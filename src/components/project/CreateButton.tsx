@@ -25,8 +25,6 @@ const CreateButton = () => {
     });
   };
   const [open, setOpen] = useState(false);
-  console.log("test");
-
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
