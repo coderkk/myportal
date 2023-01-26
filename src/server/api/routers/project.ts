@@ -16,10 +16,6 @@ export const deleteProjectSchema = z.object({
   navigateBack: z.boolean(),
 });
 
-export const getSiteDiariesSchema = z.object({
-  projectId: z.string(),
-});
-
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
     .input(createProjectSchema)
@@ -134,47 +130,6 @@ export const projectRouter = createTRPCRouter({
           });
           return {};
         });
-      } catch (error) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
-        });
-      }
-    }),
-  getSiteDiaries: protectedProcedure
-    .input(getSiteDiariesSchema)
-    .query(async ({ ctx, input }) => {
-      try {
-        const project = await ctx.prisma.project.findUniqueOrThrow({
-          where: {
-            id: input.projectId,
-          },
-          include: {
-            createdBy: {
-              select: {
-                name: true,
-              },
-            },
-            siteDiaries: {
-              include: {
-                createdBy: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-        });
-        return {
-          siteDiaries: project.siteDiaries.map((siteDiary) => ({
-            id: siteDiary.id,
-            name: siteDiary.name,
-            date: siteDiary.date.toLocaleDateString(),
-            createdBy: siteDiary.createdBy.name,
-          })),
-        };
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",

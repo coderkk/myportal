@@ -7,12 +7,9 @@ import type {
   WorkProgress,
 } from "@prisma/client";
 import * as Tabs from "@radix-ui/react-tabs";
-import { type GetStaticPropsContext } from "next";
 import { useRouter } from "next/router";
-import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { useGetSiteDiary } from "../../../../hooks/siteDiary";
-import { prisma } from "../../../../server/db";
 
 export type siteDiary = {
   weather: Weather | null;
@@ -27,27 +24,22 @@ export type siteDiary = {
   workProgresses: WorkProgress[];
 };
 
-const SiteDiary = ({
-  siteDiaryFromStaticProps,
-}: {
-  siteDiaryFromStaticProps: siteDiary;
-}) => {
+const SiteDiary = () => {
   const router = useRouter();
   const siteDiaryId = router.query.siteDiaryId as string;
   const projectId = router.query.projectId as string;
-  const { siteDiary, isError } = useGetSiteDiary({
+  const { siteDiary, isLoading, isError } = useGetSiteDiary({
     siteDiaryId: siteDiaryId,
-    initialData: siteDiaryFromStaticProps,
   });
 
   return (
     <SessionAuth>
-      {router.isFallback ? (
+      {isLoading ? (
         <div>Loading...</div>
       ) : isError ? (
         <div>Error!</div>
       ) : (
-        <PermissionToProject projectId={projectId}>
+        siteDiary && (
           <div className="flex h-screen">
             <div className="m-auto w-10/12">
               <div className="text-lg font-medium">{siteDiary.name}</div>
@@ -194,103 +186,103 @@ const SiteDiary = ({
               </Tabs.Root>
             </div>
           </div>
-        </PermissionToProject>
+        )
       )}
     </SessionAuth>
   );
 };
 
-export async function getStaticProps(context: GetStaticPropsContext) {
-  if (!context.params) {
-    return {
-      props: {},
-    };
-  }
-  const siteDiary = await prisma.siteDiary.findUnique({
-    where: {
-      id: context.params.siteDiaryId as string,
-    },
-    select: {
-      name: true,
-      createdBy: {
-        select: {
-          name: true,
-        },
-      },
-      weather: true,
-      plants: {
-        include: {
-          createdBy: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      laborers: {
-        include: {
-          createdBy: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      materials: {
-        include: {
-          createdBy: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      siteProblems: {
-        include: {
-          createdBy: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-      workProgresses: {
-        include: {
-          createdBy: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  });
+// export async function getStaticProps(context: GetStaticPropsContext) {
+//   if (!context.params) {
+//     return {
+//       props: {},
+//     };
+//   }
+//   const siteDiary = await prisma.siteDiary.findUnique({
+//     where: {
+//       id: context.params.siteDiaryId as string,
+//     },
+//     select: {
+//       name: true,
+//       createdBy: {
+//         select: {
+//           name: true,
+//         },
+//       },
+//       weather: true,
+//       plants: {
+//         include: {
+//           createdBy: {
+//             select: {
+//               name: true,
+//             },
+//           },
+//         },
+//       },
+//       laborers: {
+//         include: {
+//           createdBy: {
+//             select: {
+//               name: true,
+//             },
+//           },
+//         },
+//       },
+//       materials: {
+//         include: {
+//           createdBy: {
+//             select: {
+//               name: true,
+//             },
+//           },
+//         },
+//       },
+//       siteProblems: {
+//         include: {
+//           createdBy: {
+//             select: {
+//               name: true,
+//             },
+//           },
+//         },
+//       },
+//       workProgresses: {
+//         include: {
+//           createdBy: {
+//             select: {
+//               name: true,
+//             },
+//           },
+//         },
+//       },
+//     },
+//   });
 
-  if (!siteDiary) {
-    // https:stackoverflow.com/questions/67787456/what-is-the-difference-between-fallback-false-vs-true-vs-blocking-of-getstaticpa
-    return { notFound: true };
-  }
+//   if (!siteDiary) {
+//     // https:stackoverflow.com/questions/67787456/what-is-the-difference-between-fallback-false-vs-true-vs-blocking-of-getstaticpa
+//     return { notFound: true };
+//   }
 
-  return {
-    props: {
-      siteDiaryFromStaticProps: siteDiary,
-    },
-    revalidate: 60 * 60 * 24, // revalidate every 24 hours
-  };
-}
+//   return {
+//     props: {
+//       siteDiaryFromStaticProps: siteDiary,
+//     },
+//     revalidate: 60 * 60 * 24, // revalidate every 24 hours
+//   };
+// }
 
-export async function getStaticPaths() {
-  const siteDiaries = await prisma.siteDiary.findMany();
-  const paths = siteDiaries.map((siteDiary) => ({
-    params: {
-      projectId: siteDiary.projectId,
-      siteDiaryId: siteDiary.id,
-    },
-  }));
-  return {
-    paths: paths,
-    fallback: true,
-  };
-}
+// export async function getStaticPaths() {
+//   const siteDiaries = await prisma.siteDiary.findMany();
+//   const paths = siteDiaries.map((siteDiary) => ({
+//     params: {
+//       projectId: siteDiary.projectId,
+//       siteDiaryId: siteDiary.id,
+//     },
+//   }));
+//   return {
+//     paths: paths,
+//     fallback: true,
+//   };
+// }
 
 export default SiteDiary;

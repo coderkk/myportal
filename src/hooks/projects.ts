@@ -1,6 +1,5 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import type { siteDiary } from "../pages/projects/[projectId]/site-diary";
 import { api } from "../utils/api";
 
 export const useCreateProject = () => {
@@ -39,7 +38,7 @@ export const useCreateProject = () => {
   };
 };
 
-export const useGetMyProjects = () => {
+export const useGetProjects = () => {
   const { data, isLoading, isError } = api.project.getProjects.useQuery();
   return {
     projects: data,
@@ -147,30 +146,5 @@ export const useDeleteProject = () => {
   });
   return {
     deleteProject,
-  };
-};
-
-export const useGetSiteDiares = ({
-  projectId,
-  initialData,
-}: {
-  projectId: string;
-  initialData: siteDiary[];
-}) => {
-  const { data, isLoading, isError } = api.project.getSiteDiaries.useQuery(
-    {
-      projectId: projectId,
-    },
-    {
-      initialData: {
-        siteDiaries: initialData,
-      },
-      staleTime: 0, // this is the default but putting it here to remind devs
-    }
-  );
-  return {
-    siteDiaries: data.siteDiaries,
-    isLoading: isLoading,
-    isError: isError,
   };
 };

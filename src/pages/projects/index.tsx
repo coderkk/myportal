@@ -1,14 +1,23 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import SessionAuth from "../../components/auth/SessionAuth";
-import CreateButton from "../../components/project/CreateButton";
-import DeleteButton from "../../components/project/DeleteButton";
-import EditButton from "../../components/project/EditButton";
+import { useGetProjects } from "../../hooks/projects";
 
-import { useGetMyProjects } from "../../hooks/projects";
+import SessionAuth from "../../components/auth/SessionAuth";
+import { api } from "../../utils/api";
+
+const CreateButton = dynamic(
+  () => import("../../components/project/CreateButton") // https://nextjs.org/docs/advanced-features/dynamic-import for slower First Load JS when "npm run build"
+);
+
+const DeleteButton = dynamic(
+  () => import("../../components/project/DeleteButton")
+);
+const EditButton = dynamic(() => import("../../components/project/EditButton"));
 
 const Projects = () => {
   const router = useRouter();
-  const { projects, isLoading, isError } = useGetMyProjects();
+  const utils = api.useContext();
+  const { projects, isLoading, isError } = useGetProjects();
   return (
     <SessionAuth>
       {isLoading ? (
@@ -23,7 +32,18 @@ const Projects = () => {
               <CreateButton />
             </div>
             {projects?.map((project) => (
-              <div key={project.id} className="flex">
+              <div
+                key={project.id}
+                className="flex"
+                onMouseEnter={() => {
+                  void utils.me.hasPermissionToProject.prefetch(
+                    { projectId: project.id },
+                    {
+                      staleTime: Infinity,
+                    }
+                  );
+                }}
+              >
                 <span
                   className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500"
                   onClick={() => void router.push(`/projects/${project.id}`)}

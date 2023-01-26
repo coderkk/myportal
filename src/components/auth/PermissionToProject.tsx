@@ -18,6 +18,7 @@ export default function PermissionToProject({
       <div className="max-h-screen-xl flex min-h-[70vh]">
         <div className="m-auto">
           <Spinner />
+          Checking project permissions
         </div>
       </div>
     );
