@@ -1,16 +1,18 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
 import { useRouter } from "next/router";
-import { useDeleteProject } from "../../hooks/projects";
+import { useDeleteSiteDiary } from "../../hooks/siteDiary";
 
 const DeleteButton = ({
+  siteDiaryId,
   projectId,
   navigateBack = false,
 }: {
+  siteDiaryId: string;
   projectId: string;
   navigateBack?: boolean;
 }) => {
-  const { deleteProject } = useDeleteProject();
+  const { deleteSiteDiary } = useDeleteSiteDiary();
   const router = useRouter();
   return (
     <AlertDialog.Root>
@@ -24,8 +26,8 @@ const DeleteButton = ({
             Are you absolutely sure?
           </AlertDialog.Title>
           <AlertDialog.Description className="mx-0 mt-3 mb-5 text-sm text-gray-400">
-            This action cannot be undone. This will permanently delete your
-            project and remove your data from our servers.
+            This action cannot be undone. This will permanently delete your site
+            diary and remove your data from our servers.
           </AlertDialog.Description>
           <div className="flex justify-end gap-6">
             <AlertDialog.Cancel asChild>
@@ -38,7 +40,8 @@ const DeleteButton = ({
                 type="button"
                 onClick={() =>
                   void (async () => {
-                    await deleteProject({
+                    await deleteSiteDiary({
+                      siteDiaryId: siteDiaryId,
                       projectId: projectId,
                     });
                     if (navigateBack) {
@@ -48,7 +51,7 @@ const DeleteButton = ({
                 }
                 className="inline-flex h-9 items-center justify-center rounded-md bg-red-100 py-0 px-4 text-sm font-medium text-red-700 hover:bg-red-200"
               >
-                Yes, delete project
+                Yes, delete site diary
               </button>
             </AlertDialog.Action>
           </div>

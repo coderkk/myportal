@@ -2,6 +2,12 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
+export const createSiteDiarySchema = z.object({
+  siteDiaryName: z.string(),
+  siteDiaryDate: z.date(),
+  projectId: z.string(),
+});
+
 export const getSiteDiariesSchema = z.object({
   projectId: z.string(),
 });
@@ -10,7 +16,45 @@ export const getSiteDiaryInfoSchema = z.object({
   siteDiaryId: z.string(),
 });
 
+export const updateSiteDiarySchema = z.object({
+  siteDiaryId: z.string(),
+  siteDiaryName: z.string(),
+  projectId: z.string(),
+});
+
+export const updateSiteDiaryWeatherSchema = z.object({
+  siteDiaryId: z.string(),
+  morning: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
+  afternoon: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
+  evening: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
+});
+
+export const deleteSiteDiarySchema = z.object({
+  siteDiaryId: z.string(),
+  projectId: z.string(),
+});
+
 export const siteDiaryRouter = createTRPCRouter({
+  createSiteDiary: protectedProcedure
+    .input(createSiteDiarySchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.siteDiary.create({
+          data: {
+            name: input.siteDiaryName,
+            createdById: ctx.session.user.id,
+            date: input.siteDiaryDate,
+            projectId: input.projectId,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+          cause: error,
+        });
+      }
+    }),
   getSiteDiaries: protectedProcedure
     .input(getSiteDiariesSchema)
     .query(async ({ ctx, input }) => {
@@ -36,14 +80,12 @@ export const siteDiaryRouter = createTRPCRouter({
             },
           },
         });
-        return {
-          siteDiaries: project.siteDiaries.map((siteDiary) => ({
-            id: siteDiary.id,
-            name: siteDiary.name,
-            date: siteDiary.date.toLocaleDateString(),
-            createdBy: siteDiary.createdBy.name,
-          })),
-        };
+        return project.siteDiaries.map((siteDiary) => ({
+          id: siteDiary.id,
+          name: siteDiary.name,
+          date: siteDiary.date.toLocaleDateString(),
+          createdBy: siteDiary.createdBy.name,
+        }));
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -115,9 +157,66 @@ export const siteDiaryRouter = createTRPCRouter({
             },
           },
         });
-        return {
-          siteDiary: siteDiary,
-        };
+        return siteDiary;
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+          cause: error,
+        });
+      }
+    }),
+  updateSiteDiary: protectedProcedure
+    .input(updateSiteDiarySchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.siteDiary.update({
+          where: {
+            id: input.siteDiaryId,
+          },
+          data: {
+            name: input.siteDiaryName,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+          cause: error,
+        });
+      }
+    }),
+  updateSiteDiaryWeather: protectedProcedure
+    .input(updateSiteDiaryWeatherSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.weather.update({
+          where: {
+            siteDiaryId: input.siteDiaryId,
+          },
+          data: {
+            morning: input.morning,
+            afternoon: input.afternoon,
+            evening: input.evening,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+          cause: error,
+        });
+      }
+    }),
+  deleteSiteDiary: protectedProcedure
+    .input(deleteSiteDiarySchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.prisma.siteDiary.delete({
+          where: {
+            id: input.siteDiaryId,
+          },
+        });
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",

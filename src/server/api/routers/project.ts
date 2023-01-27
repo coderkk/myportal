@@ -2,18 +2,17 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
+export const createProjectSchema = z.object({
+  projectName: z.string(),
+});
+
 export const updateProjectSchema = z.object({
   projectId: z.string(),
   projectName: z.string(),
 });
 
-export const createProjectSchema = z.object({
-  projectName: z.string(),
-});
-
 export const deleteProjectSchema = z.object({
   projectId: z.string(),
-  navigateBack: z.boolean(),
 });
 
 export const projectRouter = createTRPCRouter({
@@ -114,21 +113,10 @@ export const projectRouter = createTRPCRouter({
     .input(deleteProjectSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        return await ctx.prisma.$transaction(async (tx) => {
-          await tx.usersOnProjects.delete({
-            where: {
-              userId_projectId: {
-                userId: ctx.session.user.id,
-                projectId: input.projectId,
-              },
-            },
-          });
-          await tx.project.delete({
-            where: {
-              id: input.projectId,
-            },
-          });
-          return {};
+        return await ctx.prisma.project.delete({
+          where: {
+            id: input.projectId,
+          },
         });
       } catch (error) {
         throw new TRPCError({

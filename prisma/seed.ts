@@ -71,7 +71,7 @@ async function main() {
         weather: {
           create: {
             morning: WeatherCondition.SUNNY,
-            afternoon: WeatherCondition.RAINING,
+            afternoon: WeatherCondition.RAINY,
             evening: WeatherCondition.CLOUDY,
           },
         },
@@ -121,6 +121,27 @@ async function main() {
     });
   }
 }
+
+// run this for a custom db clean up
+// async function cleanupDatabase() {
+//   const userId = env.TEST_USER_ID;
+
+//   // delete all existing "projects" and "createdProjects" for userId
+//   await prisma.user.update({
+//     where: {
+//       id: userId,
+//     },
+//     data: {
+//       projects: {
+//         deleteMany: {},
+//       },
+//       createdProjects: {
+//         deleteMany: {},
+//       },
+//     },
+//   });
+//   await prisma.siteDiary.deleteMany();
+// }
 
 main()
   .then(async () => {

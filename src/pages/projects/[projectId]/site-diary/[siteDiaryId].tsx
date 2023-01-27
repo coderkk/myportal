@@ -4,12 +4,17 @@ import type {
   Plant,
   SiteProblem,
   Weather,
+  WeatherCondition,
   WorkProgress,
 } from "@prisma/client";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useRouter } from "next/router";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetSiteDiary } from "../../../../hooks/siteDiary";
+import Dropdown from "../../../../components/siteDiary/weather/Dropdown";
+import {
+  useGetSiteDiary,
+  useUpdateSiteDiaryWeather,
+} from "../../../../hooks/siteDiary";
 
 export type siteDiary = {
   weather: Weather | null;
@@ -27,11 +32,26 @@ export type siteDiary = {
 const SiteDiary = () => {
   const router = useRouter();
   const siteDiaryId = router.query.siteDiaryId as string;
-  const projectId = router.query.projectId as string;
   const { siteDiary, isLoading, isError } = useGetSiteDiary({
     siteDiaryId: siteDiaryId,
   });
-
+  const { updateSiteDiaryWeather } = useUpdateSiteDiaryWeather();
+  const onWeatherChange = ({
+    weather,
+    time,
+    value,
+  }: {
+    weather: Weather | null;
+    time: string;
+    value: WeatherCondition;
+  }) => {
+    updateSiteDiaryWeather({
+      morning: time === "M" ? value : weather?.morning,
+      afternoon: time === "A" ? value : weather?.afternoon,
+      evening: time === "E" ? value : weather?.evening,
+      siteDiaryId: siteDiaryId,
+    });
+  };
   return (
     <SessionAuth>
       {isLoading ? (
@@ -47,12 +67,42 @@ const SiteDiary = () => {
                 <div>Weather condition</div>
                 <div>
                   <span className="mr-2">
-                    Morning: {siteDiary.weather?.morning}
+                    Morning:{" "}
+                    <Dropdown
+                      weatherCondition={siteDiary.weather?.morning}
+                      onWeatherChange={(value: WeatherCondition) =>
+                        onWeatherChange({
+                          weather: siteDiary.weather,
+                          time: "M",
+                          value: value,
+                        })
+                      }
+                    />
                   </span>
                   <span className="mr-2">
-                    Afternoon: {siteDiary.weather?.afternoon}
+                    Afternoon:{" "}
+                    <Dropdown
+                      weatherCondition={siteDiary.weather?.afternoon}
+                      onWeatherChange={(value: WeatherCondition) =>
+                        onWeatherChange({
+                          weather: siteDiary.weather,
+                          time: "A",
+                          value: value,
+                        })
+                      }
+                    />
                   </span>
-                  Evening: {siteDiary.weather?.evening}
+                  Evening:
+                  <Dropdown
+                    weatherCondition={siteDiary.weather?.evening}
+                    onWeatherChange={(value: WeatherCondition) =>
+                      onWeatherChange({
+                        weather: siteDiary.weather,
+                        time: "E",
+                        value: value,
+                      })
+                    }
+                  />
                 </div>
               </div>
               <Tabs.Root
@@ -93,14 +143,14 @@ const SiteDiary = () => {
                   </Tabs.Trigger>
                   <Tabs.Trigger
                     className="flex flex-1 select-none items-center justify-center rounded-tr-md bg-white px-5 text-base
-                  text-blue-200 hover:text-blue-500 data-[state=active]:text-blue-500"
+                  text-blue-200 hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
                     value="tab5"
                   >
                     Site Problems
                   </Tabs.Trigger>
                 </Tabs.List>
                 <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 outline-none focus:shadow-lg"
+                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                   value="tab1"
                 >
                   <ul>
@@ -116,7 +166,7 @@ const SiteDiary = () => {
                   </ul>
                 </Tabs.Content>
                 <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 outline-none focus:shadow-lg"
+                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5  focus:shadow"
                   value="tab2"
                 >
                   <ul>
@@ -132,7 +182,7 @@ const SiteDiary = () => {
                   </ul>
                 </Tabs.Content>
                 <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 outline-none focus:shadow-lg"
+                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5  focus:shadow"
                   value="tab3"
                 >
                   <ul>
@@ -150,7 +200,7 @@ const SiteDiary = () => {
                   </ul>
                 </Tabs.Content>
                 <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 outline-none focus:shadow-lg"
+                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                   value="tab4"
                 >
                   <ul>
@@ -167,7 +217,7 @@ const SiteDiary = () => {
                   </ul>
                 </Tabs.Content>
                 <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 outline-none focus:shadow-lg"
+                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                   value="tab5"
                 >
                   <ul>

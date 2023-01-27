@@ -1,5 +1,4 @@
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import { api } from "../utils/api";
 
 export const useCreateProject = () => {
@@ -117,8 +116,7 @@ export const useUpdateProject = () => {
 
 export const useDeleteProject = () => {
   const utils = api.useContext();
-  const router = useRouter();
-  const { mutate: deleteProject } = api.project.deleteProject.useMutation({
+  const { mutateAsync: deleteProject } = api.project.deleteProject.useMutation({
     async onMutate({ projectId }) {
       await utils.project.getProjects.cancel();
       const previousData = utils.project.getProjects.getData();
@@ -129,11 +127,6 @@ export const useDeleteProject = () => {
         return newProjects;
       });
       return () => utils.project.getProjects.setData(undefined, previousData);
-    },
-    onSuccess(data, { navigateBack }) {
-      if (navigateBack) {
-        router.back();
-      }
     },
     onError(error, values, rollback) {
       if (rollback) {

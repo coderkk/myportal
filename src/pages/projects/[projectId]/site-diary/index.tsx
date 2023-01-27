@@ -1,5 +1,8 @@
 import { useRouter } from "next/router";
 import SessionAuth from "../../../../components/auth/SessionAuth";
+import CreateButton from "../../../../components/siteDiary/CreateButton";
+import DeleteButton from "../../../../components/siteDiary/DeleteButton";
+import EditButton from "../../../../components/siteDiary/EditButton";
 import { useGetSiteDiaries } from "../../../../hooks/siteDiary";
 import { api } from "../../../../utils/api";
 
@@ -20,11 +23,13 @@ const SiteDiary = () => {
       ) : (
         <div className="flex h-screen">
           <div className="m-auto">
-            <div className="text-lg font-medium">Site Diaries</div>
-            <ul>
-              {siteDiaries?.map((siteDiary) => (
-                <li
-                  key={siteDiary.id}
+            <div className="flex justify-between">
+              <div className="text-lg font-medium">Site Diaries</div>
+              <CreateButton projectId={projectId} />
+            </div>
+            {siteDiaries?.map((siteDiary) => (
+              <div key={siteDiary.id} className="flex">
+                <span
                   className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500"
                   onClick={() =>
                     void router.push(
@@ -47,9 +52,14 @@ const SiteDiary = () => {
                     <span className="mr-4">{siteDiary.createdBy}</span>
                     <span className="mr-4">{siteDiary.date}</span>
                   </div>
-                </li>
-              ))}
-            </ul>
+                </span>
+                <EditButton siteDiary={siteDiary} projectId={projectId} />
+                <DeleteButton
+                  siteDiaryId={siteDiary.id}
+                  projectId={projectId}
+                />
+              </div>
+            ))}
           </div>
         </div>
       )}
