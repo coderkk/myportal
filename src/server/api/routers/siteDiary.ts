@@ -190,14 +190,20 @@ export const siteDiaryRouter = createTRPCRouter({
     .input(updateSiteDiaryWeatherSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.prisma.weather.update({
+        await ctx.prisma.weather.upsert({
           where: {
             siteDiaryId: input.siteDiaryId,
           },
-          data: {
+          update: {
             morning: input.morning,
             afternoon: input.afternoon,
             evening: input.evening,
+          },
+          create: {
+            morning: input.morning,
+            afternoon: input.afternoon,
+            evening: input.evening,
+            siteDiaryId: input.siteDiaryId,
           },
         });
       } catch (error) {
