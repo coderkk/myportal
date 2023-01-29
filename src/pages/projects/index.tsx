@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useGetProjects } from "../../hooks/projects";
 
+import { useRef } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { api } from "../../utils/api";
 
@@ -18,6 +19,7 @@ const Projects = () => {
   const router = useRouter();
   const utils = api.useContext();
   const { projects, isLoading, isError } = useGetProjects();
+  const pendingDeleteCountRef = useRef(0);
   return (
     <SessionAuth>
       {isLoading ? (
@@ -55,7 +57,10 @@ const Projects = () => {
                   </div>
                 </span>
                 <EditButton project={project} />
-                <DeleteButton projectId={project.id} />
+                <DeleteButton
+                  projectId={project.id}
+                  pendingDeleteCountRef={pendingDeleteCountRef}
+                />
               </div>
             ))}
           </div>

@@ -29,7 +29,7 @@ const EditButton = ({
       name: siteDiary.name,
     },
   });
-  const { updateSiteDiary } = useUpdateSiteDiary();
+  const { updateSiteDiary } = useUpdateSiteDiary({ projectId: projectId });
   const onSubmit = (
     data: FieldValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
@@ -40,7 +40,6 @@ const EditButton = ({
     updateSiteDiary({
       siteDiaryId: siteDiary.id,
       siteDiaryName: data.name as string,
-      projectId: projectId,
     });
   };
   const [open, setOpen] = useState(false);

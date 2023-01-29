@@ -1,18 +1,24 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
 import { useRouter } from "next/router";
+import type { MutableRefObject } from "react";
 import { useDeleteSiteDiary } from "../../hooks/siteDiary";
 
 const DeleteButton = ({
   siteDiaryId,
   projectId,
+  pendingDeleteCountRef,
   navigateBack = false,
 }: {
   siteDiaryId: string;
   projectId: string;
+  pendingDeleteCountRef?: MutableRefObject<number>;
   navigateBack?: boolean;
 }) => {
-  const { deleteSiteDiary } = useDeleteSiteDiary();
+  const { deleteSiteDiary } = useDeleteSiteDiary({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    projectId: projectId,
+  });
   const router = useRouter();
   return (
     <AlertDialog.Root>
@@ -42,7 +48,6 @@ const DeleteButton = ({
                   void (async () => {
                     await deleteSiteDiary({
                       siteDiaryId: siteDiaryId,
-                      projectId: projectId,
                     });
                     if (navigateBack) {
                       router.back();

@@ -1,16 +1,21 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
 import { useRouter } from "next/router";
+import type { MutableRefObject } from "react";
 import { useDeleteProject } from "../../hooks/projects";
 
 const DeleteButton = ({
   projectId,
   navigateBack = false,
+  pendingDeleteCountRef,
 }: {
   projectId: string;
   navigateBack?: boolean;
+  pendingDeleteCountRef?: MutableRefObject<number>;
 }) => {
-  const { deleteProject } = useDeleteProject();
+  const { deleteProject } = useDeleteProject({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+  });
   const router = useRouter();
   return (
     <AlertDialog.Root>

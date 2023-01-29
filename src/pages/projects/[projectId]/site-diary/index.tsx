@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { useRef } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import CreateButton from "../../../../components/siteDiary/CreateButton";
 import DeleteButton from "../../../../components/siteDiary/DeleteButton";
@@ -13,6 +14,7 @@ const SiteDiary = () => {
   const { siteDiaries, isLoading, isError } = useGetSiteDiaries({
     projectId: projectId,
   });
+  const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
   return (
     <SessionAuth>
@@ -57,6 +59,7 @@ const SiteDiary = () => {
                 <DeleteButton
                   siteDiaryId={siteDiary.id}
                   projectId={projectId}
+                  pendingDeleteCountRef={pendingDeleteCountRef}
                 />
               </div>
             ))}

@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/react";
+import type { MutableRefObject } from "react";
 import { api } from "../utils/api";
 
 export const useCreateProject = () => {
@@ -10,8 +11,8 @@ export const useCreateProject = () => {
       const previousData = utils.project.getProjects.getData();
       utils.project.getProjects.setData(undefined, (oldProjects) => {
         const optimisticUpdateObject = {
+          id: Date.now().toString(),
           name: values.projectName,
-          id: new Date(Date.now()).toLocaleDateString(),
           createdBy: session.data?.user?.name || "You",
           createdAt: new Date(Date.now()).toLocaleDateString(),
         };
@@ -114,10 +115,15 @@ export const useUpdateProject = () => {
   };
 };
 
-export const useDeleteProject = () => {
+export const useDeleteProject = ({
+  pendingDeleteCountRef,
+}: {
+  pendingDeleteCountRef?: MutableRefObject<number>;
+}) => {
   const utils = api.useContext();
   const { mutateAsync: deleteProject } = api.project.deleteProject.useMutation({
     async onMutate({ projectId }) {
+      if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
       await utils.project.getProjects.cancel();
       const previousData = utils.project.getProjects.getData();
       utils.project.getProjects.setData(undefined, (oldProjects) => {
@@ -134,7 +140,14 @@ export const useDeleteProject = () => {
       }
     },
     async onSettled() {
-      await utils.project.getProjects.invalidate();
+      if (pendingDeleteCountRef) {
+        pendingDeleteCountRef.current -= 1;
+        if (pendingDeleteCountRef.current === 0) {
+          await utils.project.getProjects.invalidate();
+        }
+      } else {
+        await utils.project.getProjects.invalidate();
+      }
     },
   });
   return {

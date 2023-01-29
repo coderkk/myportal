@@ -1,4 +1,5 @@
 import { useSession } from "next-auth/react";
+import type { MutableRefObject } from "react";
 import { api } from "../utils/api";
 
 export type siteDiary = {
@@ -20,7 +21,7 @@ export const useCreateSiteDiary = () => {
           { projectId: values.projectId },
           (oldSiteDiaries) => {
             const optimisticUpdateObject = {
-              id: new Date(Date.now()).toLocaleDateString(),
+              id: Date.now().toString(),
               name: values.siteDiaryName,
               date: new Date(Date.now()).toLocaleDateString(),
               createdBy: session.data?.user?.name || "You",
@@ -75,11 +76,11 @@ export const useGetSiteDiary = ({ siteDiaryId }: { siteDiaryId: string }) => {
   };
 };
 
-export const useUpdateSiteDiary = () => {
+export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
   const { mutate: updateSiteDiary } = api.siteDiary.updateSiteDiary.useMutation(
     {
-      async onMutate({ siteDiaryId, siteDiaryName, projectId }) {
+      async onMutate({ siteDiaryId, siteDiaryName }) {
         await utils.siteDiary.getSiteDiaries.cancel();
         const previousData = utils.siteDiary.getSiteDiaries.getData();
         utils.siteDiary.getSiteDiaries.setData(
@@ -114,7 +115,7 @@ export const useUpdateSiteDiary = () => {
           rollback();
         }
       },
-      onSuccess(data, { siteDiaryId, siteDiaryName, projectId }) {
+      onSuccess(data, { siteDiaryId, siteDiaryName }) {
         utils.siteDiary.getSiteDiaries.setData(
           { projectId: projectId },
           (oldSiteDiaries) => {
@@ -166,7 +167,7 @@ export const useUpdateSiteDiaryWeather = () => {
             if (oldSiteDiary) {
               const newSiteDiary = { ...oldSiteDiary };
               newSiteDiary.weather = {
-                id: new Date(Date.now()).toLocaleDateString(),
+                id: Date.now().toString(),
                 morning: morning || null,
                 afternoon: afternoon || null,
                 evening: evening || null,
@@ -193,11 +194,19 @@ export const useUpdateSiteDiaryWeather = () => {
   };
 };
 
-export const useDeleteSiteDiary = () => {
+export const useDeleteSiteDiary = ({
+  pendingDeleteCountRef,
+  projectId,
+}: {
+  pendingDeleteCountRef?: MutableRefObject<number>;
+  projectId: string;
+}) => {
   const utils = api.useContext();
+
   const { mutateAsync: deleteSiteDiary } =
     api.siteDiary.deleteSiteDiary.useMutation({
-      async onMutate({ siteDiaryId, projectId }) {
+      async onMutate({ siteDiaryId }) {
+        if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
         await utils.siteDiary.getSiteDiaries.cancel();
         const previousData = utils.siteDiary.getSiteDiaries.getData();
         utils.siteDiary.getSiteDiaries.setData(
@@ -221,7 +230,14 @@ export const useDeleteSiteDiary = () => {
         }
       },
       async onSettled() {
-        await utils.siteDiary.getSiteDiaries.invalidate();
+        if (pendingDeleteCountRef) {
+          pendingDeleteCountRef.current -= 1;
+          if (pendingDeleteCountRef.current === 0) {
+            await utils.siteDiary.getSiteDiaries.invalidate();
+          }
+        } else {
+          await utils.siteDiary.getSiteDiaries.invalidate();
+        }
       },
     });
   return {

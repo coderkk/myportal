@@ -19,7 +19,6 @@ export const getSiteDiaryInfoSchema = z.object({
 export const updateSiteDiarySchema = z.object({
   siteDiaryId: z.string(),
   siteDiaryName: z.string(),
-  projectId: z.string(),
 });
 
 export const updateSiteDiaryWeatherSchema = z.object({
@@ -31,7 +30,6 @@ export const updateSiteDiaryWeatherSchema = z.object({
 
 export const deleteSiteDiarySchema = z.object({
   siteDiaryId: z.string(),
-  projectId: z.string(),
 });
 
 export const siteDiaryRouter = createTRPCRouter({
