@@ -13,7 +13,7 @@ export const useCreateProject = () => {
         const optimisticUpdateObject = {
           id: Date.now().toString(),
           name: values.projectName,
-          createdBy: session.data?.user?.name || "You",
+          createdBy: { name: session.data?.user?.name || "You" },
           createdAt: new Date(Date.now()).toLocaleDateString(),
         };
         if (oldProjects) {
@@ -81,7 +81,9 @@ export const useUpdateProject = () => {
         rollback();
       }
     },
-    // do not do this with list mutations because it might end up appending twice
+    // do not do this with list-length non-idempotent mutations (eg. create
+    // in a list. "Update" and "delete" are fine because they are idempotent)
+    // because it might end up appending twice
     onSuccess(data, { projectId, projectName }) {
       // OU with data returned from the server
       utils.project.getProjects.setData(undefined, (oldProjects) => {
@@ -138,6 +140,14 @@ export const useDeleteProject = ({
       if (rollback) {
         rollback();
       }
+    },
+    onSuccess(data, { projectId }) {
+      utils.project.getProjects.setData(undefined, (oldProjects) => {
+        const newProjects = oldProjects?.filter(
+          (oldProject) => oldProject.id !== projectId
+        );
+        return newProjects;
+      });
     },
     async onSettled() {
       if (pendingDeleteCountRef) {

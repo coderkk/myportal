@@ -1,22 +1,21 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
-import { useRouter } from "next/router";
 import type { MutableRefObject } from "react";
-import { useDeleteProject } from "../../hooks/project";
+import { useDeletePlant } from "../../../hooks/plant";
 
 const DeleteButton = ({
-  projectId,
-  navigateBack = false,
+  plantId,
+  siteDiaryId,
   pendingDeleteCountRef,
 }: {
-  projectId: string;
-  navigateBack?: boolean;
+  plantId: string;
+  siteDiaryId: string;
   pendingDeleteCountRef?: MutableRefObject<number>;
 }) => {
-  const { deleteProject } = useDeleteProject({
+  const { deletePlant } = useDeletePlant({
     pendingDeleteCountRef: pendingDeleteCountRef,
+    siteDiaryId: siteDiaryId,
   });
-  const router = useRouter();
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>
@@ -29,12 +28,15 @@ const DeleteButton = ({
             Are you absolutely sure?
           </AlertDialog.Title>
           <AlertDialog.Description className="mx-0 mt-3 mb-5 text-sm text-gray-400">
-            This action cannot be undone. This will permanently delete your
-            project and remove your data from our servers.
+            This action cannot be undone. This will permanently delete this
+            plant and remove the data from our servers.
           </AlertDialog.Description>
           <div className="flex justify-end gap-6">
             <AlertDialog.Cancel asChild>
-              <button className="inline-flex h-9 items-center justify-center rounded-md bg-gray-100 py-0 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200">
+              <button
+                type="button"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-gray-100 py-0 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              >
                 Cancel
               </button>
             </AlertDialog.Cancel>
@@ -43,17 +45,14 @@ const DeleteButton = ({
                 type="button"
                 onClick={() =>
                   void (async () => {
-                    await deleteProject({
-                      projectId: projectId,
+                    await deletePlant({
+                      plantId: plantId,
                     });
-                    if (navigateBack) {
-                      router.back();
-                    }
                   })()
                 }
                 className="inline-flex h-9 items-center justify-center rounded-md bg-red-100 py-0 px-4 text-sm font-medium text-red-700 hover:bg-red-200"
               >
-                Yes, delete project
+                Yes, delete plant
               </button>
             </AlertDialog.Action>
           </div>

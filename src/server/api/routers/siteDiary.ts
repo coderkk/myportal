@@ -82,7 +82,7 @@ export const siteDiaryRouter = createTRPCRouter({
           id: siteDiary.id,
           name: siteDiary.name,
           date: siteDiary.date.toLocaleDateString(),
-          createdBy: siteDiary.createdBy.name,
+          createdBy: siteDiary.createdBy,
         }));
       } catch (error) {
         throw new TRPCError({

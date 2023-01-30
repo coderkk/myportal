@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useGetProjects } from "../../hooks/projects";
+import { useGetProjects } from "../../hooks/project";
 
 import { useRef } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
@@ -52,7 +52,7 @@ const Projects = () => {
                 >
                   <div>
                     <span className="mr-4">{project.name}</span>
-                    <span className="mr-4">{project.createdBy}</span>
+                    <span className="mr-4">{project.createdBy.name}</span>
                     <span className="mr-4">{project.createdAt}</span>
                   </div>
                 </span>

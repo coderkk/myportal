@@ -9,7 +9,7 @@ type siteDiary = {
   id: string;
   name: string;
   date: string;
-  createdBy: string | null;
+  createdBy: { name: string | null };
 };
 
 const EditButton = ({

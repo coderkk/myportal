@@ -10,6 +10,8 @@ import type {
 import * as Tabs from "@radix-ui/react-tabs";
 import { useRouter } from "next/router";
 import SessionAuth from "../../../../components/auth/SessionAuth";
+import { LaborerView } from "../../../../components/siteDiary/laborer/LaborerView";
+import { PlantView } from "../../../../components/siteDiary/plant/PlantView";
 import Dropdown from "../../../../components/siteDiary/weather/Dropdown";
 import {
   useGetSiteDiary,
@@ -105,135 +107,119 @@ const SiteDiary = () => {
                   />
                 </div>
               </div>
-              <Tabs.Root
-                className="flex w-2/3 flex-col shadow"
-                defaultValue="tab1"
-              >
-                <Tabs.List
-                  className="flex shrink-0 border-b-2 border-solid border-gray-200"
-                  aria-label="Manage your account"
+              <div className="mt-2 flex justify-center">
+                <Tabs.Root
+                  className="flex w-2/3 flex-col  shadow"
+                  defaultValue="tab1"
                 >
-                  <Tabs.Trigger
-                    className="flex flex-1 select-none items-center justify-center rounded-tl-md bg-white px-5 text-base
+                  <Tabs.List
+                    className="flex shrink-0 border-b-2 border-solid border-gray-200"
+                    aria-label="Manage your account"
+                  >
+                    <Tabs.Trigger
+                      className="flex flex-1 select-none items-center justify-center rounded-tl-md bg-white px-5 text-base
                   text-blue-200 hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                      value="tab1"
+                    >
+                      Plants
+                    </Tabs.Trigger>
+                    <Tabs.Trigger
+                      className="flex flex-1 select-none items-center justify-center bg-white px-5 text-base text-blue-200
+                  hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                      value="tab2"
+                    >
+                      Laborers
+                    </Tabs.Trigger>
+                    <Tabs.Trigger
+                      className="flex flex-1 select-none items-center justify-center bg-white px-5 text-base text-blue-200
+                  hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                      value="tab3"
+                    >
+                      Materials
+                    </Tabs.Trigger>
+                    <Tabs.Trigger
+                      className="flex flex-1 select-none items-center justify-center bg-white px-5 text-base text-blue-200
+                  hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                      value="tab4"
+                    >
+                      Work progress
+                    </Tabs.Trigger>
+                    <Tabs.Trigger
+                      className="flex flex-1 select-none items-center justify-center rounded-tr-md bg-white px-5 text-base
+                  text-blue-200 hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                      value="tab5"
+                    >
+                      Site Problems
+                    </Tabs.Trigger>
+                  </Tabs.List>
+                  <Tabs.Content
+                    className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                     value="tab1"
                   >
-                    Plants
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    className="flex flex-1 select-none items-center justify-center bg-white px-5 text-base text-blue-200
-                  hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                    <PlantView plants={siteDiary.plants} />
+                  </Tabs.Content>
+                  <Tabs.Content
+                    className="flex-grow rounded-bl-md rounded-br-md bg-white p-5  focus:shadow"
                     value="tab2"
                   >
-                    Laborers
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    className="flex flex-1 select-none items-center justify-center bg-white px-5 text-base text-blue-200
-                  hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                    <LaborerView laborers={siteDiary.laborers} />
+                  </Tabs.Content>
+                  <Tabs.Content
+                    className="flex-grow rounded-bl-md rounded-br-md bg-white p-5  focus:shadow"
                     value="tab3"
                   >
-                    Materials
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    className="flex flex-1 select-none items-center justify-center bg-white px-5 text-base text-blue-200
-                  hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                    <ul>
+                      {siteDiary.materials.map((material) => (
+                        <li key={material.id}>
+                          <div>
+                            <span className="mr-4">{material.units}</span>
+                            <span className="mr-4">{material.amount}</span>
+                            <span className="mr-4">
+                              {material.createdBy.name}
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </Tabs.Content>
+                  <Tabs.Content
+                    className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                     value="tab4"
                   >
-                    Work progress
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    className="flex flex-1 select-none items-center justify-center rounded-tr-md bg-white px-5 text-base
-                  text-blue-200 hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
+                    <ul>
+                      {siteDiary.siteProblems.map((siteProblem) => (
+                        <li key={siteProblem.id}>
+                          <div>
+                            <span className="mr-4">{siteProblem.comments}</span>
+                            <span className="mr-4">
+                              {siteProblem.createdBy.name}
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </Tabs.Content>
+                  <Tabs.Content
+                    className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                     value="tab5"
                   >
-                    Site Problems
-                  </Tabs.Trigger>
-                </Tabs.List>
-                <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
-                  value="tab1"
-                >
-                  <ul>
-                    {siteDiary.plants.map((plant) => (
-                      <li key={plant.id}>
-                        <div>
-                          <span className="mr-4">{plant.type}</span>
-                          <span className="mr-4">{plant.amount}</span>
-                          <span className="mr-4">{plant.createdBy.name}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </Tabs.Content>
-                <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5  focus:shadow"
-                  value="tab2"
-                >
-                  <ul>
-                    {siteDiary.laborers.map((laborer) => (
-                      <li key={laborer.id}>
-                        <div>
-                          <span className="mr-4">{laborer.type}</span>
-                          <span className="mr-4">{laborer.amount}</span>
-                          <span className="mr-4">{laborer.createdBy.name}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </Tabs.Content>
-                <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5  focus:shadow"
-                  value="tab3"
-                >
-                  <ul>
-                    {siteDiary.materials.map((material) => (
-                      <li key={material.id}>
-                        <div>
-                          <span className="mr-4">{material.units}</span>
-                          <span className="mr-4">{material.amount}</span>
-                          <span className="mr-4">
-                            {material.createdBy.name}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </Tabs.Content>
-                <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
-                  value="tab4"
-                >
-                  <ul>
-                    {siteDiary.siteProblems.map((siteProblem) => (
-                      <li key={siteProblem.id}>
-                        <div>
-                          <span className="mr-4">{siteProblem.comments}</span>
-                          <span className="mr-4">
-                            {siteProblem.createdBy.name}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </Tabs.Content>
-                <Tabs.Content
-                  className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
-                  value="tab5"
-                >
-                  <ul>
-                    {siteDiary.workProgresses.map((workProgress) => (
-                      <li key={workProgress.id}>
-                        <div>
-                          <span className="mr-4">{workProgress.comments}</span>
-                          <span className="mr-4">
-                            {workProgress.createdBy.name}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </Tabs.Content>
-              </Tabs.Root>
+                    <ul>
+                      {siteDiary.workProgresses.map((workProgress) => (
+                        <li key={workProgress.id}>
+                          <div>
+                            <span className="mr-4">
+                              {workProgress.comments}
+                            </span>
+                            <span className="mr-4">
+                              {workProgress.createdBy.name}
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </Tabs.Content>
+                </Tabs.Root>
+              </div>
             </div>
           </div>
         )

@@ -24,7 +24,7 @@ export const useCreateSiteDiary = () => {
               id: Date.now().toString(),
               name: values.siteDiaryName,
               date: new Date(Date.now()).toLocaleDateString(),
-              createdBy: session.data?.user?.name || "You",
+              createdBy: { name: session.data?.user?.name || "You" },
             };
             if (oldSiteDiaries) {
               return [...oldSiteDiaries, optimisticUpdateObject];
@@ -153,7 +153,7 @@ export const useUpdateSiteDiaryWeather = () => {
   const { mutate: updateSiteDiaryWeather } =
     api.siteDiary.updateSiteDiaryWeather.useMutation({
       // there is no need for an onSuccess OU because the dropdown is already an OU.
-      // we do this to take care of the edge case where the user clicks > 1 weather
+      // we do this to take care of the edge case where the user clicks > 1 weather dropdown
       // in succession quickly. Without this, it's possible that the client might send
       // null for one of the weather conditions even though the client is showing
       // a non-null value. This happens if the next click is faster than onSettled() and
@@ -228,6 +228,17 @@ export const useDeleteSiteDiary = ({
         if (rollback) {
           rollback();
         }
+      },
+      onSuccess(data, { siteDiaryId }) {
+        utils.siteDiary.getSiteDiaries.setData(
+          { projectId: projectId },
+          (oldSiteDiaries) => {
+            const newSiteDiaries = oldSiteDiaries?.filter(
+              (newSiteDiary) => newSiteDiary.id !== siteDiaryId
+            );
+            return newSiteDiaries;
+          }
+        );
       },
       async onSettled() {
         if (pendingDeleteCountRef) {

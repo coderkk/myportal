@@ -76,7 +76,7 @@ export const projectRouter = createTRPCRouter({
         return {
           id: project.id,
           name: project.name,
-          createdBy: project.createdBy.name,
+          createdBy: project.createdBy,
           createdAt: project.createdAt.toLocaleDateString(),
         };
       });

@@ -3,12 +3,12 @@ import { Edit } from "@styled-icons/boxicons-solid/";
 import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm, type FieldValues } from "react-hook-form";
-import { useUpdateProject } from "../../hooks/projects";
+import { useUpdateProject } from "../../hooks/project";
 
 type project = {
   id: string;
   name: string;
-  createdBy: string | null;
+  createdBy: { name: string | null };
   createdAt: string;
 };
 
