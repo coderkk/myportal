@@ -1,15 +1,19 @@
 import { type Laborer } from "@prisma/client";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
-import CreateButton from "./CreateButton";
-import DeleteButton from "./DeleteButton";
-import EditButton from "./EditButton";
 
 export type LaborerProps = Laborer & {
   createdBy: {
     name: string | null;
   };
 };
+
+const CreateButton = dynamic(() => import("./CreateButton"));
+
+const EditButton = dynamic(() => import("./EditButton"));
+
+const DeleteButton = dynamic(() => import("./DeleteButton"));
 
 export const LaborerView = ({ laborers }: { laborers: LaborerProps[] }) => {
   const router = useRouter();

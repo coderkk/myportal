@@ -8,15 +8,17 @@ import type {
   WorkProgress,
 } from "@prisma/client";
 import * as Tabs from "@radix-ui/react-tabs";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { LaborerView } from "../../../../components/siteDiary/laborer/LaborerView";
+import { MaterialView } from "../../../../components/siteDiary/material/MaterialView";
 import { PlantView } from "../../../../components/siteDiary/plant/PlantView";
-import Dropdown from "../../../../components/siteDiary/weather/Dropdown";
-import {
-  useGetSiteDiary,
-  useUpdateSiteDiaryWeather,
-} from "../../../../hooks/siteDiary";
+import { SiteProblemView } from "../../../../components/siteDiary/siteProblem/siteProblemView";
+// import Dropdown from "../../../../components/siteDiary/weather/Dropdown";
+import { WorkProgressView } from "../../../../components/siteDiary/workProgress/workProgressView";
+import { useGetSiteDiary } from "../../../../hooks/siteDiary";
+import { useUpdateSiteDiaryWeather } from "../../../../hooks/weather";
 
 export type siteDiary = {
   weather: Weather | null;
@@ -30,6 +32,10 @@ export type siteDiary = {
   siteProblems: SiteProblem[];
   workProgresses: WorkProgress[];
 };
+
+const Dropdown = dynamic(
+  () => import("../../../../components/siteDiary/weather/Dropdown")
+);
 
 const SiteDiary = () => {
   const router = useRouter();
@@ -142,14 +148,14 @@ const SiteDiary = () => {
                   hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
                       value="tab4"
                     >
-                      Work progress
+                      Site Problems
                     </Tabs.Trigger>
                     <Tabs.Trigger
                       className="flex flex-1 select-none items-center justify-center rounded-tr-md bg-white px-5 text-base
                   text-blue-200 hover:text-blue-500 data-[state=active]:text-blue-500 data-[state=active]:shadow-inner"
                       value="tab5"
                     >
-                      Site Problems
+                      Work progress
                     </Tabs.Trigger>
                   </Tabs.List>
                   <Tabs.Content
@@ -168,55 +174,21 @@ const SiteDiary = () => {
                     className="flex-grow rounded-bl-md rounded-br-md bg-white p-5  focus:shadow"
                     value="tab3"
                   >
-                    <ul>
-                      {siteDiary.materials.map((material) => (
-                        <li key={material.id}>
-                          <div>
-                            <span className="mr-4">{material.units}</span>
-                            <span className="mr-4">{material.amount}</span>
-                            <span className="mr-4">
-                              {material.createdBy.name}
-                            </span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+                    <MaterialView materials={siteDiary.materials} />
                   </Tabs.Content>
                   <Tabs.Content
                     className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                     value="tab4"
                   >
-                    <ul>
-                      {siteDiary.siteProblems.map((siteProblem) => (
-                        <li key={siteProblem.id}>
-                          <div>
-                            <span className="mr-4">{siteProblem.comments}</span>
-                            <span className="mr-4">
-                              {siteProblem.createdBy.name}
-                            </span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+                    <SiteProblemView siteProblems={siteDiary.siteProblems} />
                   </Tabs.Content>
                   <Tabs.Content
                     className="flex-grow rounded-bl-md rounded-br-md bg-white p-5 focus:shadow"
                     value="tab5"
                   >
-                    <ul>
-                      {siteDiary.workProgresses.map((workProgress) => (
-                        <li key={workProgress.id}>
-                          <div>
-                            <span className="mr-4">
-                              {workProgress.comments}
-                            </span>
-                            <span className="mr-4">
-                              {workProgress.createdBy.name}
-                            </span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+                    <WorkProgressView
+                      workProgresses={siteDiary.workProgresses}
+                    />
                   </Tabs.Content>
                 </Tabs.Root>
               </div>

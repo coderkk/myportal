@@ -1,11 +1,21 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import CreateButton from "../../../../components/siteDiary/CreateButton";
-import DeleteButton from "../../../../components/siteDiary/DeleteButton";
-import EditButton from "../../../../components/siteDiary/EditButton";
 import { useGetSiteDiaries } from "../../../../hooks/siteDiary";
 import { api } from "../../../../utils/api";
+
+const CreateButton = dynamic(
+  () => import("../../../../components/siteDiary/CreateButton")
+);
+
+const DeleteButton = dynamic(
+  () => import("../../../../components/siteDiary/DeleteButton")
+);
+
+const EditButton = dynamic(
+  () => import("../../../../components/siteDiary/EditButton")
+);
 
 const SiteDiary = () => {
   const router = useRouter();

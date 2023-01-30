@@ -1,9 +1,9 @@
-import { type Plant } from "@prisma/client";
+import { type Material } from "@prisma/client";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 
-export type PlantProps = Plant & {
+export type MaterialProps = Material & {
   createdBy: {
     name: string | null;
   };
@@ -15,21 +15,21 @@ const EditButton = dynamic(() => import("./EditButton"));
 
 const DeleteButton = dynamic(() => import("./DeleteButton"));
 
-export const PlantView = ({ plants }: { plants: PlantProps[] }) => {
+export const MaterialView = ({ materials }: { materials: MaterialProps[] }) => {
   const router = useRouter();
   const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
   return (
     <div className="flex justify-between">
       <ul>
-        {plants.map((plant) => (
-          <li key={plant.id}>
-            <span className="mr-4">{plant.type}</span>
-            <span className="mr-4">{plant.amount}</span>
-            <span className="mr-4">{plant.createdBy.name}</span>
-            <EditButton plant={plant} siteDiaryId={siteDiaryId} />
+        {materials.map((material) => (
+          <li key={material.id}>
+            <span className="mr-4">{material.units}</span>
+            <span className="mr-4">{material.amount}</span>
+            <span className="mr-4">{material.createdBy.name}</span>
+            <EditButton material={material} siteDiaryId={siteDiaryId} />
             <DeleteButton
-              plantId={plant.id}
+              materialId={material.id}
               siteDiaryId={siteDiaryId}
               pendingDeleteCountRef={pendingDeleteCountRef}
             />

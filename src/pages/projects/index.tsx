@@ -7,7 +7,7 @@ import SessionAuth from "../../components/auth/SessionAuth";
 import { api } from "../../utils/api";
 
 const CreateButton = dynamic(
-  () => import("../../components/project/CreateButton") // https://nextjs.org/docs/advanced-features/dynamic-import for slower First Load JS when "npm run build"
+  () => import("../../components/project/CreateButton") // https://nextjs.org/docs/advanced-features/dynamic-import for lower First Load JS when "npm run build"
 );
 
 const DeleteButton = dynamic(
