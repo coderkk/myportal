@@ -1,14 +1,17 @@
 import * as Dialog from "@radix-ui/react-dialog";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import ReactDatePicker from "react-datepicker";
+import type { ControllerRenderProps } from "react-hook-form";
+import { Controller, useForm, type FieldValues } from "react-hook-form";
 import { useUpdateSiteDiary } from "../../hooks/siteDiary";
 
 type siteDiary = {
   id: string;
   name: string;
-  date: string;
+  date: Date;
   createdBy: { name: string | null };
 };
 
@@ -23,10 +26,12 @@ const EditButton = ({
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     values: {
       name: siteDiary.name,
+      date: siteDiary.date,
     },
   });
   const { updateSiteDiary } = useUpdateSiteDiary({ projectId: projectId });
@@ -37,9 +42,11 @@ const EditButton = ({
     e?.preventDefault();
     setOpen(false);
     reset();
+    console.log(data);
     updateSiteDiary({
       siteDiaryId: siteDiary.id,
       siteDiaryName: data.name as string,
+      siteDiaryDate: data.date as Date,
     });
   };
   const [open, setOpen] = useState(false);
@@ -78,6 +85,46 @@ const EditButton = ({
                   {...register("name", { required: true })}
                 />
               </div>
+              <label
+                className="w-24 text-right text-sm text-blue-300"
+                htmlFor="date"
+              >
+                Date
+              </label>
+              <Controller
+                name="date"
+                control={control}
+                defaultValue={siteDiary.date}
+                render={({
+                  field,
+                }: {
+                  field: ControllerRenderProps<
+                    {
+                      name: string;
+                      date: Date;
+                    },
+                    "date"
+                  >;
+                }) => {
+                  const { name, value, onChange } = field;
+                  return (
+                    <ReactDatePicker
+                      name={name}
+                      selected={value}
+                      className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                    focus:border-blue-300 focus:outline-none ${
+                      errors.name
+                        ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
+                        : ""
+                    }`}
+                      onChange={(date) => onChange(date)}
+                      previousMonthButtonLabel={<ChevronLeftIcon />}
+                      nextMonthButtonLabel={<ChevronRightIcon />}
+                      popperClassName="react-datepicker-bottom"
+                    />
+                  );
+                }}
+              />
             </fieldset>
             {errors.name && (
               <span className="flex justify-center text-xs italic text-red-400">

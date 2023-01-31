@@ -23,7 +23,7 @@ export const useCreateSiteDiary = () => {
             const optimisticUpdateObject = {
               id: Date.now().toString(),
               name: values.siteDiaryName,
-              date: new Date(Date.now()).toLocaleDateString(),
+              date: values.siteDiaryDate,
               createdBy: { name: session.data?.user?.name || "You" },
             };
             if (oldSiteDiaries) {
@@ -80,7 +80,7 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
   const { mutate: updateSiteDiary } = api.siteDiary.updateSiteDiary.useMutation(
     {
-      async onMutate({ siteDiaryId, siteDiaryName }) {
+      async onMutate({ siteDiaryId, siteDiaryName, siteDiaryDate }) {
         await utils.siteDiary.getSiteDiaries.cancel();
         const previousData = utils.siteDiary.getSiteDiaries.getData();
         utils.siteDiary.getSiteDiaries.setData(
@@ -93,10 +93,11 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
               const siteDiaryToUpdateIndex = newSiteDiaries?.findIndex(
                 (siteDiary) => siteDiary.id === siteDiaryId
               );
-              const updatedsiteDiary = newSiteDiaries[siteDiaryToUpdateIndex];
-              if (updatedsiteDiary) {
-                updatedsiteDiary.name = siteDiaryName;
-                newSiteDiaries[siteDiaryToUpdateIndex] = updatedsiteDiary;
+              const updatedSiteDiary = newSiteDiaries[siteDiaryToUpdateIndex];
+              if (updatedSiteDiary) {
+                updatedSiteDiary.name = siteDiaryName;
+                updatedSiteDiary.date = siteDiaryDate;
+                newSiteDiaries[siteDiaryToUpdateIndex] = updatedSiteDiary;
               }
               return newSiteDiaries;
             } else {
@@ -115,7 +116,7 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
           rollback();
         }
       },
-      onSuccess(data, { siteDiaryId, siteDiaryName }) {
+      onSuccess(data, { siteDiaryId, siteDiaryName, siteDiaryDate }) {
         utils.siteDiary.getSiteDiaries.setData(
           { projectId: projectId },
           (oldSiteDiaries) => {
@@ -129,6 +130,7 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
               const updatedSiteDiary = newSiteDiaries[siteDiaryToUpdateIndex];
               if (updatedSiteDiary) {
                 updatedSiteDiary.name = siteDiaryName;
+                updatedSiteDiary.date = siteDiaryDate;
                 newSiteDiaries[siteDiaryToUpdateIndex] = updatedSiteDiary;
               }
               return newSiteDiaries;

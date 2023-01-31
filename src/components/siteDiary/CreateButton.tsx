@@ -1,15 +1,20 @@
 import * as Dialog from "@radix-ui/react-dialog";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import ReactDatePicker from "react-datepicker";
+import type { ControllerRenderProps } from "react-hook-form";
+import { Controller, useForm, type FieldValues } from "react-hook-form";
 import { useCreateSiteDiary } from "../../hooks/siteDiary";
 
 const CreateButton = ({ projectId }: { projectId: string }) => {
+  // const [date, setDate] = useState<Date | null>(new Date());
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm();
   const { createSiteDiary } = useCreateSiteDiary();
@@ -20,14 +25,14 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     e?.preventDefault();
     setOpen(false);
     reset();
+    console.log(data);
     createSiteDiary({
       projectId: projectId,
-      siteDiaryDate: new Date(Date.now()),
+      siteDiaryDate: data.date as Date,
       siteDiaryName: data.name as string,
     });
   };
   const [open, setOpen] = useState(false);
-
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
@@ -53,7 +58,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
               <div>
                 <input
                   className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
-                focus:border-blue-300  focus:outline-none ${
+                focus:border-blue-300 focus:outline-none ${
                   errors.name
                     ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
                     : ""
@@ -63,17 +68,57 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   {...register("name", { required: true })}
                 />
               </div>
+              <label
+                className="w-24 text-right text-sm text-blue-300"
+                htmlFor="date"
+              >
+                Date
+              </label>
+              <Controller
+                name="date"
+                control={control}
+                defaultValue={new Date()}
+                render={({
+                  field,
+                }: {
+                  field: ControllerRenderProps<FieldValues, "date">;
+                }) => {
+                  const value = field.value as Date;
+                  const { onChange, name } = field;
+                  return (
+                    <ReactDatePicker
+                      name={name}
+                      selected={value}
+                      className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                    focus:border-blue-300 focus:outline-none ${
+                      errors.name
+                        ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
+                        : ""
+                    }`}
+                      onChange={(date) => onChange(date)}
+                      previousMonthButtonLabel={<ChevronLeftIcon />}
+                      nextMonthButtonLabel={<ChevronRightIcon />}
+                      popperClassName="react-datepicker-bottom"
+                    />
+                  );
+                }}
+              />
             </fieldset>
             {errors.name && (
               <span className="flex justify-center text-xs italic text-red-400">
                 Name is required
               </span>
             )}
+            {errors.date && (
+              <span className="flex justify-center text-xs italic text-red-400">
+                Date is required
+              </span>
+            )}
             <div className="mt-6 flex justify-end">
               <button
                 className="inline-flex h-9 items-center justify-center rounded-md bg-blue-100 py-0 px-4 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
                 type="submit"
-                disabled={!!errors.name}
+                disabled={!!(errors.name || errors.date)}
               >
                 Create
               </button>

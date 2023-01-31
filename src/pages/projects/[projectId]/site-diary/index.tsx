@@ -62,7 +62,9 @@ const SiteDiary = () => {
                   <div>
                     <span className="mr-4">{siteDiary.name}</span>
                     <span className="mr-4">{siteDiary.createdBy.name}</span>
-                    <span className="mr-4">{siteDiary.date}</span>
+                    <span className="mr-4">
+                      {siteDiary.date.toLocaleDateString()}
+                    </span>
                   </div>
                 </span>
                 <EditButton siteDiary={siteDiary} projectId={projectId} />

@@ -15,7 +15,6 @@ import { LaborerView } from "../../../../components/siteDiary/laborer/LaborerVie
 import { MaterialView } from "../../../../components/siteDiary/material/MaterialView";
 import { PlantView } from "../../../../components/siteDiary/plant/PlantView";
 import { SiteProblemView } from "../../../../components/siteDiary/siteProblem/siteProblemView";
-// import Dropdown from "../../../../components/siteDiary/weather/Dropdown";
 import { WorkProgressView } from "../../../../components/siteDiary/workProgress/workProgressView";
 import { useGetSiteDiary } from "../../../../hooks/siteDiary";
 import { useUpdateSiteDiaryWeather } from "../../../../hooks/weather";

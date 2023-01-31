@@ -19,6 +19,7 @@ export const getSiteDiaryInfoSchema = z.object({
 export const updateSiteDiarySchema = z.object({
   siteDiaryId: z.string(),
   siteDiaryName: z.string(),
+  siteDiaryDate: z.date(),
 });
 
 export const updateSiteDiaryWeatherSchema = z.object({
@@ -81,7 +82,7 @@ export const siteDiaryRouter = createTRPCRouter({
         return project.siteDiaries.map((siteDiary) => ({
           id: siteDiary.id,
           name: siteDiary.name,
-          date: siteDiary.date.toLocaleDateString(),
+          date: siteDiary.date,
           createdBy: siteDiary.createdBy,
         }));
       } catch (error) {
@@ -174,6 +175,7 @@ export const siteDiaryRouter = createTRPCRouter({
           },
           data: {
             name: input.siteDiaryName,
+            date: input.siteDiaryDate,
           },
         });
       } catch (error) {
