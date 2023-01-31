@@ -6,7 +6,12 @@ export const useCreateMaterial = () => {
   const utils = api.useContext();
   const session = useSession();
   const { mutate: createMaterial } = api.material.createMaterial.useMutation({
-    async onMutate({ materialUnits, siteDiaryId, materialAmount }) {
+    async onMutate({
+      materialUnits,
+      siteDiaryId,
+      materialAmount,
+      materialType,
+    }) {
       await utils.siteDiary.getSiteDiary.cancel();
       const previousData = utils.siteDiary.getSiteDiary.getData();
       utils.siteDiary.getSiteDiary.setData(
@@ -14,6 +19,7 @@ export const useCreateMaterial = () => {
         (oldSiteDiary) => {
           const optimisticUpdateObject = {
             id: Date.now().toString(),
+            type: materialType,
             units: materialUnits,
             amount: materialAmount,
             siteDiaryId: siteDiaryId,
@@ -55,7 +61,12 @@ export const useCreateMaterial = () => {
 export const useUpdateMaterial = ({ siteDiaryId }: { siteDiaryId: string }) => {
   const utils = api.useContext();
   const { mutate: updateMaterial } = api.material.updateMaterial.useMutation({
-    async onMutate({ materialId, materialUnits, materialAmount }) {
+    async onMutate({
+      materialId,
+      materialUnits,
+      materialAmount,
+      materialType,
+    }) {
       await utils.siteDiary.getSiteDiary.cancel();
       const previousData = utils.siteDiary.getSiteDiary.getData();
       utils.siteDiary.getSiteDiary.setData(
@@ -72,6 +83,7 @@ export const useUpdateMaterial = ({ siteDiaryId }: { siteDiaryId: string }) => {
             if (updatedMaterial) {
               updatedMaterial.units = materialUnits;
               updatedMaterial.amount = materialAmount;
+              updatedMaterial.type = materialType;
               newMaterials[materialToUpdateIndex] = updatedMaterial;
             }
             const newSiteDiary = { ...oldSiteDiary };
@@ -93,7 +105,10 @@ export const useUpdateMaterial = ({ siteDiaryId }: { siteDiaryId: string }) => {
         rollback();
       }
     },
-    onSuccess(data, { materialId, materialUnits, materialAmount }) {
+    onSuccess(
+      data,
+      { materialId, materialUnits, materialAmount, materialType }
+    ) {
       utils.siteDiary.getSiteDiary.setData(
         { siteDiaryId: siteDiaryId },
         (oldSiteDiary) => {
@@ -108,6 +123,7 @@ export const useUpdateMaterial = ({ siteDiaryId }: { siteDiaryId: string }) => {
             if (updatedMaterial) {
               updatedMaterial.units = materialUnits;
               updatedMaterial.amount = materialAmount;
+              updatedMaterial.type = materialType;
               newMaterials[materialToUpdateIndex] = updatedMaterial;
             }
             const newSiteDiary = { ...oldSiteDiary };

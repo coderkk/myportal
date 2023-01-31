@@ -24,6 +24,7 @@ export const MaterialView = ({ materials }: { materials: MaterialProps[] }) => {
       <ul>
         {materials.map((material) => (
           <li key={material.id}>
+            <span className="mr-4">{material.type}</span>
             <span className="mr-4">{material.units}</span>
             <span className="mr-4">{material.amount}</span>
             <span className="mr-4">{material.createdBy.name}</span>

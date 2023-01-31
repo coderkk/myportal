@@ -88,6 +88,7 @@ async function main() {
         },
         materials: {
           create: {
+            type: "Material type",
             units: MaterialUnit.NR,
             amount: Number(faker.random.numeric(1)),
             createdBy: {

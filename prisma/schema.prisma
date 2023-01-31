@@ -153,6 +153,7 @@ model Laborer {
 
 model Material {
     id          String       @id @default(cuid())
+    type        String
     units       MaterialUnit
     amount      Int
     siteDiary   SiteDiary    @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)

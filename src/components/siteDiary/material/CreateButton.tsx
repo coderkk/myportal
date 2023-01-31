@@ -22,6 +22,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
     setOpen(false);
     reset();
     createMaterial({
+      materialType: data.type as string,
       materialUnits: data.units as MaterialUnit,
       materialAmount: data.amount as number,
       siteDiaryId: siteDiaryId,
@@ -46,6 +47,25 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
           </Dialog.Description>
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
             <fieldset className="mb-4 flex items-center gap-5">
+              <label
+                className="w-24 text-right text-sm text-blue-300"
+                htmlFor="type"
+              >
+                Type
+              </label>
+              <div>
+                <input
+                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                focus:border-blue-300  focus:outline-none ${
+                  errors.type
+                    ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
+                    : ""
+                }`}
+                  id="type"
+                  defaultValue="My new material type"
+                  {...register("type", { required: true })}
+                />
+              </div>
               <label
                 className="w-24 text-right text-sm text-blue-300"
                 htmlFor="units"
@@ -95,6 +115,11 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                 />
               </div>
             </fieldset>
+            {errors.type && (
+              <span className="flex justify-center text-xs italic text-red-400">
+                Type is required
+              </span>
+            )}
             {errors.units && (
               <span className="flex justify-center text-xs italic text-red-400">
                 Units is required
@@ -109,7 +134,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
               <button
                 className="inline-flex h-9 items-center justify-center rounded-md bg-blue-100 py-0 px-4 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
                 type="submit"
-                disabled={!!(errors.units || errors.amount)}
+                disabled={!!(errors.type || errors.units || errors.amount)}
               >
                 Create
               </button>

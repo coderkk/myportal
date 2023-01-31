@@ -4,12 +4,14 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createMaterialSchema = z.object({
+  materialType: z.string(),
   materialUnits: z.nativeEnum(MaterialUnit),
   materialAmount: z.number(),
   siteDiaryId: z.string(),
 });
 
 export const updateMaterialSchema = z.object({
+  materialType: z.string(),
   materialId: z.string(),
   materialUnits: z.nativeEnum(MaterialUnit),
   materialAmount: z.number(),
@@ -26,6 +28,7 @@ export const materialRouter = createTRPCRouter({
       try {
         return await ctx.prisma.material.create({
           data: {
+            type: input.materialType,
             units: input.materialUnits,
             amount: input.materialAmount,
             createdById: ctx.session.user.id,
@@ -49,6 +52,7 @@ export const materialRouter = createTRPCRouter({
             id: input.materialId,
           },
           data: {
+            type: input.materialType,
             units: input.materialUnits,
             amount: input.materialAmount,
           },
