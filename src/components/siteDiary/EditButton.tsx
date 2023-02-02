@@ -42,7 +42,6 @@ const EditButton = ({
     e?.preventDefault();
     setOpen(false);
     reset();
-    console.log(data);
     updateSiteDiary({
       siteDiaryId: siteDiary.id,
       siteDiaryName: data.name as string,
@@ -117,9 +116,18 @@ const EditButton = ({
                         ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
                         : ""
                     }`}
-                      onChange={(date) => onChange(date)}
-                      previousMonthButtonLabel={<ChevronLeftIcon />}
-                      nextMonthButtonLabel={<ChevronRightIcon />}
+                      onChange={(date) => {
+                        if (date) {
+                          const d = new Date();
+                          date.setHours(d.getHours());
+                          date.setMinutes(d.getMinutes());
+                          date.setSeconds(d.getSeconds());
+                          date.setMilliseconds(d.getMilliseconds());
+                          onChange(date);
+                        }
+                      }}
+                      previousMonthButtonLabel=<ChevronLeftIcon />
+                      nextMonthButtonLabel=<ChevronRightIcon />
                       popperClassName="react-datepicker-bottom"
                     />
                   );
