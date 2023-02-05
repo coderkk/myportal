@@ -24,6 +24,8 @@ export const useUpdateSiteDiaryWeather = () => {
                 afternoon: afternoon || null,
                 evening: evening || null,
                 siteDiaryId: siteDiaryId,
+                createdAt: new Date(),
+                updatedAt: new Date(),
               };
               return newSiteDiary;
             } else {

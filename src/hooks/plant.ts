@@ -19,6 +19,8 @@ export const useCreatePlant = () => {
             siteDiaryId: siteDiaryId,
             createdBy: { name: session.data?.user?.name || "You" },
             createdById: session.data?.user?.id || Date.now().toString(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
           };
           if (oldSiteDiary) {
             const newSiteDiary = { ...oldSiteDiary };

@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { MaterialUnit, WeatherCondition } from "@prisma/client";
+import { MaterialUnit, TaskStatus, WeatherCondition } from "@prisma/client";
 import { env } from "../src/env/server.mjs";
 import { prisma } from "../src/server/db";
 
@@ -118,6 +118,26 @@ async function main() {
             },
           },
         },
+      },
+    });
+  }
+
+  // create two tasks
+  for (let i = 0; i < 2; i++) {
+    await prisma.task.create({
+      data: {
+        description: faker.random.words(4),
+        createdBy: {
+          connect: {
+            id: userId,
+          },
+        },
+        project: {
+          connect: {
+            id: project.id,
+          },
+        },
+        status: TaskStatus.NOT_STARTED,
       },
     });
   }

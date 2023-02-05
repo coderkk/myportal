@@ -33,6 +33,19 @@ const Index = () => {
           >
             Site diary
           </Link>
+          <Link
+            onMouseEnter={() => {
+              void utils.task.getTasks.prefetch(
+                { projectId: projectId },
+                {
+                  staleTime: Infinity,
+                }
+              );
+            }}
+            href={`/projects/${projectId}/task`}
+          >
+            Tasks
+          </Link>
         </div>
       </div>
     </div>

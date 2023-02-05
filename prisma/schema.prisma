@@ -68,6 +68,8 @@ model User {
     createdSiteProblems   SiteProblem[]
     createdWorkProgresses WorkProgress[]
     projects              UsersOnProjects[]
+    createdTasks          Task[]            @relation("createdTasks")
+    assignedTasks         Task[]            @relation("assignedTasks")
     createdAt             DateTime          @default(now())
     updatedAt             DateTime          @default(now()) @updatedAt
 }
@@ -85,9 +87,10 @@ model VerificationToken {
 model Project {
     id          String            @id @default(cuid())
     name        String
-    createdBy   User              @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy   User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     siteDiaries SiteDiary[]
+    tasks       Task[]
     users       UsersOnProjects[]
     createdAt   DateTime          @default(now())
     updatedAt   DateTime          @updatedAt
@@ -99,7 +102,7 @@ model SiteDiary {
     id             String         @id @default(cuid())
     name           String
     date           DateTime
-    createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById    String
     project        Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId      String
@@ -123,6 +126,8 @@ model Weather {
     evening     WeatherCondition?
     siteDiary   SiteDiary         @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String            @unique
+    createdAt   DateTime          @default(now())
+    updatedAt   DateTime          @updatedAt
 }
 
 model Plant {
@@ -131,8 +136,10 @@ model Plant {
     amount      Int
     siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -144,8 +151,10 @@ model Laborer {
     amount      Int
     siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -158,8 +167,10 @@ model Material {
     amount      Int
     siteDiary   SiteDiary    @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
-    createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -170,8 +181,10 @@ model SiteProblem {
     comments    String
     siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -182,11 +195,31 @@ model WorkProgress {
     comments    String
     siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
+}
+
+model Task {
+    id           String     @id @default(cuid())
+    description  String
+    status       TaskStatus
+    createdBy    User       @relation("createdTasks", fields: [createdById], references: [id], onDelete: Restrict)
+    createdById  String
+    assignedTo   User?      @relation("assignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+    assignedToId String?
+    project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId    String
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+
+    @@index([projectId])
+    @@index([createdById])
+    @@index([assignedToId])
 }
 
 model UsersOnProjects {
@@ -225,4 +258,10 @@ enum MaterialUnit {
     M2
     M3
     NR
+}
+
+enum TaskStatus {
+    NOT_STARTED
+    IN_PROGRESS
+    COMPLETED
 }

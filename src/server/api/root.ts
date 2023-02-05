@@ -5,6 +5,8 @@ import { plantRouter } from "./routers/plant";
 import { projectRouter } from "./routers/project";
 import { siteDiaryRouter } from "./routers/siteDiary";
 import { siteProblemRouter } from "./routers/siteProblem";
+import { taskRouter } from "./routers/task";
+import { userRouter } from "./routers/user";
 import { weatherRouter } from "./routers/weather";
 import { workProgressRouter } from "./routers/workProgress";
 import { createTRPCRouter } from "./trpc";
@@ -16,6 +18,7 @@ import { createTRPCRouter } from "./trpc";
  */
 export const appRouter = createTRPCRouter({
   me: meRouter,
+  user: userRouter,
   project: projectRouter,
   siteDiary: siteDiaryRouter,
   plant: plantRouter,
@@ -24,6 +27,7 @@ export const appRouter = createTRPCRouter({
   siteProblem: siteProblemRouter,
   workProgress: workProgressRouter,
   weather: weatherRouter,
+  task: taskRouter,
 });
 
 // export type definition of API

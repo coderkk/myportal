@@ -186,34 +186,6 @@ export const siteDiaryRouter = createTRPCRouter({
         });
       }
     }),
-  updateSiteDiaryWeather: protectedProcedure
-    .input(updateSiteDiaryWeatherSchema)
-    .mutation(async ({ ctx, input }) => {
-      try {
-        await ctx.prisma.weather.upsert({
-          where: {
-            siteDiaryId: input.siteDiaryId,
-          },
-          update: {
-            morning: input.morning,
-            afternoon: input.afternoon,
-            evening: input.evening,
-          },
-          create: {
-            morning: input.morning,
-            afternoon: input.afternoon,
-            evening: input.evening,
-            siteDiaryId: input.siteDiaryId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
-        });
-      }
-    }),
   deleteSiteDiary: protectedProcedure
     .input(deleteSiteDiarySchema)
     .mutation(async ({ ctx, input }) => {
