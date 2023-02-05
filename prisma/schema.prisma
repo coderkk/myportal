@@ -127,7 +127,7 @@ model Weather {
     siteDiary   SiteDiary         @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String            @unique
     createdAt   DateTime          @default(now())
-    updatedAt   DateTime          @updatedAt
+    updatedAt   DateTime          @default(now()) @updatedAt
 }
 
 model Plant {
@@ -139,7 +139,7 @@ model Plant {
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    updatedAt   DateTime  @default(now()) @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -154,7 +154,7 @@ model Laborer {
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    updatedAt   DateTime  @default(now()) @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -170,7 +170,7 @@ model Material {
     createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
+    updatedAt   DateTime     @default(now()) @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -184,7 +184,7 @@ model SiteProblem {
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    updatedAt   DateTime  @default(now()) @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -198,7 +198,7 @@ model WorkProgress {
     createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    updatedAt   DateTime  @default(now()) @updatedAt
 
     @@index([siteDiaryId])
     @@index([createdById])

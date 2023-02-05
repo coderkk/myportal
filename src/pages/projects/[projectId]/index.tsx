@@ -46,6 +46,19 @@ const Index = () => {
           >
             Tasks
           </Link>
+          <Link
+            // onMouseEnter={() => {
+            //   void utils.task.getTasks.prefetch(
+            //     { projectId: projectId },
+            //     {
+            //       staleTime: Infinity,
+            //     }
+            //   );
+            // }}
+            href={`/projects/${projectId}/team`}
+          >
+            Team
+          </Link>
         </div>
       </div>
     </div>

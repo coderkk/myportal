@@ -61,7 +61,7 @@ const CreateButton = ({
       taskId: task.id,
       taskDescription: data.description as string,
       taskAssignedTo: users?.find(
-        (user) => user.id === data.assignee
+        (user) => user.id === (data.assignee as assignee).id
       ) as assignee,
       taskStatus: data.status as TaskStatus,
     });
