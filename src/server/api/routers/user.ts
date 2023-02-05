@@ -21,6 +21,7 @@ export const userRouter = createTRPCRouter({
                 user: {
                   select: {
                     id: true,
+                    name: true,
                     email: true,
                   },
                 },

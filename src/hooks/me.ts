@@ -14,3 +14,14 @@ export const useHasPermissionToProject = ({
     isError: isError,
   };
 };
+
+export const useIsCreatorOfProject = ({ projectId }: { projectId: string }) => {
+  const { data, isLoading, isError } = api.me.isCreatorOfProject.useQuery({
+    projectId: projectId,
+  });
+  return {
+    isCreator: data,
+    isLoading: isLoading,
+    isError: isError,
+  };
+};
