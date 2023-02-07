@@ -24,21 +24,22 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     formState: { errors },
   } = useForm();
   const { createTask } = useCreateTask();
-  const { users } = useGetUsersForProject({ projectId: projectId });
+  const { usersForProject } = useGetUsersForProject({ projectId: projectId });
 
   const onSubmit = (
     data: FieldValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
+    const assignee = usersForProject?.find(
+      (userForProject) => userForProject.id === data.assignee
+    ) as assignee;
     e?.preventDefault();
     setOpen(false);
     reset();
     createTask({
       projectId: projectId,
       taskDescription: data.description as string,
-      taskAssignedTo: users?.find(
-        (user) => user.id === data.assignee
-      ) as assignee,
+      taskAssignedTo: assignee ? assignee : null,
       taskStatus: data.status as TaskStatus,
     });
   };
@@ -97,7 +98,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   const { onChange } = field;
                   return (
                     <AssigneeDropdown
-                      assignees={users || []}
+                      assignees={usersForProject || []}
                       taskAssignee={taskAssignee}
                       onTaskAssigneeChange={(value) => onChange(value)}
                     />

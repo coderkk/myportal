@@ -164,3 +164,103 @@ export const useDeleteProject = ({
     deleteProject,
   };
 };
+
+export const useAddToProject = () => {
+  const utils = api.useContext();
+  const { mutate: addToProject } = api.project.addToProject.useMutation({
+    async onMutate(values) {
+      await utils.user.getUsersForProject.cancel();
+      const previousData = utils.user.getUsersForProject.getData();
+      utils.user.getUsersForProject.setData(
+        { projectId: values.projectId },
+        (oldUsers) => {
+          const optimisticUpdateObject = {
+            id: values.userId,
+            name: values.userName,
+            email: values.userEmail,
+          };
+          if (oldUsers) {
+            return [...oldUsers, optimisticUpdateObject];
+          } else {
+            return [optimisticUpdateObject];
+          }
+        }
+      );
+      return () =>
+        utils.user.getUsersForProject.setData(
+          { projectId: values.projectId },
+          previousData
+        );
+    },
+    onError(error, values, rollback) {
+      if (rollback) {
+        rollback();
+      }
+    },
+    async onSettled() {
+      await utils.user.getUsersForProject.invalidate();
+    },
+  });
+  return {
+    addToProject,
+  };
+};
+
+export const useRemoveFromProject = ({
+  pendingRemoveCountRef,
+}: {
+  pendingRemoveCountRef?: MutableRefObject<number>;
+}) => {
+  const utils = api.useContext();
+  const { mutate: removeFromProject } =
+    api.project.removeFromProject.useMutation({
+      async onMutate({ projectId, userToBeRemovedId }) {
+        if (pendingRemoveCountRef) pendingRemoveCountRef.current += 1;
+        await utils.user.getUsersForProject.cancel();
+        const previousData = utils.user.getUsersForProject.getData();
+        utils.user.getUsersForProject.setData(
+          { projectId: projectId },
+          (oldUsersForProject) => {
+            const newUsersForProject = oldUsersForProject?.filter(
+              (oldUserForProject) => oldUserForProject.id !== userToBeRemovedId
+            );
+            return newUsersForProject;
+          }
+        );
+        return () =>
+          utils.user.getUsersForProject.setData(
+            { projectId: projectId },
+            previousData
+          );
+      },
+      onError(error, values, rollback) {
+        if (rollback) {
+          rollback();
+        }
+      },
+      onSuccess(data, { projectId, userToBeRemovedId }) {
+        utils.user.getUsersForProject.setData(
+          { projectId: projectId },
+          (oldUsersForProject) => {
+            const newUsersForProject = oldUsersForProject?.filter(
+              (oldUserForProject) => oldUserForProject.id !== userToBeRemovedId
+            );
+            return newUsersForProject;
+          }
+        );
+      },
+      async onSettled() {
+        if (pendingRemoveCountRef) {
+          pendingRemoveCountRef.current -= 1;
+          if (pendingRemoveCountRef.current === 0) {
+            await utils.user.getUsersForProject.invalidate();
+          }
+        } else {
+          await utils.user.getUsersForProject.invalidate();
+        }
+      },
+    });
+  return {
+    removeFromProject,
+  };
+};

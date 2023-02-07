@@ -11,6 +11,7 @@ import StatusDropdown from "./StatusDropDown";
 
 export type assignee = {
   id: string;
+  name: string | null;
   email: string | null;
 };
 
@@ -48,7 +49,7 @@ const CreateButton = ({
     },
   });
   const { updateTask } = useUpdateTask({ projectId: projectId });
-  const { users } = useGetUsersForProject({ projectId: projectId });
+  const { usersForProject } = useGetUsersForProject({ projectId: projectId });
 
   const onSubmit = (
     data: FieldValues,
@@ -60,8 +61,8 @@ const CreateButton = ({
     updateTask({
       taskId: task.id,
       taskDescription: data.description as string,
-      taskAssignedTo: users?.find(
-        (user) => user.id === (data.assignee as assignee).id
+      taskAssignedTo: usersForProject?.find(
+        (userForProject) => userForProject.id === data.assignee
       ) as assignee,
       taskStatus: data.status as TaskStatus,
     });
@@ -115,7 +116,7 @@ const CreateButton = ({
                   const { value, onChange } = field;
                   return (
                     <AssigneeDropdown
-                      assignees={users || []}
+                      assignees={usersForProject || []}
                       taskAssignee={value}
                       onTaskAssigneeChange={(value) => onChange(value)}
                     />

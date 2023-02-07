@@ -7,12 +7,21 @@ export type siteDiary = {
   createdBy: string | null;
 };
 
+export const useGetUsers = () => {
+  const { data, isLoading, isError } = api.user.getUsers.useQuery();
+  return {
+    users: data,
+    isLoading: isLoading,
+    isError: isError,
+  };
+};
+
 export const useGetUsersForProject = ({ projectId }: { projectId: string }) => {
   const { data, isLoading, isError } = api.user.getUsersForProject.useQuery({
     projectId: projectId,
   });
   return {
-    users: data,
+    usersForProject: data,
     isLoading: isLoading,
     isError: isError,
   };

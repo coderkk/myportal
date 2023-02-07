@@ -15,6 +15,18 @@ export const deleteProjectSchema = z.object({
   projectId: z.string(),
 });
 
+export const addToProjectSchema = z.object({
+  projectId: z.string(),
+  userId: z.string(),
+  userName: z.string(),
+  userEmail: z.string(),
+});
+
+export const removeFromProjectSchema = z.object({
+  projectId: z.string(),
+  userToBeRemovedId: z.string(),
+});
+
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
     .input(createProjectSchema)
@@ -113,10 +125,144 @@ export const projectRouter = createTRPCRouter({
     .input(deleteProjectSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        return await ctx.prisma.project.delete({
+        const isCreator = await ctx.prisma.project.findFirst({
           where: {
             id: input.projectId,
+            createdById: ctx.session.user.id,
           },
+        });
+        // if isCreator, we delete the project and the relation
+        if (isCreator)
+          return await ctx.prisma.project.delete({
+            where: {
+              id: input.projectId,
+            },
+          });
+        // if not isCreator, we delete the relation only
+        return await ctx.prisma.usersOnProjects.delete({
+          where: {
+            userId_projectId: {
+              userId: ctx.session.user.id,
+              projectId: input.projectId,
+            },
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+          cause: error,
+        });
+      }
+    }),
+  addToProject: protectedProcedure
+    .input(addToProjectSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        // check for permission first - only creator of the project can add others
+        const isCreatorPromise = ctx.prisma.project.findFirst({
+          where: {
+            id: input.projectId,
+            createdById: ctx.session.user.id,
+          },
+        });
+        const userAlreadyInProjectPromise =
+          ctx.prisma.usersOnProjects.findFirst({
+            where: {
+              userId: input.userId,
+              projectId: input.projectId,
+            },
+          });
+
+        const [isCreator, userAlreadyInProject] = await Promise.all([
+          isCreatorPromise,
+          userAlreadyInProjectPromise,
+        ]);
+
+        if (!isCreator) {
+          throw new Error(
+            "You do not have permission since you did not create the project."
+          );
+        } else if (userAlreadyInProject) {
+          throw new Error("The user already belongs to this team.");
+        }
+
+        // add user to project
+        return await ctx.prisma.usersOnProjects.create({
+          data: {
+            userId: input.userId,
+            projectId: input.projectId,
+          },
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+          cause: error,
+        });
+      }
+    }),
+  removeFromProject: protectedProcedure
+    .input(removeFromProjectSchema)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        // check for permission first - only creator of the project can remove others
+        const isCreatorPromise = ctx.prisma.project.findFirst({
+          where: {
+            id: input.projectId,
+            createdById: ctx.session.user.id,
+          },
+        });
+        const userAlreadyInProjectPromise =
+          ctx.prisma.usersOnProjects.findFirst({
+            where: {
+              userId: input.userToBeRemovedId,
+              projectId: input.projectId,
+            },
+          });
+
+        const [isCreator, userAlreadyInProject] = await Promise.all([
+          isCreatorPromise,
+          userAlreadyInProjectPromise,
+        ]);
+
+        if (!isCreator) {
+          throw new Error(
+            "You do not have permission since you did not create the project."
+          );
+        } else if (!userAlreadyInProject) {
+          throw new Error("The user is not part of the team.");
+        }
+
+        return await ctx.prisma.$transaction(async (tx) => {
+          // remove related task of user
+          await tx.project.update({
+            where: {
+              id: input.projectId,
+            },
+            data: {
+              tasks: {
+                updateMany: {
+                  where: {
+                    projectId: input.projectId,
+                    assignedToId: input.userToBeRemovedId,
+                  },
+                  data: {
+                    assignedToId: null,
+                  },
+                },
+              },
+            },
+          });
+          // remove user from project
+          return tx.usersOnProjects.delete({
+            where: {
+              userId_projectId: {
+                userId: input.userToBeRemovedId,
+                projectId: input.projectId,
+              },
+            },
+          });
         });
       } catch (error) {
         throw new TRPCError({
