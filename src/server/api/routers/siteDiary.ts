@@ -22,13 +22,6 @@ export const updateSiteDiarySchema = z.object({
   siteDiaryDate: z.date(),
 });
 
-export const updateSiteDiaryWeatherSchema = z.object({
-  siteDiaryId: z.string(),
-  morning: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
-  afternoon: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
-  evening: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
-});
-
 export const deleteSiteDiarySchema = z.object({
   siteDiaryId: z.string(),
 });

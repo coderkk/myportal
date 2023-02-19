@@ -28,13 +28,7 @@ type task = {
   } | null;
 };
 
-const CreateButton = ({
-  projectId,
-  task,
-}: {
-  projectId: string;
-  task: task;
-}) => {
+const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
   const {
     register,
     handleSubmit,
@@ -77,10 +71,10 @@ const CreateButton = ({
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
         <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-content-show rounded-md bg-white p-6 shadow-md focus:outline-none">
           <Dialog.Title className="m-0 font-medium text-gray-800">
-            Create a new task
+            Edit task
           </Dialog.Title>
           <Dialog.Description className="mx-0 mt-3 mb-5 text-sm text-gray-400">
-            Give your task a description here. Click save when you are done.
+            Click save when you are done.
           </Dialog.Description>
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
             <fieldset className="mb-4 flex items-center gap-5">
@@ -181,4 +175,4 @@ const CreateButton = ({
   );
 };
 
-export default CreateButton;
+export default EditButton;

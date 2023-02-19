@@ -1,6 +1,7 @@
 import { laborerRouter } from "./routers/laborer";
 import { materialRouter } from "./routers/material";
 import { meRouter } from "./routers/me";
+import { orderRouter } from "./routers/order";
 import { plantRouter } from "./routers/plant";
 import { projectRouter } from "./routers/project";
 import { siteDiaryRouter } from "./routers/siteDiary";
@@ -28,6 +29,7 @@ export const appRouter = createTRPCRouter({
   workProgress: workProgressRouter,
   weather: weatherRouter,
   task: taskRouter,
+  order: orderRouter,
 });
 
 // export type definition of API

@@ -38,13 +38,6 @@ export const updateTaskSchema = z.object({
     .nullable(),
 });
 
-export const updateTaskWeatherSchema = z.object({
-  taskId: z.string(),
-  morning: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
-  afternoon: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
-  evening: z.enum(["SUNNY", "CLOUDY", "RAINY"]).nullish(),
-});
-
 export const deleteTaskSchema = z.object({
   taskId: z.string(),
 });

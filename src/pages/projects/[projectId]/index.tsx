@@ -47,17 +47,48 @@ const Index = () => {
             Tasks
           </Link>
           <Link
+            onMouseEnter={() => {
+              void utils.user.getUsersForProject.prefetch(
+                { projectId: projectId },
+                {
+                  staleTime: Infinity,
+                }
+              );
+              void utils.user.getUsers.prefetch(undefined, {
+                staleTime: Infinity,
+              });
+              void utils.me.isCreatorOfProject.prefetch(
+                { projectId: projectId },
+                {
+                  staleTime: Infinity,
+                }
+              );
+            }}
+            href={`/projects/${projectId}/team`}
+          >
+            Team
+          </Link>
+          <Link
             // onMouseEnter={() => {
-            //   void utils.task.getTasks.prefetch(
+            //   void utils.user.getUsersForProject.prefetch(
+            //     { projectId: projectId },
+            //     {
+            //       staleTime: Infinity,
+            //     }
+            //   );
+            //   void utils.user.getUsers.prefetch(undefined, {
+            //     staleTime: Infinity,
+            //   });
+            //   void utils.me.isCreatorOfProject.prefetch(
             //     { projectId: projectId },
             //     {
             //       staleTime: Infinity,
             //     }
             //   );
             // }}
-            href={`/projects/${projectId}/team`}
+            href={`/projects/${projectId}/order`}
           >
-            Team
+            Orders
           </Link>
         </div>
       </div>

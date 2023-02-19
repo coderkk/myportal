@@ -96,11 +96,11 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
           if (updatedTask) {
             updatedTask.description = taskDescription;
             updatedTask.status = taskStatus || "NOT_STARTED";
-            (updatedTask.assignedTo = {
+            updatedTask.assignedTo = {
               id: taskAssignedTo?.id || Date.now().toString(),
               email: taskAssignedTo?.email || null,
-            }),
-              (newTasks[taskToUpdateIndex] = updatedTask);
+            };
+            newTasks[taskToUpdateIndex] = updatedTask;
           }
           return newTasks;
         } else {
@@ -128,11 +128,11 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
           if (updatedTask) {
             updatedTask.description = taskDescription;
             updatedTask.status = taskStatus || "NOT_STARTED";
-            (updatedTask.assignedTo = {
+            updatedTask.assignedTo = {
               id: taskAssignedTo?.id || Date.now().toString(),
               email: taskAssignedTo?.email || null,
-            }),
-              (newTasks[taskToUpdateIndex] = updatedTask);
+            };
+            newTasks[taskToUpdateIndex] = updatedTask;
           }
           return newTasks;
         } else {
