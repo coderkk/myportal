@@ -76,7 +76,7 @@ const EditButton = ({
             <fieldset className="mb-4 flex items-center gap-5">
               <label
                 className="w-24 text-right text-sm text-blue-300"
-                htmlFor="note"
+                htmlFor="supplierEmailAddress"
               >
                 Supplier email address
               </label>
@@ -101,7 +101,7 @@ const EditButton = ({
               </div>
               <label
                 className="w-24 text-right text-sm text-blue-300"
-                htmlFor="note"
+                htmlFor="orderNumber"
               >
                 Order number
               </label>

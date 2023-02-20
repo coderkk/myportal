@@ -3,7 +3,6 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
-import type { ControllerRenderProps } from "react-hook-form";
 import { Controller, useForm, type FieldValues } from "react-hook-form";
 import { useCreateOrder } from "../../hooks/order";
 import ArrivalOnSiteDropdown from "./ArrivalOnSiteDropDown";
@@ -52,7 +51,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
             <fieldset className="mb-4 flex items-center gap-5">
               <label
                 className="w-24 text-right text-sm text-blue-300"
-                htmlFor="note"
+                htmlFor="supplierEmailAddress"
               >
                 Supplier email address
               </label>
@@ -77,7 +76,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
               </div>
               <label
                 className="w-24 text-right text-sm text-blue-300"
-                htmlFor="note"
+                htmlFor="orderNumber"
               >
                 Order number
               </label>
@@ -127,11 +126,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                 control={control}
                 defaultValue={"NO"}
                 rules={{ required: true }}
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<FieldValues, "arrivalOnSite">;
-                }) => {
+                render={({ field }) => {
                   const value = field.value as OrderArrivalOnSite;
                   const { onChange } = field;
                   return (

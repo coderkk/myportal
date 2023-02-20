@@ -59,12 +59,14 @@ const SiteDiary = () => {
       siteDiaryId: siteDiaryId,
     });
   };
+  if (isError) {
+    void router.push("/projects");
+    return <div>Error...</div>;
+  }
   return (
     <SessionAuth>
       {isLoading ? (
         <div>Loading...</div>
-      ) : isError ? (
-        <div>Error!</div>
       ) : (
         siteDiary && (
           <div className="flex h-screen">
