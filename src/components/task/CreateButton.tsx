@@ -88,18 +88,12 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
               <Controller
                 name="assignee"
                 control={control}
-                defaultValue={""}
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<FieldValues, "assignee">;
-                }) => {
-                  const taskAssignee = field.value as assignee;
+                render={({ field }) => {
                   const { onChange } = field;
                   return (
                     <AssigneeDropdown
                       assignees={usersForProject || []}
-                      taskAssignee={taskAssignee}
+                      taskAssignee={null}
                       onTaskAssigneeChange={(value) => onChange(value)}
                     />
                   );

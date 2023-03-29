@@ -11,7 +11,6 @@ import StatusDropdown from "./StatusDropDown";
 
 export type assignee = {
   id: string;
-  name: string | null;
   email: string | null;
 };
 
@@ -22,10 +21,7 @@ type task = {
   createdBy: {
     name: string | null;
   };
-  assignedTo: {
-    id: string;
-    email: string | null;
-  } | null;
+  assignedTo: assignee | null;
 };
 
 const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
@@ -52,12 +48,20 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
     e?.preventDefault();
     setOpen(false);
     reset();
+    // weird react hook controlled input structure...
+    const assignee =
+      data.assignee && (data.assignee as assignee).id
+        ? (usersForProject?.find(
+            (userForProject) =>
+              userForProject.id === (data.assignee as assignee).id
+          ) as assignee)
+        : (usersForProject?.find(
+            (userForProject) => userForProject.id === data.assignee
+          ) as assignee);
     updateTask({
       taskId: task.id,
       taskDescription: data.description as string,
-      taskAssignedTo: usersForProject?.find(
-        (userForProject) => userForProject.id === data.assignee
-      ) as assignee,
+      taskAssignedTo: assignee ? assignee : null,
       taskStatus: data.status as TaskStatus,
     });
   };
