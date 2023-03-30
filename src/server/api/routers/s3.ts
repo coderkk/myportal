@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { S3 } from "aws-sdk";
+import { Delete } from "aws-sdk/clients/s3";
 import type { FileArray, FileData } from "chonky";
 import path from "path";
 import { z } from "zod";
@@ -31,6 +32,11 @@ export const getPreSignedURLForDownloadSchema = z.object({
 
 export const getPreSignedURLForUploadSchema = z.object({
   fileId: z.string(),
+});
+
+export const createFolderSchema = z.object({
+  prefix: z.string(),
+  folderName: z.string(),
 });
 
 export const s3Router = createTRPCRouter({
@@ -83,7 +89,7 @@ export const s3Router = createTRPCRouter({
         }
         // we don't return the directory that we are in (exclude ".test" for example)
         return chonkyFiles.filter((file) => {
-          if (file && !file.isDir && file.size === 0 && file.id.endsWith("/")) {
+          if (file && !file.isDir && file.id.endsWith("/")) {
             return false;
           }
           return true;
@@ -100,13 +106,28 @@ export const s3Router = createTRPCRouter({
     .input(deleteS3ObjectSchema)
     .mutation(async ({ input }) => {
       try {
-        // get presigned url to delete
-        return await s3
-          .deleteObject({
-            Bucket: env.AWS_S3_BUCKET_NAME_,
-            Key: input.fileId,
-          })
-          .promise();
+        const deleteHelper = async (bucket: string, dir: string) => {
+          const listParams = {
+            Bucket: bucket,
+            Prefix: dir,
+          };
+          const listedObjects = await s3.listObjectsV2(listParams).promise();
+          console.log(listedObjects.Contents);
+          if (listedObjects.Contents?.length === 0) return;
+          const deleteParams: {
+            Bucket: string;
+            Delete: Delete;
+          } = {
+            Bucket: bucket,
+            Delete: { Objects: [] },
+          };
+          listedObjects.Contents?.forEach(({ Key }) => {
+            if (Key) deleteParams.Delete.Objects.push({ Key });
+          });
+          await s3.deleteObjects(deleteParams).promise();
+          if (listedObjects.IsTruncated) await deleteHelper(bucket, dir); // listObjectsV2 has a MaxKeys and the number of files may be >MaxKeys
+        };
+        return await deleteHelper(env.AWS_S3_BUCKET_NAME_, input.fileId);
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -147,6 +168,29 @@ export const s3Router = createTRPCRouter({
         return {
           preSignedURLForUpload: preSignedURLForUpload,
         };
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: (error as Error).message,
+          cause: error,
+        });
+      }
+    }),
+  createFolder: protectedProcedure
+    .input(createFolderSchema)
+    .mutation(async ({ input }) => {
+      try {
+        const key =
+          input.prefix === "/"
+            ? input.folderName
+            : input.prefix + input.folderName;
+        return await s3
+          .upload({
+            Bucket: env.AWS_S3_BUCKET_NAME_,
+            Key: key + "/", // the "/" tells s3 to create a folder
+            Body: "body does not matter", // needs to be here for api compatibility
+          })
+          .promise();
       } catch (error) {
         throw new TRPCError({
           code: "BAD_REQUEST",

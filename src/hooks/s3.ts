@@ -85,3 +85,15 @@ export const useGetPreSignedURLForUpload = () => {
     getPreSignedURLForUpload: getPreSignedURLForUpload,
   };
 };
+
+export const useCreateFolder = () => {
+  const utils = api.useContext();
+  const { mutateAsync: createFolder } = api.s3.createFolder.useMutation({
+    async onSettled() {
+      await utils.s3.fetchS3BucketContents.invalidate();
+    },
+  });
+  return {
+    createFolder,
+  };
+};

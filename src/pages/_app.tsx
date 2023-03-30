@@ -16,7 +16,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const router = useRouter();
   let component = <Component {...pageProps} />;
   if (router.asPath.match("/projects/.*")) {
-    setChonkyDefaults({ iconComponent: ChonkyIconFA });
+    setChonkyDefaults({
+      iconComponent: ChonkyIconFA,
+      disableDragAndDrop: true,
+    });
     const projectId = router.query.projectId as string;
     component = (
       <PermissionToProject projectId={projectId}>
