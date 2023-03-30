@@ -1,6 +1,4 @@
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { setChonkyDefaults } from "chonky";
-import { ChonkyIconFA } from "chonky-icon-fontawesome";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
@@ -16,10 +14,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const router = useRouter();
   let component = <Component {...pageProps} />;
   if (router.asPath.match("/projects/.*")) {
-    setChonkyDefaults({
-      iconComponent: ChonkyIconFA,
-      disableDragAndDrop: true,
-    });
     const projectId = router.query.projectId as string;
     component = (
       <PermissionToProject projectId={projectId}>

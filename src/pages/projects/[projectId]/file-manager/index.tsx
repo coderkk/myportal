@@ -1,15 +1,25 @@
-import type { ChonkyFileActionData, FileArray, FileData } from "chonky";
 import {
   ChonkyActions,
+  ChonkyFileActionData,
+  FileArray,
   FileBrowser,
   FileContextMenu,
+  FileData,
   FileHelper,
   FileList,
   FileNavbar,
   FileToolbar,
+  setChonkyDefaults,
 } from "chonky";
+import { ChonkyIconFA } from "chonky-icon-fontawesome";
 import path from "path";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { env } from "../../../../env/client.mjs";
 import {
@@ -27,6 +37,7 @@ const S3Browser = () => {
   const hiddenFileInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenAnchorRef = useRef<HTMLAnchorElement | null>(null);
   const [folderPrefix, setKeyPrefix] = useState<string>("/");
+  const mounted = useRef<boolean>(false);
 
   const { chonkyFiles, isFetchS3BucketContentsError } =
     useFetchS3BucketContents({
@@ -40,6 +51,15 @@ const S3Browser = () => {
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
 
   const { createFolder } = useCreateFolder();
+
+  useEffect(() => {
+    if (mounted.current) return;
+    mounted.current = true;
+    setChonkyDefaults({
+      iconComponent: ChonkyIconFA,
+      disableDragAndDrop: true,
+    });
+  }, []);
 
   const handleDownloadFile = useCallback(
     async (fileData: FileData) => {
@@ -165,6 +185,8 @@ const S3Browser = () => {
     ChonkyActions.DownloadFiles,
     ChonkyActions.DeleteFiles,
   ];
+
+  if (!mounted.current) return null;
 
   return (
     <SessionAuth>
