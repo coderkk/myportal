@@ -1,8 +1,15 @@
 import { api } from "../utils/api";
 
-export const useFetchS3BucketContents = ({ prefix }: { prefix: string }) => {
+export const useFetchS3BucketContents = ({
+  prefix,
+  projectId,
+}: {
+  prefix: string;
+  projectId: string;
+}) => {
   const { data, isError } = api.s3.fetchS3BucketContents.useQuery({
     prefix: prefix,
+    projectId: projectId,
   });
   return {
     chonkyFiles: data,
@@ -13,12 +20,13 @@ export const useFetchS3BucketContents = ({ prefix }: { prefix: string }) => {
 export const useDeleteS3Object = () => {
   const utils = api.useContext();
   const { mutateAsync: deleteS3Object } = api.s3.deleteS3Object.useMutation({
-    async onMutate({ prefix, fileId }) {
+    async onMutate({ prefix, fileId, projectId }) {
       await utils.s3.fetchS3BucketContents.cancel();
       const previousData = utils.s3.fetchS3BucketContents.getData();
       utils.s3.fetchS3BucketContents.setData(
         {
           prefix: prefix,
+          projectId: projectId,
         },
         (oldFileData) => {
           if (oldFileData) {
@@ -35,6 +43,7 @@ export const useDeleteS3Object = () => {
         utils.s3.fetchS3BucketContents.setData(
           {
             prefix: prefix,
+            projectId: projectId,
           },
           previousData
         );
@@ -44,10 +53,11 @@ export const useDeleteS3Object = () => {
         rollback();
       }
     },
-    onSuccess(data, { prefix, fileId }) {
+    onSuccess(data, { prefix, fileId, projectId }) {
       utils.s3.fetchS3BucketContents.setData(
         {
           prefix: prefix,
+          projectId: projectId,
         },
         (oldFileData) => {
           if (oldFileData) {

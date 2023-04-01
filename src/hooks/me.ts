@@ -5,9 +5,14 @@ export const useHasPermissionToProject = ({
 }: {
   projectId: string;
 }) => {
-  const { data, isLoading, isError } = api.me.hasPermissionToProject.useQuery({
-    projectId: projectId,
-  });
+  const { data, isLoading, isError } = api.me.hasPermissionToProject.useQuery(
+    {
+      projectId: projectId,
+    },
+    {
+      retry: false,
+    }
+  );
   return {
     hasPermission: data,
     isLoading: isLoading,

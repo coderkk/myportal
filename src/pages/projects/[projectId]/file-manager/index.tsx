@@ -1,10 +1,8 @@
+import type { ChonkyFileActionData, FileArray, FileData } from "chonky";
 import {
   ChonkyActions,
-  ChonkyFileActionData,
-  FileArray,
   FileBrowser,
   FileContextMenu,
-  FileData,
   FileHelper,
   FileList,
   FileNavbar,
@@ -12,6 +10,7 @@ import {
   setChonkyDefaults,
 } from "chonky";
 import { ChonkyIconFA } from "chonky-icon-fontawesome";
+import { useRouter } from "next/router";
 import path from "path";
 import React, {
   useCallback,
@@ -21,7 +20,6 @@ import React, {
   useState,
 } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { env } from "../../../../env/client.mjs";
 import {
   useCreateFolder,
   useDeleteS3Object,
@@ -33,15 +31,19 @@ import { api } from "../../../../utils/api";
 
 const S3Browser = () => {
   const utils = api.useContext();
+  const router = useRouter();
   const [uploadingFile, setUploadingFile] = useState<boolean>(false);
   const hiddenFileInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenAnchorRef = useRef<HTMLAnchorElement | null>(null);
-  const [folderPrefix, setKeyPrefix] = useState<string>("/");
+  const [folderPrefix, setFolderPrefix] = useState<string>("/");
   const mounted = useRef<boolean>(false);
+  const projectId = router.query.projectId as string;
+  const [projectBucketCreated, setProjectBucketCreated] = useState(false);
 
   const { chonkyFiles, isFetchS3BucketContentsError } =
     useFetchS3BucketContents({
       prefix: folderPrefix,
+      projectId: projectId,
     });
 
   const { deleteS3Object } = useDeleteS3Object();
@@ -52,19 +54,37 @@ const S3Browser = () => {
 
   const { createFolder } = useCreateFolder();
 
+  console.log(chonkyFiles);
+
   useEffect(() => {
-    if (mounted.current) return;
-    mounted.current = true;
-    setChonkyDefaults({
-      iconComponent: ChonkyIconFA,
-      disableDragAndDrop: true,
-    });
-  }, []);
+    const helper = async () => {
+      if (mounted.current) return;
+      mounted.current = true;
+      setChonkyDefaults({
+        iconComponent: ChonkyIconFA,
+        disableDragAndDrop: true,
+      });
+      // check if the folder for project exists
+      chonkyFiles?.map((file) => {
+        if (file?.name === projectId) {
+          return setProjectBucketCreated(true);
+        }
+      }, []);
+      await createFolder({
+        prefix: folderPrefix,
+        folderName: projectId,
+        projectId: projectId,
+      });
+      setProjectBucketCreated(true);
+    };
+    void helper();
+  }, [chonkyFiles, createFolder, folderPrefix, projectId]);
 
   const handleDownloadFile = useCallback(
     async (fileData: FileData) => {
       const { preSignedURLForDownload } = await getPreSignedURLForDownload({
         fileId: fileData.id,
+        projectId: projectId,
       });
       fetch(preSignedURLForDownload, {
         method: "GET",
@@ -82,15 +102,24 @@ const S3Browser = () => {
           console.error(error);
         });
     },
-    [getPreSignedURLForDownload]
+    [getPreSignedURLForDownload, projectId]
   );
 
-  const handleFileInputChange = (
+  const handleFileInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files;
     if (files && files[0]) {
-      void handleUploadFile(files[0]);
+      const fileName = files[0].name;
+      // if exists, don't upload
+      chonkyFiles?.map((file) => {
+        if (file?.name == fileName) {
+          alert("Duplicate file name. Delete existing file first");
+          return;
+        }
+      });
+      await handleUploadFile(files[0]);
+      event.target.value = ""; // clear the input
     }
   };
 
@@ -99,6 +128,7 @@ const S3Browser = () => {
     const fileId = folderPrefix === "/" ? file.name : folderPrefix + file.name;
     const { preSignedURLForUpload } = await getPreSignedURLForUpload({
       fileId: fileId,
+      projectId: projectId,
     });
     fetch(preSignedURLForUpload, {
       method: "PUT",
@@ -138,11 +168,11 @@ const S3Browser = () => {
     }
     folderChain.unshift({
       id: "/",
-      name: env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+      name: projectId,
       isDir: true,
     });
     return folderChain;
-  }, [folderPrefix]);
+  }, [folderPrefix, projectId]);
 
   const handleFileAction = useCallback(
     (data: ChonkyFileActionData) => {
@@ -150,14 +180,17 @@ const S3Browser = () => {
         const { targetFile, files } = data.payload;
         const fileToOpen = targetFile ?? files[0];
         if (fileToOpen && FileHelper.isDirectory(fileToOpen)) {
-          const newPrefix = `${fileToOpen.id.replace(/\/*$/, "")}/`;
-          setKeyPrefix(newPrefix);
+          const newPrefix = `${fileToOpen.id
+            .replace(projectId + "/", "")
+            .replace(/\/*$/, "")}/`;
+          setFolderPrefix(newPrefix);
         }
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
         for (const file of data.state.selectedFilesForAction) {
           void deleteS3Object({
             prefix: folderPrefix,
             fileId: file.id,
+            projectId: projectId,
           });
         }
       } else if (data.id === ChonkyActions.DownloadFiles.id) {
@@ -173,10 +206,11 @@ const S3Browser = () => {
           void createFolder({
             prefix: folderPrefix,
             folderName: folderName,
+            projectId: projectId,
           });
       }
     },
-    [createFolder, deleteS3Object, folderPrefix, handleDownloadFile]
+    [createFolder, deleteS3Object, folderPrefix, handleDownloadFile, projectId]
   );
 
   const fileActions = [
@@ -186,7 +220,7 @@ const S3Browser = () => {
     ChonkyActions.DeleteFiles,
   ];
 
-  if (!mounted.current) return null;
+  if (!mounted.current || !projectBucketCreated) return null;
 
   return (
     <SessionAuth>
@@ -213,7 +247,9 @@ const S3Browser = () => {
                 type="file"
                 aria-label="input"
                 ref={hiddenFileInputRef}
-                onChange={handleFileInputChange}
+                onChange={(e) => {
+                  void handleFileInputChange(e);
+                }}
                 className="hidden"
               />
               <a ref={hiddenAnchorRef} />
