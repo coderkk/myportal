@@ -99,6 +99,43 @@ export const useGetPreSignedURLForUpload = () => {
 export const useCreateFolder = () => {
   const utils = api.useContext();
   const { mutateAsync: createFolder } = api.s3.createFolder.useMutation({
+    async onMutate({ projectId, prefix, folderName }) {
+      await utils.s3.fetchS3BucketContents.invalidate();
+      const previousData = utils.s3.fetchS3BucketContents.getData();
+      utils.s3.fetchS3BucketContents.setData(
+        { projectId: projectId, prefix: prefix },
+        (oldFileData) => {
+          const s3Prefix =
+            prefix !== "/" ? projectId + "/" + prefix : projectId + "/";
+          const optimisticUpdateObject = {
+            id: s3Prefix + folderName,
+            name: folderName,
+            isDir: true,
+          };
+          if (oldFileData) {
+            // no duplicates
+            for (const file of oldFileData) {
+              if (file && file.name == folderName && file.isDir) {
+                return oldFileData;
+              }
+            }
+            return [...oldFileData, optimisticUpdateObject];
+          } else {
+            return [optimisticUpdateObject];
+          }
+        }
+      );
+      return () =>
+        utils.s3.fetchS3BucketContents.setData(
+          { projectId: projectId, prefix: prefix },
+          previousData
+        );
+    },
+    onError(error, values, rollback) {
+      if (rollback) {
+        rollback();
+      }
+    },
     async onSettled() {
       await utils.s3.fetchS3BucketContents.invalidate();
     },

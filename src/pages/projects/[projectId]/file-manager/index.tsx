@@ -30,8 +30,8 @@ import {
 import { api } from "../../../../utils/api";
 
 const S3Browser = () => {
-  const utils = api.useContext();
   const router = useRouter();
+  const utils = api.useContext();
   const [uploadingFile, setUploadingFile] = useState<boolean>(false);
   const hiddenFileInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenAnchorRef = useRef<HTMLAnchorElement | null>(null);
@@ -53,8 +53,6 @@ const S3Browser = () => {
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
 
   const { createFolder } = useCreateFolder();
-
-  console.log(chonkyFiles);
 
   useEffect(() => {
     const helper = async () => {
@@ -123,28 +121,37 @@ const S3Browser = () => {
     }
   };
 
-  const handleUploadFile = async (file: File) => {
-    setUploadingFile(true);
-    const fileId = folderPrefix === "/" ? file.name : folderPrefix + file.name;
-    const { preSignedURLForUpload } = await getPreSignedURLForUpload({
-      fileId: fileId,
-      projectId: projectId,
-    });
-    fetch(preSignedURLForUpload, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type,
-      },
-      body: file,
-    })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setUploadingFile(false);
-        void utils.s3.fetchS3BucketContents.invalidate(); // refetch bucket contents
+  const handleUploadFile = useCallback(
+    async (file: File) => {
+      setUploadingFile(true);
+      const fileId =
+        folderPrefix === "/" ? file.name : folderPrefix + file.name;
+      const { preSignedURLForUpload } = await getPreSignedURLForUpload({
+        fileId: fileId,
+        projectId: projectId,
       });
-  };
+      fetch(preSignedURLForUpload, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      })
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => {
+          setUploadingFile(false);
+          void utils.s3.fetchS3BucketContents.invalidate(); // refetch bucket contents
+        });
+    },
+    [
+      folderPrefix,
+      getPreSignedURLForUpload,
+      projectId,
+      utils.s3.fetchS3BucketContents,
+    ]
+  );
 
   const folderChain = useMemo(() => {
     let folderChain: FileArray;
