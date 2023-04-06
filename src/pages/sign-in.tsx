@@ -1,4 +1,3 @@
-import Image from "next/image";
 import DiscordButton from "../components/oauth/DiscordButton";
 import FacebookButton from "../components/oauth/FacebookButton";
 import GoogleButton from "../components/oauth/GoogleButton";
@@ -8,7 +7,7 @@ import TwitterButton from "../components/oauth/TwitterButton";
 
 export default function signin() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center space-y-8 py-12 sm:px-6 lg:space-y-12 lg:px-8">
+    <div className="flex min-h-screen flex-col items-center justify-center space-y-8 bg-[url('/images/background-auth.jpg')] bg-cover py-12 sm:px-6 lg:space-y-12 lg:px-8">
       <div className="w-full space-y-4 sm:mx-auto sm:max-w-md">
         <div className="flex min-h-screen flex-col items-center justify-center space-y-8 py-12 sm:px-6 lg:space-y-12 lg:px-8">
           <div className="border-y border-gray-700 bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:border-x sm:px-10">
@@ -32,16 +31,6 @@ export default function signin() {
             </div>
           </div>
         </div>
-      </div>
-      <div className="hidden sm:contents lg:relative lg:block lg:flex-1">
-        <Image
-          className="absolute inset-0 h-full w-full object-cover"
-          src={"/images/background-auth.jpg"}
-          alt=""
-          unoptimized
-          width={500}
-          height={500}
-        />
       </div>
     </div>
   );
