@@ -11,14 +11,16 @@ import { NavLink } from "./NavLink";
 
 const MobileNavLink = ({
   href,
+  onClick,
   children,
 }: {
   href: string;
+  onClick?: () => undefined;
   children: React.ReactNode;
 }) => {
   return (
     <Popover.Button as={Link} href={href} className="block w-full p-2">
-      {children}
+      <span onClick={onClick}>{children}</span>
     </Popover.Button>
   );
 };
@@ -51,6 +53,7 @@ const MobileNavIcon = ({ open }: { open: boolean }) => {
 };
 
 const MobileNavigation = () => {
+  const { data: sessionData, status } = useSession();
   return (
     <Popover>
       <Popover.Button
@@ -88,7 +91,14 @@ const MobileNavigation = () => {
             <MobileNavLink href="#testimonials">Testimonials</MobileNavLink>
             <MobileNavLink href="#pricing">Pricing</MobileNavLink>
             <hr className="m-2 border-slate-300/40" />
-            <MobileNavLink href="sign-in">Sign in</MobileNavLink>
+            {status !== "loading" &&
+              (!sessionData ? (
+                <MobileNavLink href="sign-in">Sign in</MobileNavLink>
+              ) : (
+                <MobileNavLink href="sign-in" onClick={() => void signOut()}>
+                  Sign out
+                </MobileNavLink>
+              ))}
           </Popover.Panel>
         </Transition.Child>
       </Transition.Root>
@@ -97,7 +107,7 @@ const MobileNavigation = () => {
 };
 
 export const Header = () => {
-  const { data: sessionData } = useSession();
+  const { data: sessionData, status } = useSession();
   return (
     <header className="py-10">
       <Container className="">
@@ -113,23 +123,27 @@ export const Header = () => {
             </div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            {!sessionData ? (
-              <>
+            {status !== "loading" &&
+              (!sessionData ? (
+                <>
+                  <div className="hidden md:block">
+                    <NavLink href="sign-in">Sign in</NavLink>
+                  </div>
+                  <Button href="sign-in" color="blue">
+                    <span>
+                      Get started{" "}
+                      <span className="hidden lg:inline">today</span>
+                    </span>
+                  </Button>
+                </>
+              ) : (
+                //void: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void
                 <div className="hidden md:block">
-                  <NavLink href="sign-in">Sign in</NavLink>
+                  <Button href="sign-in" color="blue">
+                    <span onClick={() => void signOut()}>Sign out</span>
+                  </Button>
                 </div>
-                <Button href="sign-in" color="blue">
-                  <span>
-                    Get started <span className="hidden lg:inline">today</span>
-                  </span>
-                </Button>
-              </>
-            ) : (
-              //void: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void
-              <Button href="sign-in" color="blue">
-                <span onClick={() => void signOut()}>Sign out</span>
-              </Button>
-            )}
+              ))}
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>

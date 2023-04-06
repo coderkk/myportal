@@ -1,3 +1,4 @@
+import Image from "next/image";
 import DiscordButton from "../components/oauth/DiscordButton";
 import FacebookButton from "../components/oauth/FacebookButton";
 import GoogleButton from "../components/oauth/GoogleButton";
@@ -31,6 +32,16 @@ export default function signin() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="hidden sm:contents lg:relative lg:block lg:flex-1">
+        <Image
+          className="absolute inset-0 h-full w-full object-cover"
+          src={"/images/background-auth.jpg"}
+          alt=""
+          unoptimized
+          width={500}
+          height={500}
+        />
       </div>
     </div>
   );
