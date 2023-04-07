@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import { Button } from "./Button";
-import { Container } from "./Container";
+import { Button } from "../common/Button";
+import { Container } from "../common/Container";
 
 export const CallToAction = () => {
   return (

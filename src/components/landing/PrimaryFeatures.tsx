@@ -3,7 +3,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { Container } from "./Container";
+import { Container } from "../common/Container";
 
 const features = [
   {

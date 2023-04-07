@@ -3,13 +3,14 @@ import clsx from "clsx";
 import Link from "next/link";
 import { Fragment } from "react";
 
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { Button } from "./Button";
 import { Container } from "./Container";
 import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
+import RenderIfAuthedElse from "./RenderIfAuthedElse";
 
-const MobileNavLink = ({
+export const MobileNavLink = ({
   href,
   onClick,
   children,
@@ -25,7 +26,7 @@ const MobileNavLink = ({
   );
 };
 
-const MobileNavIcon = ({ open }: { open: boolean }) => {
+export const MobileNavIcon = ({ open }: { open: boolean }) => {
   return (
     <svg
       aria-hidden="true"
@@ -52,8 +53,7 @@ const MobileNavIcon = ({ open }: { open: boolean }) => {
   );
 };
 
-const MobileNavigation = () => {
-  const { data: sessionData, status } = useSession();
+export const MobileNavigation = () => {
   return (
     <Popover>
       <Popover.Button
@@ -91,14 +91,16 @@ const MobileNavigation = () => {
             <MobileNavLink href="#testimonials">Testimonials</MobileNavLink>
             <MobileNavLink href="#pricing">Pricing</MobileNavLink>
             <hr className="m-2 border-slate-300/40" />
-            {status !== "loading" &&
-              (!sessionData ? (
-                <MobileNavLink href="sign-in">Sign in</MobileNavLink>
-              ) : (
+            <RenderIfAuthedElse
+              authedComponent={
                 <MobileNavLink href="sign-in" onClick={() => void signOut()}>
                   Sign out
                 </MobileNavLink>
-              ))}
+              }
+              notAuthedComponent={
+                <MobileNavLink href="sign-in">Sign in</MobileNavLink>
+              }
+            />
           </Popover.Panel>
         </Transition.Child>
       </Transition.Root>
@@ -107,24 +109,47 @@ const MobileNavigation = () => {
 };
 
 export const Header = () => {
-  const { data: sessionData, status } = useSession();
   return (
     <header className="py-10">
       <Container className="">
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
-            <Link href="#" aria-label="Home">
+            <Link href="/" aria-label="Home">
               <Logo className="h-10 w-auto" />
             </Link>
             <div className="hidden md:flex md:gap-x-6">
-              <NavLink href="#features">Features</NavLink>
-              <NavLink href="#testimonials">Testimonials</NavLink>
-              <NavLink href="#pricing">Pricing</NavLink>
+              <RenderIfAuthedElse
+                authedComponent={
+                  <>
+                    <NavLink href="/projects" target="_blank">
+                      Projects
+                    </NavLink>
+                    <NavLink href="/contactus" target="_blank">
+                      Contact Us
+                    </NavLink>
+                  </>
+                }
+                notAuthedComponent={
+                  <>
+                    <NavLink href="#features">Features</NavLink>
+                    <NavLink href="#testimonials">Testimonials</NavLink>
+                    <NavLink href="#pricing">Pricing</NavLink>
+                  </>
+                }
+              />
             </div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
-            {status !== "loading" &&
-              (!sessionData ? (
+            <RenderIfAuthedElse
+              authedComponent={
+                //void: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void
+                <div className="hidden md:block">
+                  <Button href="sign-in" color="blue">
+                    <span onClick={() => void signOut()}>Sign out</span>
+                  </Button>
+                </div>
+              }
+              notAuthedComponent={
                 <>
                   <div className="hidden md:block">
                     <NavLink href="sign-in">Sign in</NavLink>
@@ -136,14 +161,8 @@ export const Header = () => {
                     </span>
                   </Button>
                 </>
-              ) : (
-                //void: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void
-                <div className="hidden md:block">
-                  <Button href="sign-in" color="blue">
-                    <span onClick={() => void signOut()}>Sign out</span>
-                  </Button>
-                </div>
-              ))}
+              }
+            />
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
