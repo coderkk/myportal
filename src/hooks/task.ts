@@ -158,7 +158,7 @@ export const useDeleteTask = ({
 }) => {
   const utils = api.useContext();
 
-  const { mutateAsync: deleteTask } = api.task.deleteTask.useMutation({
+  const { mutate: deleteTask } = api.task.deleteTask.useMutation({
     async onMutate({ taskId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
       await utils.task.getTasks.cancel();

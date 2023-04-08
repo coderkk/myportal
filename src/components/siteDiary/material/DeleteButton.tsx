@@ -44,11 +44,9 @@ const DeleteButton = ({
               <button
                 type="button"
                 onClick={() =>
-                  void (async () => {
-                    await deleteMaterial({
-                      materialId: materialId,
-                    });
-                  })()
+                  deleteMaterial({
+                    materialId: materialId,
+                  })
                 }
                 className="inline-flex h-9 items-center justify-center rounded-md bg-red-100 py-0 px-4 text-sm font-medium text-red-700 hover:bg-red-200"
               >

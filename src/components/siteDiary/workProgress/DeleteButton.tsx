@@ -44,11 +44,9 @@ const DeleteButton = ({
               <button
                 type="button"
                 onClick={() =>
-                  void (async () => {
-                    await deleteWorkProgress({
-                      workProgressId: workProgressId,
-                    });
-                  })()
+                  deleteWorkProgress({
+                    workProgressId: workProgressId,
+                  })
                 }
                 className="inline-flex h-9 items-center justify-center rounded-md bg-red-100 py-0 px-4 text-sm font-medium text-red-700 hover:bg-red-200"
               >

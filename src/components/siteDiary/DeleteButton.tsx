@@ -1,9 +1,7 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
-import type { TRPCError } from "@trpc/server";
 import { useRouter } from "next/router";
 import type { MutableRefObject } from "react";
-import toast from "react-hot-toast";
 import { useDeleteSiteDiary } from "../../hooks/siteDiary";
 
 const DeleteButton = ({
@@ -46,20 +44,14 @@ const DeleteButton = ({
             <AlertDialog.Action asChild>
               <button
                 type="button"
-                onClick={() =>
-                  void (async () => {
-                    try {
-                      await deleteSiteDiary({
-                        siteDiaryId: siteDiaryId,
-                      });
-                      if (navigateBack) {
-                        router.back();
-                      }
-                    } catch (error: unknown) {
-                      toast.error(`Error: ${(error as TRPCError).message}`);
-                    }
-                  })()
-                }
+                onClick={() => {
+                  deleteSiteDiary({
+                    siteDiaryId: siteDiaryId,
+                  });
+                  if (navigateBack) {
+                    router.back();
+                  }
+                }}
                 className="inline-flex h-9 items-center justify-center rounded-md bg-red-100 py-0 px-4 text-sm font-medium text-red-700 hover:bg-red-200"
               >
                 Yes, delete site diary

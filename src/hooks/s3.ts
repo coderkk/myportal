@@ -19,7 +19,7 @@ export const useFetchS3BucketContents = ({
 
 export const useDeleteS3Object = () => {
   const utils = api.useContext();
-  const { mutateAsync: deleteS3Object } = api.s3.deleteS3Object.useMutation({
+  const { mutate: deleteS3Object } = api.s3.deleteS3Object.useMutation({
     async onMutate({ prefix, fileId, projectId }) {
       await utils.s3.fetchS3BucketContents.cancel();
       const previousData = utils.s3.fetchS3BucketContents.getData();
@@ -98,7 +98,7 @@ export const useGetPreSignedURLForUpload = () => {
 
 export const useCreateFolder = () => {
   const utils = api.useContext();
-  const { mutateAsync: createFolder } = api.s3.createFolder.useMutation({
+  const { mutate: createFolder } = api.s3.createFolder.useMutation({
     async onMutate({ projectId, prefix, folderName }) {
       await utils.s3.fetchS3BucketContents.invalidate();
       const previousData = utils.s3.fetchS3BucketContents.getData();

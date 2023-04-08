@@ -123,7 +123,7 @@ export const useDeleteProject = ({
   pendingDeleteCountRef?: MutableRefObject<number>;
 }) => {
   const utils = api.useContext();
-  const { mutateAsync: deleteProject } = api.project.deleteProject.useMutation({
+  const { mutate: deleteProject } = api.project.deleteProject.useMutation({
     async onMutate({ projectId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
       await utils.project.getProjects.cancel();

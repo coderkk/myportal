@@ -159,8 +159,8 @@ export const useDeleteSiteDiary = ({
 }) => {
   const utils = api.useContext();
 
-  const { mutateAsync: deleteSiteDiary } =
-    api.siteDiary.deleteSiteDiary.useMutation({
+  const { mutate: deleteSiteDiary } = api.siteDiary.deleteSiteDiary.useMutation(
+    {
       async onMutate({ siteDiaryId }) {
         if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
         await utils.siteDiary.getSiteDiaries.cancel();
@@ -206,7 +206,8 @@ export const useDeleteSiteDiary = ({
           await utils.siteDiary.getSiteDiaries.invalidate();
         }
       },
-    });
+    }
+  );
   return {
     deleteSiteDiary,
   };

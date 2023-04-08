@@ -154,66 +154,65 @@ export const useDeleteMaterial = ({
   siteDiaryId: string;
 }) => {
   const utils = api.useContext();
-  const { mutateAsync: deleteMaterial } =
-    api.material.deleteMaterial.useMutation({
-      async onMutate({ materialId }) {
-        if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
-        await utils.siteDiary.getSiteDiary.cancel();
-        const previousData = utils.siteDiary.getSiteDiary.getData();
-        utils.siteDiary.getSiteDiary.setData(
-          { siteDiaryId: siteDiaryId },
-          (oldSiteDiary) => {
-            if (oldSiteDiary) {
-              const newMaterials = oldSiteDiary?.materials.filter(
-                (oldMaterial) => oldMaterial.id !== materialId
-              );
-              const newSiteDiary = { ...oldSiteDiary };
-              newSiteDiary.materials = newMaterials;
-              return newSiteDiary;
-            } else {
-              return oldSiteDiary;
-            }
+  const { mutate: deleteMaterial } = api.material.deleteMaterial.useMutation({
+    async onMutate({ materialId }) {
+      if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
+      await utils.siteDiary.getSiteDiary.cancel();
+      const previousData = utils.siteDiary.getSiteDiary.getData();
+      utils.siteDiary.getSiteDiary.setData(
+        { siteDiaryId: siteDiaryId },
+        (oldSiteDiary) => {
+          if (oldSiteDiary) {
+            const newMaterials = oldSiteDiary?.materials.filter(
+              (oldMaterial) => oldMaterial.id !== materialId
+            );
+            const newSiteDiary = { ...oldSiteDiary };
+            newSiteDiary.materials = newMaterials;
+            return newSiteDiary;
+          } else {
+            return oldSiteDiary;
           }
-        );
-        return () =>
-          utils.siteDiary.getSiteDiary.setData(
-            { siteDiaryId: siteDiaryId },
-            previousData
-          );
-      },
-      onError(error, values, rollback) {
-        if (rollback) {
-          rollback();
         }
-      },
-      onSuccess(data, { materialId }) {
+      );
+      return () =>
         utils.siteDiary.getSiteDiary.setData(
           { siteDiaryId: siteDiaryId },
-          (oldSiteDiary) => {
-            if (oldSiteDiary) {
-              const newMaterials = oldSiteDiary?.materials.filter(
-                (oldMaterial) => oldMaterial.id !== materialId
-              );
-              const newSiteDiary = { ...oldSiteDiary };
-              newSiteDiary.materials = newMaterials;
-              return newSiteDiary;
-            } else {
-              return oldSiteDiary;
-            }
-          }
+          previousData
         );
-      },
-      async onSettled() {
-        if (pendingDeleteCountRef) {
-          pendingDeleteCountRef.current -= 1;
-          if (pendingDeleteCountRef.current === 0) {
-            await utils.siteDiary.getSiteDiary.invalidate();
+    },
+    onError(error, values, rollback) {
+      if (rollback) {
+        rollback();
+      }
+    },
+    onSuccess(data, { materialId }) {
+      utils.siteDiary.getSiteDiary.setData(
+        { siteDiaryId: siteDiaryId },
+        (oldSiteDiary) => {
+          if (oldSiteDiary) {
+            const newMaterials = oldSiteDiary?.materials.filter(
+              (oldMaterial) => oldMaterial.id !== materialId
+            );
+            const newSiteDiary = { ...oldSiteDiary };
+            newSiteDiary.materials = newMaterials;
+            return newSiteDiary;
+          } else {
+            return oldSiteDiary;
           }
-        } else {
+        }
+      );
+    },
+    async onSettled() {
+      if (pendingDeleteCountRef) {
+        pendingDeleteCountRef.current -= 1;
+        if (pendingDeleteCountRef.current === 0) {
           await utils.siteDiary.getSiteDiary.invalidate();
         }
-      },
-    });
+      } else {
+        await utils.siteDiary.getSiteDiary.invalidate();
+      }
+    },
+  });
   return {
     deleteMaterial,
   };

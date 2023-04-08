@@ -149,7 +149,7 @@ export const useDeleteWorkProgress = ({
   siteDiaryId: string;
 }) => {
   const utils = api.useContext();
-  const { mutateAsync: deleteWorkProgress } =
+  const { mutate: deleteWorkProgress } =
     api.workProgress.deleteWorkProgress.useMutation({
       async onMutate({ workProgressId }) {
         if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;

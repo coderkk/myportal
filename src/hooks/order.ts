@@ -167,7 +167,7 @@ export const useDeleteOrder = ({
 }) => {
   const utils = api.useContext();
 
-  const { mutateAsync: deleteOrder } = api.order.deleteOrder.useMutation({
+  const { mutate: deleteOrder } = api.order.deleteOrder.useMutation({
     async onMutate({ orderId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
       await utils.order.getOrders.cancel();

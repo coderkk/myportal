@@ -147,7 +147,7 @@ export const useDeleteSiteProblem = ({
   siteDiaryId: string;
 }) => {
   const utils = api.useContext();
-  const { mutateAsync: deleteSiteProblem } =
+  const { mutate: deleteSiteProblem } =
     api.siteProblem.deleteSiteProblem.useMutation({
       async onMutate({ siteProblemId }) {
         if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;

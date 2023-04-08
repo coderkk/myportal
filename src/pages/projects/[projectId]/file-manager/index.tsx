@@ -66,25 +66,32 @@ const S3Browser = () => {
 
   const handleDownloadFile = useCallback(
     async (fileData: FileData) => {
-      const { preSignedURLForDownload } = await getPreSignedURLForDownload({
-        fileId: fileData.id,
-        projectId: projectId,
-      });
-      fetch(preSignedURLForDownload, {
-        method: "GET",
-      })
-        .then((res) => res.blob())
-        .then((blob) => {
-          const url = window.URL.createObjectURL(new Blob([blob]));
-          if (hiddenAnchorRef.current) {
-            hiddenAnchorRef.current.href = url;
-            hiddenAnchorRef.current.download = fileData.name;
-            hiddenAnchorRef.current.click();
-          }
-        })
-        .catch((error) => {
-          console.error(error);
+      try {
+        const { preSignedURLForDownload } = await getPreSignedURLForDownload({
+          fileId: fileData.id,
+          projectId: projectId,
         });
+        fetch(preSignedURLForDownload, {
+          method: "GET",
+        })
+          .then((res) => res.blob())
+          .then((blob) => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            if (hiddenAnchorRef.current) {
+              hiddenAnchorRef.current.href = url;
+              hiddenAnchorRef.current.download = fileData.name;
+              hiddenAnchorRef.current.click();
+            }
+          })
+          .catch(() => {
+            // avoid eslint error
+          });
+      } catch (error) {
+        // This try catch is necessary as getPreSignedURLForDownload
+        // returns a promise that can possibly cause a runtime error.
+        // we handle this error in src/utils/api.ts so there's no need
+        // to do anything here other than catch the error.
+      }
     },
     [getPreSignedURLForDownload, projectId]
   );
@@ -112,24 +119,29 @@ const S3Browser = () => {
       setUploadingFile(true);
       const fileId =
         folderPrefix === "/" ? file.name : folderPrefix + file.name;
-      const { preSignedURLForUpload } = await getPreSignedURLForUpload({
-        fileId: fileId,
-        projectId: projectId,
-      });
-      fetch(preSignedURLForUpload, {
-        method: "PUT",
-        headers: {
-          "Content-Type": file.type,
-        },
-        body: file,
-      })
-        .catch((error) => {
-          console.error(error);
-        })
-        .finally(() => {
-          setUploadingFile(false);
-          void utils.s3.fetchS3BucketContents.invalidate(); // refetch bucket contents
+      try {
+        const { preSignedURLForUpload } = await getPreSignedURLForUpload({
+          fileId: fileId,
+          projectId: projectId,
         });
+        fetch(preSignedURLForUpload, {
+          method: "PUT",
+          headers: {
+            "Content-Type": file.type,
+          },
+          body: file,
+        }).catch(() => {
+          // avoid eslint error
+        });
+      } catch (error) {
+        // This try catch is necessary as getPreSignedURLForDownload
+        // returns a promise that can possibly cause a runtime error.
+        // we handle this error in src/utils/api.ts so there's no need
+        // to do anything here other than catch the error.
+      } finally {
+        setUploadingFile(false);
+        void utils.s3.fetchS3BucketContents.invalidate(); // refetch bucket contents
+      }
     },
     [
       folderPrefix,
@@ -180,7 +192,7 @@ const S3Browser = () => {
         }
       } else if (data.id === ChonkyActions.DeleteFiles.id) {
         for (const file of data.state.selectedFilesForAction) {
-          void deleteS3Object({
+          deleteS3Object({
             prefix: folderPrefix,
             fileId: file.id,
             projectId: projectId,
@@ -199,7 +211,7 @@ const S3Browser = () => {
       } else if (data.id === ChonkyActions.CreateFolder.id) {
         const folderName = prompt("Provide the name for your new folder:");
         if (folderName)
-          void createFolder({
+          createFolder({
             prefix: folderPrefix,
             folderName: folderName,
             projectId: projectId,
