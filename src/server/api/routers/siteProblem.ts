@@ -30,9 +30,8 @@ export const siteProblemRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create site problem",
         });
       }
     }),
@@ -50,9 +49,8 @@ export const siteProblemRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update site problem",
         });
       }
     }),
@@ -67,9 +65,8 @@ export const siteProblemRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete site problem",
         });
       }
     }),

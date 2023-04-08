@@ -37,9 +37,8 @@ export const materialRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create material",
         });
       }
     }),
@@ -59,9 +58,8 @@ export const materialRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update material",
         });
       }
     }),
@@ -76,9 +74,8 @@ export const materialRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete material",
         });
       }
     }),

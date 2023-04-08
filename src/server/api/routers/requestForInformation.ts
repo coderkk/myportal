@@ -45,9 +45,8 @@ export const requestForInformationRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create RFI",
         });
       }
     }),
@@ -79,9 +78,8 @@ export const requestForInformationRouter = createTRPCRouter({
         }));
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get RFIs",
         });
       }
     }),
@@ -105,9 +103,8 @@ export const requestForInformationRouter = createTRPCRouter({
         return requestForInformation;
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get RFI",
         });
       }
     }),
@@ -126,9 +123,8 @@ export const requestForInformationRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update RFI",
         });
       }
     }),
@@ -143,9 +139,8 @@ export const requestForInformationRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete RFI",
         });
       }
     }),

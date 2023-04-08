@@ -30,9 +30,8 @@ export const workProgressRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create work progress",
         });
       }
     }),
@@ -50,9 +49,8 @@ export const workProgressRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update work progress",
         });
       }
     }),
@@ -67,9 +65,8 @@ export const workProgressRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete work progress",
         });
       }
     }),

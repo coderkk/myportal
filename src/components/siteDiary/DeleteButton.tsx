@@ -1,7 +1,9 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
+import type { TRPCError } from "@trpc/server";
 import { useRouter } from "next/router";
 import type { MutableRefObject } from "react";
+import toast from "react-hot-toast";
 import { useDeleteSiteDiary } from "../../hooks/siteDiary";
 
 const DeleteButton = ({
@@ -46,11 +48,15 @@ const DeleteButton = ({
                 type="button"
                 onClick={() =>
                   void (async () => {
-                    await deleteSiteDiary({
-                      siteDiaryId: siteDiaryId,
-                    });
-                    if (navigateBack) {
-                      router.back();
+                    try {
+                      await deleteSiteDiary({
+                        siteDiaryId: siteDiaryId,
+                      });
+                      if (navigateBack) {
+                        router.back();
+                      }
+                    } catch (error: unknown) {
+                      toast.error(`Error: ${(error as TRPCError).message}`);
                     }
                   })()
                 }

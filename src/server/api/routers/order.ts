@@ -47,9 +47,8 @@ export const orderRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create order",
         });
       }
     }),
@@ -83,9 +82,8 @@ export const orderRouter = createTRPCRouter({
         }));
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get orders",
         });
       }
     }),
@@ -108,9 +106,8 @@ export const orderRouter = createTRPCRouter({
         return order;
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get order",
         });
       }
     }),
@@ -131,9 +128,8 @@ export const orderRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update order",
         });
       }
     }),
@@ -148,9 +144,8 @@ export const orderRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete order",
         });
       }
     }),

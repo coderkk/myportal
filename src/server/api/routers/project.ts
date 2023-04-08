@@ -51,9 +51,8 @@ export const projectRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create project",
         });
       }
     }),
@@ -95,9 +94,8 @@ export const projectRouter = createTRPCRouter({
       return projects;
     } catch (error) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: (error as Error).message,
-        cause: error,
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to get projects",
       });
     }
   }),
@@ -115,9 +113,8 @@ export const projectRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update project",
         });
       }
     }),
@@ -149,9 +146,8 @@ export const projectRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete project",
         });
       }
     }),
@@ -180,11 +176,13 @@ export const projectRouter = createTRPCRouter({
         ]);
 
         if (!isCreator) {
-          throw new Error(
-            "You do not have permission since you did not create the project."
-          );
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+          });
         } else if (userAlreadyInProject) {
-          throw new Error("The user already belongs to this team.");
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+          });
         }
 
         // add user to project
@@ -195,10 +193,21 @@ export const projectRouter = createTRPCRouter({
           },
         });
       } catch (error) {
+        if ((error as TRPCError).code === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message:
+              "You do not have permission since you did not create the project",
+          });
+        } else if ((error as TRPCError).code === "BAD_REQUEST") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "The user already belongs to this team.",
+          });
+        }
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to add to project",
         });
       }
     }),
@@ -227,11 +236,13 @@ export const projectRouter = createTRPCRouter({
         ]);
 
         if (!isCreator) {
-          throw new Error(
-            "You do not have permission since you did not create the project."
-          );
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+          });
         } else if (!userAlreadyInProject) {
-          throw new Error("The user is not part of the team.");
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+          });
         }
 
         return await ctx.prisma.$transaction(async (tx) => {
@@ -265,10 +276,21 @@ export const projectRouter = createTRPCRouter({
           });
         });
       } catch (error) {
+        if ((error as TRPCError).code === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message:
+              "You do not have permission since you did not create the project",
+          });
+        } else if ((error as TRPCError).code === "BAD_REQUEST") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "The user is not part of the team.",
+          });
+        }
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to remove from project",
         });
       }
     }),

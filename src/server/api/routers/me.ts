@@ -42,9 +42,8 @@ export const meRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "UNAUTHORIZED",
+          message: "Do not have permission to project",
         });
       }
     }),
@@ -64,9 +63,8 @@ export const meRouter = createTRPCRouter({
         return true;
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "UNAUTHORIZED",
+          message: "Not the creator of the project",
         });
       }
     }),

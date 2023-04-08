@@ -19,6 +19,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import toast from "react-hot-toast";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import {
   useCreateFolder,
@@ -38,7 +39,6 @@ const S3Browser = () => {
   const [folderPrefix, setFolderPrefix] = useState<string>("/");
   const mounted = useRef<boolean>(false);
   const projectId = router.query.projectId as string;
-  const [projectBucketCreated, setProjectBucketCreated] = useState(false);
 
   const { chonkyFiles, isFetchS3BucketContentsError } =
     useFetchS3BucketContents({
@@ -55,28 +55,14 @@ const S3Browser = () => {
   const { createFolder } = useCreateFolder();
 
   useEffect(() => {
-    const helper = async () => {
-      if (mounted.current) return;
+    if (!mounted.current) {
       mounted.current = true;
       setChonkyDefaults({
         iconComponent: ChonkyIconFA,
         disableDragAndDrop: true,
       });
-      // check if the folder for project exists
-      chonkyFiles?.map((file) => {
-        if (file?.name === projectId) {
-          return setProjectBucketCreated(true);
-        }
-      }, []);
-      await createFolder({
-        prefix: folderPrefix,
-        folderName: projectId,
-        projectId: projectId,
-      });
-      setProjectBucketCreated(true);
-    };
-    void helper();
-  }, [chonkyFiles, createFolder, folderPrefix, projectId]);
+    }
+  }, []);
 
   const handleDownloadFile = useCallback(
     async (fileData: FileData) => {
@@ -112,7 +98,7 @@ const S3Browser = () => {
       // if exists, don't upload
       chonkyFiles?.map((file) => {
         if (file?.name == fileName) {
-          alert("Duplicate file name. Delete existing file first");
+          toast.error("Duplicate file name. Delete existing file first");
           return;
         }
       });
@@ -202,7 +188,10 @@ const S3Browser = () => {
         }
       } else if (data.id === ChonkyActions.DownloadFiles.id) {
         for (const file of data.state.selectedFilesForAction) {
-          if (file.isDir) continue; // add toast
+          if (file.isDir) {
+            toast.error("Cannot download folders");
+            continue;
+          }
           void handleDownloadFile(file);
         }
       } else if (data.id === ChonkyActions.UploadFiles.id) {
@@ -227,7 +216,7 @@ const S3Browser = () => {
     ChonkyActions.DeleteFiles,
   ];
 
-  if (!mounted.current || !projectBucketCreated) return null;
+  if (!mounted.current) return null;
 
   return (
     <SessionAuth>

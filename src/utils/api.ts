@@ -7,9 +7,12 @@
  */
 import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
+import type { TRPCError } from "@trpc/server";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
 
+import { QueryCache } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { type AppRouter } from "../server/api/root";
 
 const getBaseUrl = () => {
@@ -45,6 +48,18 @@ export const api = createTRPCNext<AppRouter>({
         }),
       ],
       abortOnUnmount: true,
+      queryClientConfig: {
+        queryCache: new QueryCache({
+          onError: (error: unknown) => {
+            toast.error(`Error: ${(error as TRPCError).message}`);
+          },
+        }),
+        // mutationCache: new MutationCache({
+        //   onError: (error) => {
+        //     toast.error(`Error: ${(error as TRPCError).message}`);
+        //   },
+        // }),
+      },
     };
   },
   /**
