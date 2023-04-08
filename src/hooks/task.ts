@@ -57,24 +57,12 @@ export const useCreateTask = () => {
 };
 
 export const useGetTasks = ({ projectId }: { projectId: string }) => {
-  const { data, isLoading, isError } = api.task.getTasks.useQuery({
+  const { data, isLoading } = api.task.getTasks.useQuery({
     projectId: projectId,
   });
   return {
     tasks: data,
     isLoading: isLoading,
-    isError: isError,
-  };
-};
-
-export const useGetTask = ({ taskId }: { taskId: string }) => {
-  const { data, isLoading, isError } = api.task.getTask.useQuery({
-    taskId: taskId,
-  });
-  return {
-    task: data,
-    isLoading: isLoading,
-    isError: isError,
   };
 };
 

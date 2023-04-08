@@ -55,24 +55,22 @@ export const useCreateSiteDiary = () => {
 };
 
 export const useGetSiteDiaries = ({ projectId }: { projectId: string }) => {
-  const { data, isLoading, isError } = api.siteDiary.getSiteDiaries.useQuery({
+  const { data, isLoading } = api.siteDiary.getSiteDiaries.useQuery({
     projectId: projectId,
   });
   return {
     siteDiaries: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 
 export const useGetSiteDiary = ({ siteDiaryId }: { siteDiaryId: string }) => {
-  const { data, isLoading, isError } = api.siteDiary.getSiteDiary.useQuery({
+  const { data, isLoading } = api.siteDiary.getSiteDiary.useQuery({
     siteDiaryId: siteDiaryId,
   });
   return {
     siteDiary: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 

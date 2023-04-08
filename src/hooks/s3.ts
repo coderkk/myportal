@@ -7,13 +7,13 @@ export const useFetchS3BucketContents = ({
   prefix: string;
   projectId: string;
 }) => {
-  const { data, isError } = api.s3.fetchS3BucketContents.useQuery({
+  const { data, isLoading } = api.s3.fetchS3BucketContents.useQuery({
     prefix: prefix,
     projectId: projectId,
   });
   return {
     chonkyFiles: data,
-    isFetchS3BucketContentsError: isError,
+    isLoading: isLoading,
   };
 };
 

@@ -6,13 +6,12 @@ export const useGetReplies = ({
 }: {
   requestForInformationId: string;
 }) => {
-  const { data, isLoading, isError } = api.reply.getReplies.useQuery({
+  const { data, isLoading } = api.reply.getReplies.useQuery({
     requestForInformationId: requestForInformationId,
   });
   return {
     replies: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 

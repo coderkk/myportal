@@ -52,13 +52,17 @@ export const api = createTRPCNext<AppRouter>({
         // catch all query errors
         queryCache: new QueryCache({
           onError: (error: unknown) => {
-            toast.error(`Error: ${(error as TRPCError).message}`);
+            toast.error(`Error: ${(error as TRPCError).message}`, {
+              duration: 4000,
+            });
           },
         }),
         // catch all muatation errors
         mutationCache: new MutationCache({
           onError: (error: unknown) => {
-            toast.error(`Error: ${(error as TRPCError).message}`);
+            toast.error(`Error: ${(error as TRPCError).message}`, {
+              duration: 4000,
+            });
           },
         }),
       },

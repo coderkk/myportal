@@ -59,14 +59,13 @@ export const useGetRequestForInformations = ({
 }: {
   projectId: string;
 }) => {
-  const { data, isLoading, isError } =
+  const { data, isLoading } =
     api.requestForInformation.getRequestForInformations.useQuery({
       projectId: projectId,
     });
   return {
     requestForInformations: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 
@@ -75,14 +74,13 @@ export const useGetRequestForInformation = ({
 }: {
   requestForInformationId: string;
 }) => {
-  const { data, isLoading, isError } =
+  const { data, isLoading } =
     api.requestForInformation.getRequestForInformation.useQuery({
       requestForInformationId: requestForInformationId,
     });
   return {
     requestForInformation: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 

@@ -16,6 +16,10 @@ export const replyRouter = createTRPCRouter({
     .input(getRepliesSchema)
     .query(async ({ ctx, input }) => {
       try {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get replies",
+        });
         const requestForInformation =
           await ctx.prisma.requestForInformation.findUniqueOrThrow({
             where: {

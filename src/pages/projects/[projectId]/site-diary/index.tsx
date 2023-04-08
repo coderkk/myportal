@@ -21,7 +21,7 @@ const SiteDiary = () => {
   const router = useRouter();
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
-  const { siteDiaries, isLoading, isError } = useGetSiteDiaries({
+  const { siteDiaries, isLoading } = useGetSiteDiaries({
     projectId: projectId,
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
@@ -30,8 +30,6 @@ const SiteDiary = () => {
     <SessionAuth>
       {isLoading ? (
         <div>Loading...</div>
-      ) : isError ? (
-        <div>Error!</div>
       ) : (
         <div className="flex h-screen">
           <div className="m-auto">

@@ -55,24 +55,12 @@ export const useCreateOrder = () => {
 };
 
 export const useGetOrders = ({ projectId }: { projectId: string }) => {
-  const { data, isLoading, isError } = api.order.getOrders.useQuery({
+  const { data, isLoading } = api.order.getOrders.useQuery({
     projectId: projectId,
   });
   return {
     orders: data,
     isLoading: isLoading,
-    isError: isError,
-  };
-};
-
-export const useGetOrder = ({ orderId }: { orderId: string }) => {
-  const { data, isLoading, isError } = api.order.getOrder.useQuery({
-    orderId: orderId,
-  });
-  return {
-    order: data,
-    isLoading: isLoading,
-    isError: isError,
   };
 };
 

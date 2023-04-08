@@ -42,8 +42,8 @@ export const meRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Do not have permission to project",
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to check if user has permission to project",
         });
       }
     }),
@@ -63,8 +63,8 @@ export const meRouter = createTRPCRouter({
         return true;
       } catch (error) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Not the creator of the project",
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to check if user is creator of project",
         });
       }
     }),

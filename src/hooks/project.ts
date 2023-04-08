@@ -39,11 +39,10 @@ export const useCreateProject = () => {
 };
 
 export const useGetProjects = () => {
-  const { data, isLoading, isError } = api.project.getProjects.useQuery();
+  const { data, isLoading } = api.project.getProjects.useQuery();
   return {
     projects: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 

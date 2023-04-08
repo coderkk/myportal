@@ -40,11 +40,10 @@ const S3Browser = () => {
   const mounted = useRef<boolean>(false);
   const projectId = router.query.projectId as string;
 
-  const { chonkyFiles, isFetchS3BucketContentsError } =
-    useFetchS3BucketContents({
-      prefix: folderPrefix,
-      projectId: projectId,
-    });
+  const { chonkyFiles, isLoading } = useFetchS3BucketContents({
+    prefix: folderPrefix,
+    projectId: projectId,
+  });
 
   const { deleteS3Object } = useDeleteS3Object();
 
@@ -228,13 +227,14 @@ const S3Browser = () => {
     ChonkyActions.DeleteFiles,
   ];
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   if (!mounted.current) return null;
 
   return (
     <SessionAuth>
-      {isFetchS3BucketContentsError ? (
-        <div>Fetch error!</div>
-      ) : (
+      {
         <div>
           <div className="h-96 w-10/12">
             <FileBrowser
@@ -265,7 +265,7 @@ const S3Browser = () => {
             {uploadingFile && <div>Uploading file...</div>}
           </div>
         </div>
-      )}
+      }
     </SessionAuth>
   );
 };
