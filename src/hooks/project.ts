@@ -39,11 +39,10 @@ export const useCreateProject = () => {
 };
 
 export const useGetProjects = () => {
-  const { data, isLoading, isError } = api.project.getProjects.useQuery();
+  const { data, isLoading } = api.project.getProjects.useQuery();
   return {
     projects: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 
@@ -123,7 +122,7 @@ export const useDeleteProject = ({
   pendingDeleteCountRef?: MutableRefObject<number>;
 }) => {
   const utils = api.useContext();
-  const { mutateAsync: deleteProject } = api.project.deleteProject.useMutation({
+  const { mutate: deleteProject } = api.project.deleteProject.useMutation({
     async onMutate({ projectId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
       await utils.project.getProjects.cancel();

@@ -39,7 +39,7 @@ const Dropdown = dynamic(
 const SiteDiary = () => {
   const router = useRouter();
   const siteDiaryId = router.query.siteDiaryId as string;
-  const { siteDiary, isLoading, isError } = useGetSiteDiary({
+  const { siteDiary, isLoading } = useGetSiteDiary({
     siteDiaryId: siteDiaryId,
   });
   const { updateSiteDiaryWeather } = useUpdateSiteDiaryWeather();
@@ -59,10 +59,6 @@ const SiteDiary = () => {
       siteDiaryId: siteDiaryId,
     });
   };
-  if (isError) {
-    void router.push("/projects");
-    return <div>Error...</div>;
-  }
   return (
     <SessionAuth>
       {isLoading ? (

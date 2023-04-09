@@ -42,9 +42,8 @@ export const meRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to check if user has permission to project",
         });
       }
     }),
@@ -64,9 +63,8 @@ export const meRouter = createTRPCRouter({
         return true;
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to check if user is creator of project",
         });
       }
     }),

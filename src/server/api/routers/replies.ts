@@ -16,6 +16,10 @@ export const replyRouter = createTRPCRouter({
     .input(getRepliesSchema)
     .query(async ({ ctx, input }) => {
       try {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get replies",
+        });
         const requestForInformation =
           await ctx.prisma.requestForInformation.findUniqueOrThrow({
             where: {
@@ -42,9 +46,8 @@ export const replyRouter = createTRPCRouter({
         }));
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get replies",
         });
       }
     }),
@@ -61,9 +64,8 @@ export const replyRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to reply",
         });
       }
     }),

@@ -57,24 +57,12 @@ export const useCreateTask = () => {
 };
 
 export const useGetTasks = ({ projectId }: { projectId: string }) => {
-  const { data, isLoading, isError } = api.task.getTasks.useQuery({
+  const { data, isLoading } = api.task.getTasks.useQuery({
     projectId: projectId,
   });
   return {
     tasks: data,
     isLoading: isLoading,
-    isError: isError,
-  };
-};
-
-export const useGetTask = ({ taskId }: { taskId: string }) => {
-  const { data, isLoading, isError } = api.task.getTask.useQuery({
-    taskId: taskId,
-  });
-  return {
-    task: data,
-    isLoading: isLoading,
-    isError: isError,
   };
 };
 
@@ -158,7 +146,7 @@ export const useDeleteTask = ({
 }) => {
   const utils = api.useContext();
 
-  const { mutateAsync: deleteTask } = api.task.deleteTask.useMutation({
+  const { mutate: deleteTask } = api.task.deleteTask.useMutation({
     async onMutate({ taskId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
       await utils.task.getTasks.cancel();

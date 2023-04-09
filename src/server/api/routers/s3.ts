@@ -136,10 +136,15 @@ export const s3Router = createTRPCRouter({
             return file;
           });
       } catch (error) {
+        if ((error as TRPCError).code === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You do not have permission to this project",
+          });
+        }
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch S3 bucket contents",
         });
       }
     }),
@@ -178,10 +183,15 @@ export const s3Router = createTRPCRouter({
         };
         return await deleteHelper(env.AWS_S3_BUCKET_NAME_, input.fileId);
       } catch (error) {
+        if ((error as TRPCError).code === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You do not have permission to this project",
+          });
+        }
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete S3 object",
         });
       }
     }),
@@ -207,10 +217,15 @@ export const s3Router = createTRPCRouter({
           preSignedURLForDownload: preSignedURLForDownload,
         };
       } catch (error) {
+        if ((error as TRPCError).code === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You do not have permission to this project",
+          });
+        }
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get presigned url for download",
         });
       }
     }),
@@ -236,10 +251,15 @@ export const s3Router = createTRPCRouter({
           preSignedURLForUpload: preSignedURLForUpload,
         };
       } catch (error) {
+        if ((error as TRPCError).code === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You do not have permission to this project",
+          });
+        }
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get presigned url for upload",
         });
       }
     }),
@@ -261,7 +281,7 @@ export const s3Router = createTRPCRouter({
           input.prefix === "/"
             ? input.folderName
             : input.prefix + input.folderName;
-        key = key.replace(/\/g/, "_"); // sanitize,
+        key = key.replace(/\//g, "_"); // sanitize,
         if (key[0] === "_") {
           key = key.substring(1, key.length);
         }
@@ -279,10 +299,15 @@ export const s3Router = createTRPCRouter({
           })
           .promise();
       } catch (error) {
+        if ((error as TRPCError).code === "UNAUTHORIZED") {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You do not have permission to this project",
+          });
+        }
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create folder",
         });
       }
     }),

@@ -59,14 +59,13 @@ export const useGetRequestForInformations = ({
 }: {
   projectId: string;
 }) => {
-  const { data, isLoading, isError } =
+  const { data, isLoading } =
     api.requestForInformation.getRequestForInformations.useQuery({
       projectId: projectId,
     });
   return {
     requestForInformations: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 
@@ -75,14 +74,13 @@ export const useGetRequestForInformation = ({
 }: {
   requestForInformationId: string;
 }) => {
-  const { data, isLoading, isError } =
+  const { data, isLoading } =
     api.requestForInformation.getRequestForInformation.useQuery({
       requestForInformationId: requestForInformationId,
     });
   return {
     requestForInformation: data,
     isLoading: isLoading,
-    isError: isError,
   };
 };
 
@@ -198,7 +196,7 @@ export const useDeleteRequestForInformation = ({
 }) => {
   const utils = api.useContext();
 
-  const { mutateAsync: deleteRequestForInformation } =
+  const { mutate: deleteRequestForInformation } =
     api.requestForInformation.deleteRequestForInformation.useMutation({
       async onMutate({ requestForInformationId }) {
         if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache

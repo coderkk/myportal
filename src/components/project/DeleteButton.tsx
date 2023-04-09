@@ -41,16 +41,14 @@ const DeleteButton = ({
             <AlertDialog.Action asChild>
               <button
                 type="button"
-                onClick={() =>
-                  void (async () => {
-                    await deleteProject({
-                      projectId: projectId,
-                    });
-                    if (navigateBack) {
-                      router.back();
-                    }
-                  })()
-                }
+                onClick={() => {
+                  deleteProject({
+                    projectId: projectId,
+                  });
+                  if (navigateBack) {
+                    router.back();
+                  }
+                }}
                 className="inline-flex h-9 items-center justify-center rounded-md bg-red-100 py-0 px-4 text-sm font-medium text-red-700 hover:bg-red-200"
               >
                 Yes, delete project

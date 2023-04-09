@@ -13,7 +13,7 @@ const Replies = () => {
   const session = useSession();
   const requestForInformationId = router.query
     .requestForInformationId as string;
-  const { replies, isLoading, isError } = useGetReplies({
+  const { replies, isLoading } = useGetReplies({
     requestForInformationId: requestForInformationId,
   });
 
@@ -39,11 +39,6 @@ const Replies = () => {
       description: data.description as string,
     });
   };
-
-  if (isError) {
-    void router.push("/projects");
-    return <div>Error...</div>;
-  }
 
   return (
     <SessionAuth>

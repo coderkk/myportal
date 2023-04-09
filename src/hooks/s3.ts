@@ -7,19 +7,19 @@ export const useFetchS3BucketContents = ({
   prefix: string;
   projectId: string;
 }) => {
-  const { data, isError } = api.s3.fetchS3BucketContents.useQuery({
+  const { data, isLoading } = api.s3.fetchS3BucketContents.useQuery({
     prefix: prefix,
     projectId: projectId,
   });
   return {
     chonkyFiles: data,
-    isFetchS3BucketContentsError: isError,
+    isLoading: isLoading,
   };
 };
 
 export const useDeleteS3Object = () => {
   const utils = api.useContext();
-  const { mutateAsync: deleteS3Object } = api.s3.deleteS3Object.useMutation({
+  const { mutate: deleteS3Object } = api.s3.deleteS3Object.useMutation({
     async onMutate({ prefix, fileId, projectId }) {
       await utils.s3.fetchS3BucketContents.cancel();
       const previousData = utils.s3.fetchS3BucketContents.getData();
@@ -98,7 +98,44 @@ export const useGetPreSignedURLForUpload = () => {
 
 export const useCreateFolder = () => {
   const utils = api.useContext();
-  const { mutateAsync: createFolder } = api.s3.createFolder.useMutation({
+  const { mutate: createFolder } = api.s3.createFolder.useMutation({
+    async onMutate({ projectId, prefix, folderName }) {
+      await utils.s3.fetchS3BucketContents.invalidate();
+      const previousData = utils.s3.fetchS3BucketContents.getData();
+      utils.s3.fetchS3BucketContents.setData(
+        { projectId: projectId, prefix: prefix },
+        (oldFileData) => {
+          const s3Prefix =
+            prefix !== "/" ? projectId + "/" + prefix : projectId + "/";
+          const optimisticUpdateObject = {
+            id: s3Prefix + folderName,
+            name: folderName,
+            isDir: true,
+          };
+          if (oldFileData) {
+            // no duplicates
+            for (const file of oldFileData) {
+              if (file && file.name == folderName && file.isDir) {
+                return oldFileData;
+              }
+            }
+            return [...oldFileData, optimisticUpdateObject];
+          } else {
+            return [optimisticUpdateObject];
+          }
+        }
+      );
+      return () =>
+        utils.s3.fetchS3BucketContents.setData(
+          { projectId: projectId, prefix: prefix },
+          previousData
+        );
+    },
+    onError(error, values, rollback) {
+      if (rollback) {
+        rollback();
+      }
+    },
     async onSettled() {
       await utils.s3.fetchS3BucketContents.invalidate();
     },

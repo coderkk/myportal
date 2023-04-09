@@ -55,24 +55,12 @@ export const useCreateOrder = () => {
 };
 
 export const useGetOrders = ({ projectId }: { projectId: string }) => {
-  const { data, isLoading, isError } = api.order.getOrders.useQuery({
+  const { data, isLoading } = api.order.getOrders.useQuery({
     projectId: projectId,
   });
   return {
     orders: data,
     isLoading: isLoading,
-    isError: isError,
-  };
-};
-
-export const useGetOrder = ({ orderId }: { orderId: string }) => {
-  const { data, isLoading, isError } = api.order.getOrder.useQuery({
-    orderId: orderId,
-  });
-  return {
-    order: data,
-    isLoading: isLoading,
-    isError: isError,
   };
 };
 
@@ -167,7 +155,7 @@ export const useDeleteOrder = ({
 }) => {
   const utils = api.useContext();
 
-  const { mutateAsync: deleteOrder } = api.order.deleteOrder.useMutation({
+  const { mutate: deleteOrder } = api.order.deleteOrder.useMutation({
     async onMutate({ orderId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
       await utils.order.getOrders.cancel();

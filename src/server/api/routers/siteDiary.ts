@@ -41,9 +41,8 @@ export const siteDiaryRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create site diary",
         });
       }
     }),
@@ -80,9 +79,8 @@ export const siteDiaryRouter = createTRPCRouter({
         }));
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get site diaries",
         });
       }
     }),
@@ -152,9 +150,8 @@ export const siteDiaryRouter = createTRPCRouter({
         return siteDiary;
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get site diary",
         });
       }
     }),
@@ -173,9 +170,8 @@ export const siteDiaryRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update site diary",
         });
       }
     }),
@@ -190,9 +186,8 @@ export const siteDiaryRouter = createTRPCRouter({
         });
       } catch (error) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: (error as Error).message,
-          cause: error,
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete site diary",
         });
       }
     }),

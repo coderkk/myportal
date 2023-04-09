@@ -138,7 +138,7 @@ export const useDeletePlant = ({
   siteDiaryId: string;
 }) => {
   const utils = api.useContext();
-  const { mutateAsync: deletePlant } = api.plant.deletePlant.useMutation({
+  const { mutate: deletePlant } = api.plant.deletePlant.useMutation({
     async onMutate({ plantId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
       await utils.siteDiary.getSiteDiary.cancel();

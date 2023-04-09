@@ -18,14 +18,12 @@ const EditButton = dynamic(() => import("../../components/project/EditButton"));
 const Projects = () => {
   const router = useRouter();
   const utils = api.useContext();
-  const { projects, isLoading, isError } = useGetProjects();
+  const { projects, isLoading } = useGetProjects();
   const pendingDeleteCountRef = useRef(0);
   return (
     <SessionAuth>
       {isLoading ? (
         <div>Loading...</div>
-      ) : isError ? (
-        <div>Error!</div>
       ) : (
         <div className="flex h-screen">
           <div className="m-auto">

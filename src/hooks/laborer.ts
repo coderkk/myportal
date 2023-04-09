@@ -138,7 +138,7 @@ export const useDeleteLaborer = ({
   siteDiaryId: string;
 }) => {
   const utils = api.useContext();
-  const { mutateAsync: deleteLaborer } = api.laborer.deleteLaborer.useMutation({
+  const { mutate: deleteLaborer } = api.laborer.deleteLaborer.useMutation({
     async onMutate({ laborerId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
       await utils.siteDiary.getSiteDiary.cancel();
