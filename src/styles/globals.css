@@ -80,3 +80,7 @@
 .react-datepicker__aria-live {
   @apply hidden;
 }
+
+.chonky-iconWithText + span {
+  @apply hidden lg:inline-block;
+}

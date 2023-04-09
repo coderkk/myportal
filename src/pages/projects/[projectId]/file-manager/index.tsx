@@ -12,15 +12,10 @@ import {
 import { ChonkyIconFA } from "chonky-icon-fontawesome";
 import { useRouter } from "next/router";
 import path from "path";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import SessionAuth from "../../../../components/auth/SessionAuth";
+import { ProjectHeader } from "../../../../components/project/ProjectHeader";
 import {
   useCreateFolder,
   useDeleteS3Object,
@@ -33,14 +28,12 @@ import { api } from "../../../../utils/api";
 const S3Browser = () => {
   const router = useRouter();
   const utils = api.useContext();
-  const [uploadingFile, setUploadingFile] = useState<boolean>(false);
   const hiddenFileInputRef = useRef<HTMLInputElement | null>(null);
   const hiddenAnchorRef = useRef<HTMLAnchorElement | null>(null);
   const [folderPrefix, setFolderPrefix] = useState<string>("/");
-  const mounted = useRef<boolean>(false);
   const projectId = router.query.projectId as string;
 
-  const { chonkyFiles, isLoading } = useFetchS3BucketContents({
+  const { chonkyFiles } = useFetchS3BucketContents({
     prefix: folderPrefix,
     projectId: projectId,
   });
@@ -53,15 +46,10 @@ const S3Browser = () => {
 
   const { createFolder } = useCreateFolder();
 
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-      setChonkyDefaults({
-        iconComponent: ChonkyIconFA,
-        disableDragAndDrop: true,
-      });
-    }
-  }, []);
+  setChonkyDefaults({
+    iconComponent: ChonkyIconFA,
+    disableDragAndDrop: true,
+  });
 
   const handleDownloadFile = useCallback(
     async (fileData: FileData) => {
@@ -83,9 +71,10 @@ const S3Browser = () => {
             }
           })
           .catch(() => {
-            // avoid eslint error
+            toast.error("Error when downloading file");
           });
       } catch (error) {
+        toast.error("Error when downloading file");
         // This try catch is necessary as getPreSignedURLForDownload
         // returns a promise that can possibly cause a runtime error.
         // we handle this error in src/utils/api.ts so there's no need
@@ -115,7 +104,6 @@ const S3Browser = () => {
 
   const handleUploadFile = useCallback(
     async (file: File) => {
-      setUploadingFile(true);
       const fileId =
         folderPrefix === "/" ? file.name : folderPrefix + file.name;
       try {
@@ -123,22 +111,33 @@ const S3Browser = () => {
           fileId: fileId,
           projectId: projectId,
         });
-        fetch(preSignedURLForUpload, {
+
+        const uploadFile = fetch(preSignedURLForUpload, {
           method: "PUT",
           headers: {
             "Content-Type": file.type,
           },
           body: file,
         }).catch(() => {
-          // avoid eslint error
+          toast.error("Error when uploading file");
         });
+
+        toast
+          .promise(uploadFile, {
+            loading: "Uploading file",
+            success: "File uploaded successfully",
+            error: "Error when uploading file",
+          })
+          .catch(() => {
+            toast.error("Error when uploading file");
+          });
       } catch (error) {
+        toast.error("Error when uploading file");
         // This try catch is necessary as getPreSignedURLForDownload
         // returns a promise that can possibly cause a runtime error.
         // we handle this error in src/utils/api.ts so there's no need
         // to do anything here other than catch the error.
       } finally {
-        setUploadingFile(false);
         void utils.s3.fetchS3BucketContents.invalidate(); // refetch bucket contents
       }
     },
@@ -227,45 +226,36 @@ const S3Browser = () => {
     ChonkyActions.DeleteFiles,
   ];
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (!mounted.current) return null;
-
   return (
     <SessionAuth>
-      {
-        <div>
-          <div className="h-96 w-10/12">
-            <FileBrowser
-              files={
-                chonkyFiles
-                  ? chonkyFiles
-                  : Array.from({ length: 3 }, () => null)
-              }
-              folderChain={folderChain}
-              onFileAction={handleFileAction}
-              fileActions={fileActions}
-            >
-              <FileNavbar />
-              <FileToolbar />
-              <FileList />
-              <FileContextMenu />
-              <input
-                type="file"
-                aria-label="input"
-                ref={hiddenFileInputRef}
-                onChange={(e) => {
-                  void handleFileInputChange(e);
-                }}
-                className="hidden"
-              />
-              <a ref={hiddenAnchorRef} />
-            </FileBrowser>
-            {uploadingFile && <div>Uploading file...</div>}
-          </div>
+      <ProjectHeader />
+      <div className="flex h-screen max-h-[80vh] justify-center">
+        <div className="my-16 w-11/12 lg:w-9/12">
+          <FileBrowser
+            files={
+              chonkyFiles ? chonkyFiles : Array.from({ length: 3 }, () => null)
+            }
+            folderChain={folderChain}
+            onFileAction={handleFileAction}
+            fileActions={fileActions}
+          >
+            <FileNavbar />
+            <FileToolbar />
+            <FileList />
+            <FileContextMenu />
+            <input
+              type="file"
+              aria-label="input"
+              ref={hiddenFileInputRef}
+              onChange={(e) => {
+                void handleFileInputChange(e);
+              }}
+              className="hidden"
+            />
+            <a ref={hiddenAnchorRef} />
+          </FileBrowser>
         </div>
-      }
+      </div>
     </SessionAuth>
   );
 };

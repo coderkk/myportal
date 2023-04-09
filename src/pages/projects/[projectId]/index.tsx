@@ -11,7 +11,7 @@ const DeleteButton = dynamic(
 const Index = () => {
   const { query } = useRouter();
   const projectId = query.projectId as string;
-  const { project, isLoading } = useGetProject({ projectId: projectId });
+  const { project } = useGetProject({ projectId: projectId });
   return (
     <>
       <ProjectHeader />
