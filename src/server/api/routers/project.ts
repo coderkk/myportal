@@ -6,6 +6,10 @@ export const createProjectSchema = z.object({
   projectName: z.string(),
 });
 
+export const getProjectSchema = z.object({
+  projectId: z.string(),
+});
+
 export const updateProjectSchema = z.object({
   projectId: z.string(),
   projectName: z.string(),
@@ -99,6 +103,23 @@ export const projectRouter = createTRPCRouter({
       });
     }
   }),
+  getProject: protectedProcedure
+    .input(getProjectSchema)
+    .query(async ({ ctx, input }) => {
+      try {
+        const project = await ctx.prisma.project.findUniqueOrThrow({
+          where: {
+            id: input.projectId,
+          },
+        });
+        return project;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to get project",
+        });
+      }
+    }),
   updateProject: protectedProcedure
     .input(updateProjectSchema)
     .mutation(async ({ ctx, input }) => {
