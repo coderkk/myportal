@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createTaskSchema = z.object({
@@ -46,127 +46,116 @@ export const taskRouter = createTRPCRouter({
   createTask: protectedProcedure
     .input(createTaskSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.task.create({
-          data: {
-            description: input.taskDescription,
-            status: input.taskStatus,
-            createdById: ctx.session.user.id,
-            assignedToId: input.taskAssignedTo?.id,
-            projectId: input.projectId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create task",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.task.create({
+            data: {
+              description: input.taskDescription,
+              status: input.taskStatus,
+              createdById: ctx.session.user.id,
+              assignedToId: input.taskAssignedTo?.id,
+              projectId: input.projectId,
+            },
+          });
+        },
+        errorMessages: ["Failed to create task"],
+      })();
     }),
   getTasks: protectedProcedure
     .input(getTasksSchema)
     .query(async ({ ctx, input }) => {
-      try {
-        const project = await ctx.prisma.project.findUniqueOrThrow({
-          where: {
-            id: input.projectId,
-          },
-          include: {
-            tasks: {
-              include: {
-                createdBy: {
-                  select: {
-                    name: true,
+      return await trycatch({
+        fn: async () => {
+          const project = await ctx.prisma.project.findUniqueOrThrow({
+            where: {
+              id: input.projectId,
+            },
+            include: {
+              tasks: {
+                include: {
+                  createdBy: {
+                    select: {
+                      name: true,
+                    },
                   },
-                },
-                assignedTo: {
-                  select: {
-                    id: true,
-                    email: true,
+                  assignedTo: {
+                    select: {
+                      id: true,
+                      email: true,
+                    },
                   },
                 },
               },
             },
-          },
-        });
-        return project.tasks.map((task) => ({
-          id: task.id,
-          description: task.description,
-          status: task.status,
-          createdBy: task.createdBy,
-          assignedTo: task.assignedTo,
-        }));
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get tasks",
-        });
-      }
+          });
+          return project.tasks.map((task) => ({
+            id: task.id,
+            description: task.description,
+            status: task.status,
+            createdBy: task.createdBy,
+            assignedTo: task.assignedTo,
+          }));
+        },
+        errorMessages: ["Failed to get tasks"],
+      })();
     }),
   getTask: protectedProcedure
     .input(getTaskInfoSchema)
     .query(async ({ ctx, input }) => {
-      try {
-        const task = await ctx.prisma.task.findUniqueOrThrow({
-          where: {
-            id: input.taskId,
-          },
-          include: {
-            createdBy: {
-              select: {
-                name: true,
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.task.findUniqueOrThrow({
+            where: {
+              id: input.taskId,
+            },
+            include: {
+              createdBy: {
+                select: {
+                  name: true,
+                },
+              },
+              assignedTo: {
+                select: {
+                  name: true,
+                },
               },
             },
-            assignedTo: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        });
-        return task;
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get task",
-        });
-      }
+          });
+        },
+        errorMessages: ["Failed to get task"],
+      })();
     }),
   updateTask: protectedProcedure
     .input(updateTaskSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        await ctx.prisma.task.update({
-          where: {
-            id: input.taskId,
-          },
-          data: {
-            description: input.taskDescription,
-            status: input.taskStatus,
-            assignedToId: input.taskAssignedTo?.id,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to update task",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.task.update({
+            where: {
+              id: input.taskId,
+            },
+            data: {
+              description: input.taskDescription,
+              status: input.taskStatus,
+              assignedToId: input.taskAssignedTo?.id,
+            },
+          });
+        },
+        errorMessages: ["Failed to update task"],
+      })();
     }),
   deleteTask: protectedProcedure
     .input(deleteTaskSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.task.delete({
-          where: {
-            id: input.taskId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to delete task",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.task.delete({
+            where: {
+              id: input.taskId,
+            },
+          });
+        },
+        errorMessages: ["Failed to delete task"],
+      })();
     }),
 });

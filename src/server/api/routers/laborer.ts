@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createLaborerSchema = z.object({
@@ -22,56 +22,50 @@ export const laborerRouter = createTRPCRouter({
   createLaborer: protectedProcedure
     .input(createLaborerSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.laborer.create({
-          data: {
-            type: input.laborerType,
-            amount: input.laborerAmount,
-            createdById: ctx.session.user.id,
-            siteDiaryId: input.siteDiaryId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create laborer",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.laborer.create({
+            data: {
+              type: input.laborerType,
+              amount: input.laborerAmount,
+              createdById: ctx.session.user.id,
+              siteDiaryId: input.siteDiaryId,
+            },
+          });
+        },
+        errorMessages: ["Failed to create laborer"],
+      })();
     }),
   updateLaborer: protectedProcedure
     .input(updateLaborerSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        await ctx.prisma.laborer.update({
-          where: {
-            id: input.laborerId,
-          },
-          data: {
-            type: input.laborerType,
-            amount: input.laborerAmount,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to update laborer",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.laborer.update({
+            where: {
+              id: input.laborerId,
+            },
+            data: {
+              type: input.laborerType,
+              amount: input.laborerAmount,
+            },
+          });
+        },
+        errorMessages: ["Failed to update laborer"],
+      })();
     }),
   deleteLaborer: protectedProcedure
     .input(deleteLaborerSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.laborer.delete({
-          where: {
-            id: input.laborerId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to delete laborer",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.laborer.delete({
+            where: {
+              id: input.laborerId,
+            },
+          });
+        },
+        errorMessages: ["Failed to delete laborer"],
+      })();
     }),
 });
