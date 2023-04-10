@@ -5,9 +5,14 @@ import { type AppType } from "next/app";
 import { useRouter } from "next/router";
 import { Toaster } from "react-hot-toast";
 import PermissionToProject from "../components/auth/PermissionToProject";
-import { ProjectHeader } from "../components/project/ProjectHeader";
+// import { ProjectHeader } from "../components/project/ProjectHeader";
+import dynamic from "next/dynamic";
 import "../styles/globals.css";
 import { api } from "../utils/api";
+
+const ProjectHeader = dynamic(
+  () => import("../components/project/ProjectHeader")
+);
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

@@ -26,7 +26,7 @@ export const userRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await trycatch({
         fn: async () => {
-          const users = await ctx.prisma.project.findUniqueOrThrow({
+          const { users } = await ctx.prisma.project.findUniqueOrThrow({
             where: {
               id: input.projectId,
             },
@@ -44,7 +44,7 @@ export const userRouter = createTRPCRouter({
               },
             },
           });
-          return users.users.map((user) => user?.user);
+          return users.map((user) => user?.user);
         },
         errorMessages: ["Failed to get users for project"],
       })();

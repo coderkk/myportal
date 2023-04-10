@@ -256,3 +256,5 @@ export const ProjectHeader = () => {
     />
   );
 };
+
+export default ProjectHeader;
