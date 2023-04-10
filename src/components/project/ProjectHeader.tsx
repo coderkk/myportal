@@ -257,4 +257,4 @@ export const ProjectHeader = () => {
   );
 };
 
-export default ProjectHeader;
+export default ProjectHeader; // for dynamic import
