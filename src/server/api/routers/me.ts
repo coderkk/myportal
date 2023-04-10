@@ -31,6 +31,24 @@ export const userHasPermissionToProject = async ({
   return true;
 };
 
+export const userHasPermissionToProjectOrThrow = async ({
+  ctx,
+  projectId,
+}: {
+  ctx: createInnerTRPCContext;
+  projectId: string;
+}) => {
+  if (
+    !(await userHasPermissionToProject({
+      ctx,
+      projectId: projectId,
+    }))
+  )
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+};
+
 export const meRouter = createTRPCRouter({
   hasPermissionToProject: protectedProcedure
     .input(hasPermissionToProjectSchema)

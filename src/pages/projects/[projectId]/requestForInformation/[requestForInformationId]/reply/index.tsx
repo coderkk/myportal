@@ -45,7 +45,7 @@ const Replies = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="flex h-screen">
+        <div className="flex h-[80vh]">
           <div className="m-auto w-[80%]">
             <div className="flex justify-center">
               <div className="text-lg font-medium ">

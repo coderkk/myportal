@@ -82,6 +82,14 @@ export const ProjectHeader = () => {
     href: string;
   }) => {
     switch (href) {
+      case "/file-manager":
+        void utils.s3.fetchS3BucketContents.prefetch(
+          { projectId: projectId, prefix: "/" },
+          {
+            staleTime: Infinity,
+          }
+        );
+        break;
       case "/site-diary":
         void utils.siteDiary.getSiteDiaries.prefetch(
           { projectId: projectId },

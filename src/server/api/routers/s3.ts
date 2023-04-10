@@ -6,7 +6,7 @@ import path from "path";
 import { z } from "zod";
 import { env } from "../../../env/server.mjs";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { userHasPermissionToProject } from "./me";
+import { userHasPermissionToProjectOrThrow } from "./me";
 
 const s3Config = {
   apiVersion: "latest",
@@ -60,15 +60,10 @@ export const s3Router = createTRPCRouter({
     .input(fetchS3BucketContentsSchema)
     .query(async ({ ctx, input }) => {
       try {
-        if (
-          !(await userHasPermissionToProject({
-            ctx,
-            projectId: input.projectId,
-          }))
-        )
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-          });
+        await userHasPermissionToProjectOrThrow({
+          ctx,
+          projectId: input.projectId,
+        });
         const prefix =
           input.prefix !== "/"
             ? input.projectId + "/" + input.prefix
@@ -152,15 +147,10 @@ export const s3Router = createTRPCRouter({
     .input(deleteS3ObjectSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (
-          !(await userHasPermissionToProject({
-            ctx,
-            projectId: input.projectId,
-          }))
-        )
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-          });
+        await userHasPermissionToProjectOrThrow({
+          ctx,
+          projectId: input.projectId,
+        });
         const deleteHelper = async (bucket: string, dir: string) => {
           const listParams = {
             Bucket: bucket,
@@ -199,15 +189,10 @@ export const s3Router = createTRPCRouter({
     .input(getPreSignedURLForDownloadSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (
-          !(await userHasPermissionToProject({
-            ctx,
-            projectId: input.projectId,
-          }))
-        )
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-          });
+        await userHasPermissionToProjectOrThrow({
+          ctx,
+          projectId: input.projectId,
+        });
         const preSignedURLForDownload = s3.getSignedUrl("getObject", {
           Bucket: env.AWS_S3_BUCKET_NAME_,
           Key: input.fileId,
@@ -233,15 +218,10 @@ export const s3Router = createTRPCRouter({
     .input(getPreSignedURLForUploadSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        if (
-          !(await userHasPermissionToProject({
-            ctx,
-            projectId: input.projectId,
-          }))
-        )
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-          });
+        await userHasPermissionToProjectOrThrow({
+          ctx,
+          projectId: input.projectId,
+        });
         const preSignedURLForUpload = s3.getSignedUrl("putObject", {
           Bucket: env.AWS_S3_BUCKET_NAME_,
           Key: input.projectId + "/" + input.fileId,
@@ -268,15 +248,10 @@ export const s3Router = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // no need to check if a folder exists as even if it overwrites, the files in the folder will still be there
       try {
-        if (
-          !(await userHasPermissionToProject({
-            ctx,
-            projectId: input.projectId,
-          }))
-        )
-          throw new TRPCError({
-            code: "UNAUTHORIZED",
-          });
+        await userHasPermissionToProjectOrThrow({
+          ctx,
+          projectId: input.projectId,
+        });
         let key =
           input.prefix === "/"
             ? input.folderName.replace(/\//g, "_")
