@@ -282,7 +282,6 @@ export const s3Router = createTRPCRouter({
             ? input.folderName.replace(/\//g, "_")
             : input.prefix + input.folderName.replace(/\//g, "_");
         // key = key.replace(/\//g, "_"); // sanitize,
-        console.log(key);
         // if (key[0] === "_") {
         //   key = key.substring(1, key.length);
         // }

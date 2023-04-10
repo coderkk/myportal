@@ -16,17 +16,21 @@ const MyApp: AppType<{ session: Session | null }> = ({
   let component = <Component {...pageProps} />;
   if (router.asPath.match("/projects/.*")) {
     const projectId = router.query.projectId as string;
-    component = (
-      <PermissionToProject projectId={projectId}>
-        <Component {...pageProps} />
-      </PermissionToProject>
-    );
+    if (!projectId) {
+      component = <div>{null}</div>;
+    } else {
+      component = (
+        <PermissionToProject projectId={projectId}>
+          <Component {...pageProps} />
+        </PermissionToProject>
+      );
+    }
   }
   return (
     <SessionProvider session={session}>
-      {component}
       <ReactQueryDevtools />
       <Toaster />
+      {component}
     </SessionProvider>
   );
 };

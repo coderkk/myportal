@@ -170,7 +170,7 @@ export const ProjectHeader = () => {
                   </div>
                   <div className="flex-auto">
                     <Link
-                      href={`${router.asPath}${item.href}`}
+                      href={`/projects/${projectId}/${item.href}`}
                       className="block font-semibold text-gray-900"
                       onMouseEnter={() =>
                         prefetch({

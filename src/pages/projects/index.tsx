@@ -4,6 +4,7 @@ import { useGetProjects } from "../../hooks/project";
 
 import { useRef } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
+import { Header } from "../../components/common/Header";
 import { api } from "../../utils/api";
 
 const CreateButton = dynamic(
@@ -22,6 +23,7 @@ const Projects = () => {
   const pendingDeleteCountRef = useRef(0);
   return (
     <SessionAuth>
+      <Header />
       {isLoading ? (
         <div>Loading...</div>
       ) : (

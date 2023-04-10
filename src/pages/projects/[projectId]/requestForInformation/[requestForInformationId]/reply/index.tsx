@@ -5,6 +5,7 @@ import type { FieldValues } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { Send } from "styled-icons/bootstrap";
 import SessionAuth from "../../../../../../components/auth/SessionAuth";
+import { ProjectHeader } from "../../../../../../components/project/ProjectHeader";
 import { useCreateReply, useGetReplies } from "../../../../../../hooks/reply";
 import { useGetRequestForInformation } from "../../../../../../hooks/requestForInformation";
 
@@ -42,6 +43,7 @@ const Replies = () => {
 
   return (
     <SessionAuth>
+      <ProjectHeader />
       {isLoading ? (
         <div>Loading...</div>
       ) : (

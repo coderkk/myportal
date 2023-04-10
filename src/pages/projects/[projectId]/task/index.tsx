@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
+import { ProjectHeader } from "../../../../components/project/ProjectHeader";
 import { useGetTasks } from "../../../../hooks/task";
 
 const CreateButton = dynamic(
@@ -26,6 +27,7 @@ const Task = () => {
 
   return (
     <SessionAuth>
+      <ProjectHeader />
       {isLoading ? (
         <div>Loading...</div>
       ) : (
