@@ -15,7 +15,6 @@ import path from "path";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { ProjectHeader } from "../../../../components/project/ProjectHeader";
 import {
   useCreateFolder,
   useDeleteS3Object,
@@ -228,7 +227,6 @@ const S3Browser = () => {
 
   return (
     <SessionAuth>
-      <ProjectHeader />
       <div className="flex h-screen max-h-[80vh] justify-center">
         <div className="my-16 w-11/12 lg:w-9/12">
           <FileBrowser

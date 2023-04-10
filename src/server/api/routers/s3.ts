@@ -281,10 +281,6 @@ export const s3Router = createTRPCRouter({
           input.prefix === "/"
             ? input.folderName.replace(/\//g, "_")
             : input.prefix + input.folderName.replace(/\//g, "_");
-        // key = key.replace(/\//g, "_"); // sanitize,
-        // if (key[0] === "_") {
-        //   key = key.substring(1, key.length);
-        // }
         const prefix = removeFromStringIfStartsWith(key, input.projectId);
         if (prefix === "") {
           key = `${input.projectId}/`; // the "/" at the end tells s3 to create a folder

@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
-import { ProjectHeader } from "../../../components/project/ProjectHeader";
 import { useGetProject } from "../../../hooks/project";
 
 const DeleteButton = dynamic(
@@ -14,7 +13,6 @@ const Index = () => {
   const { project } = useGetProject({ projectId: projectId });
   return (
     <>
-      <ProjectHeader />
       <div className="flex h-screen">
         <div className="m-auto">
           <div className="w-full">

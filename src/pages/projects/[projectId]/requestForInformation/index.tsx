@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useRef } from "react";
 import { CommentDots } from "styled-icons/boxicons-regular";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { ProjectHeader } from "../../../../components/project/ProjectHeader";
 import { useGetRequestForInformations } from "../../../../hooks/requestForInformation";
 
 const CreateButton = dynamic(
@@ -29,7 +28,6 @@ const RequestForInformation = () => {
 
   return (
     <SessionAuth>
-      <ProjectHeader />
       {isLoading ? (
         <div>Loading...</div>
       ) : (

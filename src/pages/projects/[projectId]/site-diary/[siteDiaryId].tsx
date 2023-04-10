@@ -11,7 +11,6 @@ import * as Tabs from "@radix-ui/react-tabs";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { ProjectHeader } from "../../../../components/project/ProjectHeader";
 import { LaborerView } from "../../../../components/siteDiary/laborer/LaborerView";
 import { MaterialView } from "../../../../components/siteDiary/material/MaterialView";
 import { PlantView } from "../../../../components/siteDiary/plant/PlantView";
@@ -62,7 +61,6 @@ const SiteDiary = () => {
   };
   return (
     <SessionAuth>
-      <ProjectHeader />
       {isLoading ? (
         <div>Loading...</div>
       ) : (

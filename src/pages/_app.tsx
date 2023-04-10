@@ -5,6 +5,7 @@ import { type AppType } from "next/app";
 import { useRouter } from "next/router";
 import { Toaster } from "react-hot-toast";
 import PermissionToProject from "../components/auth/PermissionToProject";
+import { ProjectHeader } from "../components/project/ProjectHeader";
 import "../styles/globals.css";
 import { api } from "../utils/api";
 
@@ -21,6 +22,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     } else {
       component = (
         <PermissionToProject projectId={projectId}>
+          <ProjectHeader />
           <Component {...pageProps} />
         </PermissionToProject>
       );

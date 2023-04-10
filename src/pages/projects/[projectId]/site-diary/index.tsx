@@ -2,7 +2,6 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { ProjectHeader } from "../../../../components/project/ProjectHeader";
 import { useGetSiteDiaries } from "../../../../hooks/siteDiary";
 import { api } from "../../../../utils/api";
 
@@ -29,7 +28,6 @@ const SiteDiary = () => {
 
   return (
     <SessionAuth>
-      <ProjectHeader />
       {isLoading ? (
         <div>Loading...</div>
       ) : (

@@ -13,7 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import { api } from "../../utils/api";
 import { Header, MobileNavLink } from "../common/Header";
 
@@ -71,6 +71,7 @@ const callsToAction = [
 export const ProjectHeader = () => {
   const router = useRouter();
   const utils = api.useContext();
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const projectId = router.query.projectId as string;
 
   const prefetch = ({
@@ -137,8 +138,11 @@ export const ProjectHeader = () => {
 
   const desktopExtraComponents = (
     <Popover.Group className="px-2 py-1 lg:flex lg:gap-x-12">
-      <Popover className="relative ">
-        <Popover.Button className="flex items-center text-sm text-gray-900 hover:bg-slate-100 hover:text-slate-900">
+      <Popover className="relative">
+        <Popover.Button
+          ref={buttonRef}
+          className="flex items-center text-sm text-gray-900 hover:bg-slate-100 hover:text-slate-900"
+        >
           Features
           <ChevronDownIcon
             className="h-5 w-5 flex-none text-gray-400"
@@ -170,7 +174,7 @@ export const ProjectHeader = () => {
                   </div>
                   <div className="flex-auto">
                     <Link
-                      href={`/projects/${projectId}/${item.href}`}
+                      href={`/projects/${projectId}${item.href}`}
                       className="block font-semibold text-gray-900"
                       onMouseEnter={() =>
                         prefetch({
@@ -178,6 +182,7 @@ export const ProjectHeader = () => {
                           href: item.href,
                         })
                       }
+                      onClick={() => buttonRef.current?.click()}
                     >
                       {item.name}
                       <span className="absolute inset-0" />

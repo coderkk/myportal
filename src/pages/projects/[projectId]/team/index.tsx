@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { ProjectHeader } from "../../../../components/project/ProjectHeader";
 import SearchAndAdd from "../../../../components/team/SearchAndAdd";
 import { useIsCreatorOfProject } from "../../../../hooks/me";
 import { useGetUsers, useGetUsersForProject } from "../../../../hooks/user";
@@ -50,7 +49,6 @@ const Team = () => {
 
   return (
     <SessionAuth>
-      <ProjectHeader />
       {isLoading ? (
         <div>Loading...</div>
       ) : (
