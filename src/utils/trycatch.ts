@@ -12,6 +12,7 @@ export const trycatch = <T>({
     try {
       return await fn();
     } catch (error) {
+      console.log(error);
       if ((error as TRPCError).code === "UNAUTHORIZED") {
         throw new TRPCError({
           code: "UNAUTHORIZED",
