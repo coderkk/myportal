@@ -8,11 +8,10 @@ import { Hero } from "../components/landing/Hero";
 import { Pricing } from "../components/landing/Pricing";
 import { PrimaryFeatures } from "../components/landing/PrimaryFeatures";
 import { SecondaryFeatures } from "../components/landing/SecondaryFeatures";
-import { api } from "../utils/api";
 
 const Home: NextPage = () => {
-  const { data } = api.python.test.useQuery();
-  console.log(data);
+  // const { data } = api.python.test.useQuery();
+  // console.log(data);
   return (
     <>
       <Head>
