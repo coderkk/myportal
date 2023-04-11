@@ -11,13 +11,6 @@ import { api } from "../../utils/api";
 import { Header, MobileNavLink } from "../common/Header";
 import { projectFeatures } from "./data";
 
-// type icon = React.ForwardRefExoticComponent<
-//   React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {
-//     title?: string;
-//     titleId?: string;
-//   } & React.RefAttributes<SVGSVGElement>
-// >;
-
 const callsToAction = [
   { name: "Watch demo", href: "#", icon: PlayCircleIcon },
   { name: "Contact sales", href: "#", icon: PhoneIcon },
