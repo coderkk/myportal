@@ -7,7 +7,7 @@ export const pythonRouter = createTRPCRouter({
   test: protectedProcedure.query(async () => {
     return await trycatch({
       fn: () => {
-        const python: ChildProcessWithoutNullStreams = spawn("python3", [
+        const python: ChildProcessWithoutNullStreams = spawn("python", [
           "src/server/api/python/testing.py",
         ]);
         return new Promise<string>((resolve, reject) => {
