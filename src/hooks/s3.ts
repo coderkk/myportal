@@ -108,14 +108,18 @@ export const useCreateFolder = () => {
           const s3Prefix =
             prefix !== "/" ? projectId + "/" + prefix : projectId + "/";
           const optimisticUpdateObject = {
-            id: s3Prefix + folderName,
-            name: folderName,
+            id: s3Prefix + folderName.replace(/\//g, "_"),
+            name: folderName.replace(/\//g, "_"),
             isDir: true,
           };
           if (oldFileData) {
             // no duplicates
             for (const file of oldFileData) {
-              if (file && file.name == folderName && file.isDir) {
+              if (
+                file &&
+                file.name == folderName.replace(/\//g, "_") &&
+                file.isDir
+              ) {
                 return oldFileData;
               }
             }

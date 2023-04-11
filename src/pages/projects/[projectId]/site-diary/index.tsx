@@ -31,7 +31,7 @@ const SiteDiary = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="flex h-screen">
+        <div className="flex h-[80vh]">
           <div className="m-auto">
             <div className="flex justify-between">
               <div className="text-lg font-medium">Site Diaries</div>

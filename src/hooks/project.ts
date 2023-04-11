@@ -46,6 +46,16 @@ export const useGetProjects = () => {
   };
 };
 
+export const useGetProject = ({ projectId }: { projectId: string }) => {
+  const { data, isLoading } = api.project.getProject.useQuery({
+    projectId: projectId,
+  });
+  return {
+    project: data,
+    isLoading: isLoading,
+  };
+};
+
 export const useUpdateProject = () => {
   const utils = api.useContext();
   const { mutate: updateProject } = api.project.updateProject.useMutation({

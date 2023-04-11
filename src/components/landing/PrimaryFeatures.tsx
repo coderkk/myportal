@@ -5,29 +5,30 @@ import { useEffect, useState } from "react";
 
 import { Container } from "../common/Container";
 
+// TODO: replace with real screenshots of product
 const features = [
   {
-    title: "Payroll",
+    title: "Automatic invoices processing",
     description:
-      "Keep track of everyone's salaries and whether or not they've been paid. Direct deposit not supported.",
+      "Upload your invoices and our built-in OCR AI will extract key details such as invoice number, costs and vendor automatically for you, magically!",
     image: "/images/screenshots/payroll.png",
   },
   {
-    title: "Claim expenses",
+    title: "Real time financial dashboard",
     description:
-      "All of your receipts organized into one place, as long as you don't mind typing in the data by hand.",
+      "Project’s profit margin and budget will be updated automatically along with the newly processed invoices.",
     image: "/images/screenshots/expenses.png",
   },
   {
-    title: "VAT handling",
+    title: "File sharing",
     description:
-      "We only sell our software to companies who don't deal with VAT at all, so technically we do all the VAT stuff they need.",
+      "Your project's Google Drive. Centralize your files in one location, ensuring easy access to all team members.",
     image: "/images/screenshots/vat-returns.png",
   },
   {
-    title: "Reporting",
+    title: "Tasks allocation",
     description:
-      "Easily export your data into an Excel spreadsheet where you can do whatever the hell you want with it.",
+      "Eliminate the risk of overlooked tasks by effortlessly tracking all delegated responsibilities.",
     image: "/images/screenshots/reporting.png",
   },
 ];
@@ -67,11 +68,11 @@ export const PrimaryFeatures = () => {
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
           <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
-            Everything you need to run your books.
+            Say goodbye to manual data entry.
           </h2>
           <p className="mt-6 text-lg tracking-tight text-blue-100">
-            Well everything you need if you aren’t that picky about minor
-            details like tax compliance.
+            Process your invoices at speed, saving up to 80% of your time,with
+            high accuracy and precision.
           </p>
         </div>
         <Tab.Group

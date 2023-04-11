@@ -65,7 +65,7 @@ const SiteDiary = () => {
         <div>Loading...</div>
       ) : (
         siteDiary && (
-          <div className="flex h-screen">
+          <div className="flex h-[80vh]">
             <div className="m-auto w-10/12">
               <div className="text-lg font-medium">{siteDiary.name}</div>
               <div className="flex justify-between">

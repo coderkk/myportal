@@ -126,3 +126,29 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+// const enforceUserHasPermissionToProject = t.middleware(async (props) => {
+//   props.
+//   if (!ctx.session || !ctx.session.user) {
+//     throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+//   }
+//   const userOnProject = await ctx.prisma.usersOnProjects.findFirst({
+//     where: {
+//       userId: ctx.session?.user?.id,
+//       projectId: projectId,
+//     },
+//   });
+//   // not found
+//   if (!userOnProject) {
+//     throw new TRPCError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+//   }
+
+//   return next({
+//     ctx: {
+//       // infers the `session` as non-nullable
+//       session: { ...ctx.session, user: ctx.session.user },
+//     },
+//   });
+// });
+
+// export const hasPermissionToProjectProcedure = t.procedure.use(enforceUserIsAuthed);

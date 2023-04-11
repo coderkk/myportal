@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createReplySchema = z.object({
@@ -15,58 +15,50 @@ export const replyRouter = createTRPCRouter({
   getReplies: protectedProcedure
     .input(getRepliesSchema)
     .query(async ({ ctx, input }) => {
-      try {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get replies",
-        });
-        const requestForInformation =
-          await ctx.prisma.requestForInformation.findUniqueOrThrow({
-            where: {
-              id: input.requestForInformationId,
-            },
-            include: {
-              replies: {
-                include: {
-                  createdBy: {
-                    select: {
-                      id: true,
-                      name: true,
+      return await trycatch({
+        fn: async () => {
+          const requestForInformation =
+            await ctx.prisma.requestForInformation.findUniqueOrThrow({
+              where: {
+                id: input.requestForInformationId,
+              },
+              include: {
+                replies: {
+                  include: {
+                    createdBy: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
                     },
                   },
                 },
               },
-            },
-          });
-        return requestForInformation.replies.map((reply) => ({
-          id: reply.id,
-          description: reply.description,
-          repliedBy: reply.createdBy.name,
-          repliedById: reply.createdBy.id,
-        }));
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get replies",
-        });
-      }
+            });
+          return requestForInformation.replies.map((reply) => ({
+            id: reply.id,
+            description: reply.description,
+            repliedBy: reply.createdBy.name,
+            repliedById: reply.createdBy.id,
+          }));
+        },
+        errorMessages: ["Failed to get replies"],
+      })();
     }),
   createReply: protectedProcedure
     .input(createReplySchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.reply.create({
-          data: {
-            description: input.description,
-            createdById: ctx.session.user.id,
-            requestForInformationId: input.requestForInformationId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to reply",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.reply.create({
+            data: {
+              description: input.description,
+              createdById: ctx.session.user.id,
+              requestForInformationId: input.requestForInformationId,
+            },
+          });
+        },
+        errorMessages: ["Failed to reply"],
+      })();
     }),
 });

@@ -5,10 +5,12 @@ import { useId } from "react";
 
 import { Container } from "../common/Container";
 
+// TODO: update description
 const features = [
   {
-    name: "Reporting",
-    summary: "Stay on top of things with always up-to-date reporting features.",
+    name: "Site Records",
+    summary:
+      "Now everyone in your team can contribute to the same daily site diary.",
     description:
       "We talked about reporting in the section above but we needed three items here, so mentioning it one more time for posterity.",
     image: "/images/screenshots/profit-loss.png",
@@ -41,9 +43,9 @@ const features = [
     },
   },
   {
-    name: "Inventory",
+    name: "RFIs Management",
     summary:
-      "Never lose track of what’s in stock with accurate inventory tracking.",
+      "Send Requests For Information's (RFIs) to consultants who can answer them seamlessly in a single portal, and keep track of them easily.",
     description:
       "We don’t offer this as part of our software but that statement is inarguably true. Accurate inventory tracking would help you for sure.",
     image: "/images/screenshots/inventory.png",
@@ -69,9 +71,9 @@ const features = [
     },
   },
   {
-    name: "Contacts",
+    name: "Photos Gallery",
     summary:
-      "Organize all of your contacts, service providers, and invoices in one place.",
+      "Centralise all your site photos in one place, providing easy access to your team to use as proof of records.",
     description:
       "This also isn’t actually a feature, it’s just some friendly advice. We definitely recommend that you do this, you’ll feel really organized and professional.",
     image: "/images/screenshots/contacts.png",
@@ -242,11 +244,11 @@ export function SecondaryFeatures() {
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
           <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl">
-            Simplify everyday business tasks.
+            Get more out of our product.
           </h2>
           <p className="mt-4 text-lg tracking-tight text-slate-700">
-            Because you’d probably be a little confused if we suggested you
-            complicate your everyday business tasks instead.
+            Collaborate with your team members and organise your day-to-day work
+            better.
           </p>
         </div>
         <FeaturesMobile />

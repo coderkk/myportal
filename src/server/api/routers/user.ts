@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const getUsersForProjectSchema = z.object({
@@ -8,49 +8,45 @@ export const getUsersForProjectSchema = z.object({
 
 export const userRouter = createTRPCRouter({
   getUsers: protectedProcedure.query(async ({ ctx }) => {
-    try {
-      return await ctx.prisma.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      });
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to get users",
-      });
-    }
+    return await trycatch({
+      fn: () => {
+        return ctx.prisma.user.findMany({
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        });
+      },
+      errorMessages: ["Failed to get users"],
+    })();
   }),
   getUsersForProject: protectedProcedure
     .input(getUsersForProjectSchema)
     .query(async ({ ctx, input }) => {
-      try {
-        const users = await ctx.prisma.project.findUniqueOrThrow({
-          where: {
-            id: input.projectId,
-          },
-          select: {
-            users: {
-              select: {
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                    email: true,
+      return await trycatch({
+        fn: async () => {
+          const { users } = await ctx.prisma.project.findUniqueOrThrow({
+            where: {
+              id: input.projectId,
+            },
+            select: {
+              users: {
+                select: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
                   },
                 },
               },
             },
-          },
-        });
-        return users.users.map((user) => user?.user);
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get users for project",
-        });
-      }
+          });
+          return users.map((user) => user?.user);
+        },
+        errorMessages: ["Failed to get users for project"],
+      })();
     }),
 });

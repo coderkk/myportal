@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const updateWeatherSchema = z.object({
@@ -13,28 +13,26 @@ export const weatherRouter = createTRPCRouter({
   updateSiteDiaryWeather: protectedProcedure
     .input(updateWeatherSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        await ctx.prisma.weather.upsert({
-          where: {
-            siteDiaryId: input.siteDiaryId,
-          },
-          update: {
-            morning: input.morning,
-            afternoon: input.afternoon,
-            evening: input.evening,
-          },
-          create: {
-            morning: input.morning,
-            afternoon: input.afternoon,
-            evening: input.evening,
-            siteDiaryId: input.siteDiaryId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to update site diary weather",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.weather.upsert({
+            where: {
+              siteDiaryId: input.siteDiaryId,
+            },
+            update: {
+              morning: input.morning,
+              afternoon: input.afternoon,
+              evening: input.evening,
+            },
+            create: {
+              morning: input.morning,
+              afternoon: input.afternoon,
+              evening: input.evening,
+              siteDiaryId: input.siteDiaryId,
+            },
+          });
+        },
+        errorMessages: ["Failed to update site diary weather"],
+      })();
     }),
 });

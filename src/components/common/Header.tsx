@@ -1,6 +1,7 @@
 import { Popover, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Fragment } from "react";
 
 import { signOut } from "next-auth/react";
@@ -15,14 +16,20 @@ export const MobileNavLink = ({
   onClick,
   children,
 }: {
-  href: string;
+  href?: string;
   onClick?: () => undefined;
   children: React.ReactNode;
 }) => {
+  if (href)
+    return (
+      <Link href={href} className="block w-full p-2">
+        <span onClick={onClick}>{children}</span>
+      </Link>
+    );
   return (
-    <Popover.Button as={Link} href={href} className="block w-full p-2">
+    <span className="block w-full p-2">
       <span onClick={onClick}>{children}</span>
-    </Popover.Button>
+    </span>
   );
 };
 
@@ -53,7 +60,11 @@ export const MobileNavIcon = ({ open }: { open: boolean }) => {
   );
 };
 
-export const MobileNavigation = () => {
+export const MobileNavigation = ({
+  mobileExtraComponents,
+}: {
+  mobileExtraComponents: ReactNode;
+}) => {
   return (
     <Popover>
       <Popover.Button
@@ -87,9 +98,23 @@ export const MobileNavigation = () => {
             as="div"
             className="absolute inset-x-0 top-full mt-4 flex origin-top flex-col rounded-2xl bg-white p-4 text-lg tracking-tight text-slate-900 shadow-xl ring-1 ring-slate-900/5"
           >
-            <MobileNavLink href="#features">Features</MobileNavLink>
-            <MobileNavLink href="#testimonials">Testimonials</MobileNavLink>
-            <MobileNavLink href="#pricing">Pricing</MobileNavLink>
+            <RenderIfAuthedElse
+              authedComponent={
+                <>
+                  <MobileNavLink href="/projects">Projects</MobileNavLink>
+                  <MobileNavLink href="/contactus">Contact Us</MobileNavLink>
+                  {mobileExtraComponents}
+                </>
+              }
+              notAuthedComponent={
+                <>
+                  <MobileNavLink href="#features">Features</MobileNavLink>
+                  <MobileNavLink href="#pricing">Pricing</MobileNavLink>
+                  <MobileNavLink href="#faq">FAQs</MobileNavLink>
+                </>
+              }
+            />
+
             <hr className="m-2 border-slate-300/40" />
             <RenderIfAuthedElse
               authedComponent={
@@ -108,10 +133,16 @@ export const MobileNavigation = () => {
   );
 };
 
-export const Header = () => {
+export const Header = ({
+  desktopExtraComponents,
+  mobileExtraComponents,
+}: {
+  desktopExtraComponents?: ReactNode;
+  mobileExtraComponents?: ReactNode;
+}) => {
   return (
     <header className="py-10">
-      <Container className="">
+      <Container>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
             <Link href="/" aria-label="Home">
@@ -127,13 +158,14 @@ export const Header = () => {
                     <NavLink href="/contactus" target="_blank">
                       Contact Us
                     </NavLink>
+                    {desktopExtraComponents}
                   </>
                 }
                 notAuthedComponent={
                   <>
                     <NavLink href="#features">Features</NavLink>
-                    <NavLink href="#testimonials">Testimonials</NavLink>
                     <NavLink href="#pricing">Pricing</NavLink>
+                    <NavLink href="#faq">FAQs</NavLink>
                   </>
                 }
               />
@@ -164,7 +196,7 @@ export const Header = () => {
               }
             />
             <div className="-mr-1 md:hidden">
-              <MobileNavigation />
+              <MobileNavigation mobileExtraComponents={mobileExtraComponents} />
             </div>
           </div>
         </nav>

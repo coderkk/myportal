@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createRequestForInformationSchema = z.object({
@@ -34,61 +34,59 @@ export const requestForInformationRouter = createTRPCRouter({
   createRequestForInformation: protectedProcedure
     .input(createRequestForInformationSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.requestForInformation.create({
-          data: {
-            topic: input.requestForInformationTopic,
-            status: input.requestForInformationStatus,
-            createdById: ctx.session.user.id,
-            projectId: input.projectId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create RFI",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.requestForInformation.create({
+            data: {
+              topic: input.requestForInformationTopic,
+              status: input.requestForInformationStatus,
+              createdById: ctx.session.user.id,
+              projectId: input.projectId,
+            },
+          });
+        },
+        errorMessages: ["Failed to create RFI"],
+      })();
     }),
   getRequestForInformations: protectedProcedure
     .input(getRequestForInformationsSchema)
     .query(async ({ ctx, input }) => {
-      try {
-        const project = await ctx.prisma.project.findUniqueOrThrow({
-          where: {
-            id: input.projectId,
-          },
-          include: {
-            requestForInformations: {
-              include: {
-                createdBy: {
-                  select: {
-                    name: true,
+      return await trycatch({
+        fn: async () => {
+          const project = await ctx.prisma.project.findUniqueOrThrow({
+            where: {
+              id: input.projectId,
+            },
+            include: {
+              requestForInformations: {
+                include: {
+                  createdBy: {
+                    select: {
+                      name: true,
+                    },
                   },
                 },
               },
             },
-          },
-        });
-        return project.requestForInformations.map((requestForInformation) => ({
-          id: requestForInformation.id,
-          topic: requestForInformation.topic,
-          status: requestForInformation.status,
-          createdBy: requestForInformation.createdBy,
-        }));
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get RFIs",
-        });
-      }
+          });
+          return project.requestForInformations.map(
+            (requestForInformation) => ({
+              id: requestForInformation.id,
+              topic: requestForInformation.topic,
+              status: requestForInformation.status,
+              createdBy: requestForInformation.createdBy,
+            })
+          );
+        },
+        errorMessages: ["Failed to get RFIs"],
+      })();
     }),
   getRequestForInformation: protectedProcedure
     .input(getRequestForInformationInfoSchema)
     .query(async ({ ctx, input }) => {
-      try {
-        const requestForInformation =
-          await ctx.prisma.requestForInformation.findUniqueOrThrow({
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.requestForInformation.findUniqueOrThrow({
             where: {
               id: input.requestForInformationId,
             },
@@ -100,48 +98,40 @@ export const requestForInformationRouter = createTRPCRouter({
               },
             },
           });
-        return requestForInformation;
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to get RFI",
-        });
-      }
+        },
+        errorMessages: ["Failed to get RFI"],
+      })();
     }),
   updateRequestForInformation: protectedProcedure
     .input(updateRequestForInformationSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        await ctx.prisma.requestForInformation.update({
-          where: {
-            id: input.requestForInformationId,
-          },
-          data: {
-            topic: input.requestForInformationTopic,
-            status: input.requestForInformationStatus,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to update RFI",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.requestForInformation.update({
+            where: {
+              id: input.requestForInformationId,
+            },
+            data: {
+              topic: input.requestForInformationTopic,
+              status: input.requestForInformationStatus,
+            },
+          });
+        },
+        errorMessages: ["Failed to update RFI"],
+      })();
     }),
   deleteRequestForInformation: protectedProcedure
     .input(deleteRequestForInformationSchema)
     .mutation(async ({ ctx, input }) => {
-      try {
-        return await ctx.prisma.requestForInformation.delete({
-          where: {
-            id: input.requestForInformationId,
-          },
-        });
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to delete RFI",
-        });
-      }
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.requestForInformation.delete({
+            where: {
+              id: input.requestForInformationId,
+            },
+          });
+        },
+        errorMessages: ["Failed to delete RFI"],
+      })();
     }),
 });
