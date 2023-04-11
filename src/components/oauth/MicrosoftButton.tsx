@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 const MicrosoftButton = () => {
   return (
     <button
-      className="hover:bg-gray-750 relative inline-flex items-center justify-center rounded-md border border-gray-700 bg-gray-800 px-6 py-3 text-lg font-medium text-white shadow-sm hover:text-gray-100"
+      className="relative inline-flex items-center justify-center rounded-md border border-gray-700 bg-gray-800 px-6 py-3 text-lg font-medium text-white shadow-sm hover:bg-gray-700 hover:text-gray-100"
       type="button"
       onClick={() => void signIn("azure-ad", { callbackUrl: "/" })}
     >
