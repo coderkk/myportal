@@ -1,5 +1,6 @@
 import type { ChildProcessWithoutNullStreams } from "child_process";
 import { spawn } from "child_process";
+import path from "path";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -7,8 +8,11 @@ export const pythonRouter = createTRPCRouter({
   test: protectedProcedure.query(async () => {
     return await trycatch({
       fn: () => {
-        const python: ChildProcessWithoutNullStreams = spawn("python", [
-          "src/server/api/python/testing.py",
+        console.log(
+          path.join(process.cwd(), "/src/server/api/python/testing.py")
+        );
+        const python: ChildProcessWithoutNullStreams = spawn("python3", [
+          path.join(process.cwd(), "/src/server/api/python/testing.py"),
         ]);
         return new Promise<string>((resolve, reject) => {
           let output = "";
