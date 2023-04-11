@@ -29,22 +29,6 @@ export const pythonRouter = createTRPCRouter({
             }
           });
         });
-
-        // return new Promise((resolve) => {
-        //   python.stdout.on("data", (data: string) => {
-        //     console.log(`stdout: ${data}`);
-        //     resolve(data);
-        //   });
-
-        //   python.stderr.on("data", (data: string) => {
-        //     console.error(`stderr: ${data}`);
-        //   });
-
-        //   python.on("close", (code: string) => {
-        //     console.log(`child process exited with code ${code}`);
-        //     resolve(code);
-        //   });
-        // });
       },
       errorMessages: ["Failed to run python code"],
     })();
