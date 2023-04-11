@@ -4,64 +4,19 @@ import {
   PhoneIcon,
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
-import {
-  ArrowPathIcon,
-  ChartPieIcon,
-  CursorArrowRaysIcon,
-  FingerPrintIcon,
-  SquaresPlusIcon,
-} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useRef } from "react";
 import { api } from "../../utils/api";
 import { Header, MobileNavLink } from "../common/Header";
+import { projectFeatures } from "./data";
 
-type icon = React.ForwardRefExoticComponent<
-  React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {
-    title?: string;
-    titleId?: string;
-  } & React.RefAttributes<SVGSVGElement>
->;
-
-const projectFeatures = [
-  {
-    name: "File management",
-    description: "Organize and search for your files.",
-    href: "/file-manager",
-    icon: ChartPieIcon as icon,
-  },
-  {
-    name: "Orders",
-    description: "Derek, replace this",
-    href: "/order",
-    icon: CursorArrowRaysIcon as icon,
-  },
-  {
-    name: "Request for information",
-    description: "Derek, replace this",
-    href: "/requestForInformation",
-    icon: FingerPrintIcon as icon,
-  },
-  {
-    name: "Site diary",
-    description: "Derek, replace this",
-    href: "/site-diary",
-    icon: SquaresPlusIcon as icon,
-  },
-  {
-    name: "Task management",
-    description: "Derek, replace this",
-    href: "/task",
-    icon: ArrowPathIcon as icon,
-  },
-  {
-    name: "Team",
-    description: "Derek, replace this",
-    href: "/team",
-    icon: ArrowPathIcon as icon,
-  },
-];
+// type icon = React.ForwardRefExoticComponent<
+//   React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {
+//     title?: string;
+//     titleId?: string;
+//   } & React.RefAttributes<SVGSVGElement>
+// >;
 
 const callsToAction = [
   { name: "Watch demo", href: "#", icon: PlayCircleIcon },
@@ -74,6 +29,7 @@ export const ProjectHeader = () => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const projectId = router.query.projectId as string;
 
+  // TODO: add prefetching for financial dashboard, invoice processing, settings, and photos
   const prefetch = ({
     projectId,
     href,
@@ -147,15 +103,9 @@ export const ProjectHeader = () => {
   const desktopExtraComponents = (
     <Popover.Group className="px-2 py-1 lg:flex lg:gap-x-12">
       <Popover className="relative">
-        <Popover.Button
-          ref={buttonRef}
-          className="flex items-center text-sm text-gray-900 hover:bg-slate-100 hover:text-slate-900"
-        >
-          Features
-          <ChevronDownIcon
-            className="h-5 w-5 flex-none text-gray-400"
-            aria-hidden="true"
-          />
+        <Popover.Button className="flex items-center text-sm text-gray-900 hover:bg-slate-100 hover:text-slate-900">
+          <span>Solutions</span>
+          <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
         </Popover.Button>
 
         <Transition
@@ -167,59 +117,61 @@ export const ProjectHeader = () => {
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 translate-y-1"
         >
-          <Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-            <div className="p-4">
-              {projectFeatures.map((item) => (
-                <div
-                  key={item.name}
-                  className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50"
-                >
-                  <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+          <Popover.Panel className="absolute left-1/2 z-10 mt-5 flex w-screen max-w-max -translate-x-1/2 px-4">
+            <div className="w-screen max-w-md flex-auto overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5 lg:max-w-3xl">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-1 p-4 lg:grid-cols-2">
+                {projectFeatures.map((item) => (
+                  <div
+                    key={item.name}
+                    className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50"
+                  >
+                    <div className="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                      <span className="h-6 w-6 text-gray-600 group-hover:text-indigo-600">
+                        <>{item.icon}</>
+                      </span>
+                    </div>
+                    <div>
+                      <Link
+                        href={`/projects/${projectId}${item.href}`}
+                        onMouseEnter={() =>
+                          prefetch({
+                            projectId: projectId,
+                            href: item.href,
+                          })
+                        }
+                        onClick={() => buttonRef.current?.click()}
+                        className="font-semibold text-gray-900"
+                      >
+                        {item.name}
+                        <span className="absolute inset-0" />
+                      </Link>
+                      <p className="mt-1 text-gray-600">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
+                {callsToAction.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100"
+                  >
                     <item.icon
-                      className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+                      className="h-5 w-5 flex-none text-gray-400"
                       aria-hidden="true"
                     />
-                  </div>
-                  <div className="flex-auto">
-                    <Link
-                      href={`/projects/${projectId}${item.href}`}
-                      className="block font-semibold text-gray-900"
-                      onMouseEnter={() =>
-                        prefetch({
-                          projectId: projectId,
-                          href: item.href,
-                        })
-                      }
-                      onClick={() => buttonRef.current?.click()}
-                    >
-                      {item.name}
-                      <span className="absolute inset-0" />
-                    </Link>
-                    <p className="mt-1 text-gray-600">{item.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-              {callsToAction.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100"
-                >
-                  <item.icon
-                    className="h-5 w-5 flex-none text-gray-400"
-                    aria-hidden="true"
-                  />
-                  {item.name}
-                </a>
-              ))}
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
             </div>
           </Popover.Panel>
         </Transition>
       </Popover>
     </Popover.Group>
   );
+
   const mobileExtraComponents = (
     <MobileNavLink>
       <Disclosure as="div" className="-mx-3">

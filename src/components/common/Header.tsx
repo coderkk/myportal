@@ -109,10 +109,8 @@ export const MobileNavigation = ({
               notAuthedComponent={
                 <>
                   <MobileNavLink href="#features">Features</MobileNavLink>
-                  <MobileNavLink href="#testimonials">
-                    Testimonials
-                  </MobileNavLink>
                   <MobileNavLink href="#pricing">Pricing</MobileNavLink>
+                  <MobileNavLink href="#faq">FAQs</MobileNavLink>
                 </>
               }
             />
@@ -166,8 +164,8 @@ export const Header = ({
                 notAuthedComponent={
                   <>
                     <NavLink href="#features">Features</NavLink>
-                    <NavLink href="#testimonials">Testimonials</NavLink>
                     <NavLink href="#pricing">Pricing</NavLink>
+                    <NavLink href="#faq">FAQs</NavLink>
                   </>
                 }
               />

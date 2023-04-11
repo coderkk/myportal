@@ -8,7 +8,6 @@ import { Hero } from "../components/landing/Hero";
 import { Pricing } from "../components/landing/Pricing";
 import { PrimaryFeatures } from "../components/landing/PrimaryFeatures";
 import { SecondaryFeatures } from "../components/landing/SecondaryFeatures";
-import { Testimonials } from "../components/landing/Testimonials";
 
 const Home: NextPage = () => {
   return (
@@ -26,9 +25,8 @@ const Home: NextPage = () => {
         <Hero />
         <PrimaryFeatures />
         <SecondaryFeatures />
-        <CallToAction />
-        <Testimonials />
         <Pricing />
+        <CallToAction />
         <Faqs />
       </main>
       <Footer />

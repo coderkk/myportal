@@ -68,7 +68,7 @@ function Plan({
         featured ? "order-first bg-blue-600 py-8 lg:order-none" : "lg:py-8"
       )}
     >
-      <h3 className="font-display mt-5 text-lg text-white">{name}</h3>
+      <h3 className="font-display mt-5 text-lg text-white">{price}</h3>
       <p
         className={clsx(
           "mt-2 text-base",
@@ -78,7 +78,7 @@ function Plan({
         {description}
       </p>
       <p className="font-display order-first text-5xl font-light tracking-tight text-white">
-        {price}
+        {name}
       </p>
       <ul
         role="list"
@@ -124,52 +124,39 @@ export function Pricing() {
             for everyone.
           </h2>
           <p className="mt-4 text-lg text-slate-400">
-            It doesn’t matter what size your business is, our software won’t
-            work well for you.
+            Whatever your business size, we have a plan that will work for you.
           </p>
         </div>
         <div className="-mx-4 mt-16 grid max-w-2xl grid-cols-1 gap-y-10 sm:mx-auto lg:-mx-8 lg:max-w-none lg:grid-cols-3 xl:mx-0 xl:gap-x-8">
           <Plan
             name="Starter"
-            price="$9"
+            price="Free"
             description="Good for anyone who is self-employed and just getting started."
             href="sign-in"
             features={[
-              "Send 10 quotes and invoices",
-              "Connect up to 2 bank accounts",
-              "Track up to 15 expenses per month",
-              "Manual payroll support",
-              "Export up to 3 reports",
+              "Financial dashboard",
+              "Automated invoice processing",
+              "Site diary",
+              "File sharing",
+              "RFIs management",
+              "Tasks allocation",
+              "Photos gallery",
             ]}
           />
           <Plan
             featured
             name="Small business"
-            price="$15"
-            description="Perfect for small / medium sized businesses."
+            price="RM 200 per month per project"
+            description="Perfect for small & medium sized businesses."
             href="sign-in"
-            features={[
-              "Send 25 quotes and invoices",
-              "Connect up to 5 bank accounts",
-              "Track up to 50 expenses per month",
-              "Automated payroll support",
-              "Export up to 12 reports",
-              "Bulk reconcile transactions",
-              "Track in multiple currencies",
-            ]}
+            features={["Everything in Starter", "Plus"]}
           />
           <Plan
             name="Enterprise"
-            price="$39"
+            price="RM 500 per month per project"
             description="For even the biggest enterprise companies."
             href="sign-in"
-            features={[
-              "Send unlimited quotes and invoices",
-              "Connect up to 15 bank accounts",
-              "Track up to 200 expenses per month",
-              "Automated payroll support",
-              "Export up to 25 reports, including TPS",
-            ]}
+            features={["Everything in Small business", "Plus"]}
           />
         </div>
       </Container>
