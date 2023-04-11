@@ -25,6 +25,7 @@ model Account {
     refresh_token     String?  @db.Text // Why db.Text is needed: https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     access_token      String?  @db.Text
     expires_at        Int?
+    ext_expires_in    Int?
     token_type        String?
     scope             String?
     id_token          String?  @db.Text
