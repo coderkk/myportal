@@ -96,7 +96,10 @@ export const ProjectHeader = () => {
   const desktopExtraComponents = (
     <Popover.Group className="px-2 py-1 lg:flex lg:gap-x-12">
       <Popover className="relative">
-        <Popover.Button className="flex items-center text-sm text-gray-900 hover:bg-slate-100 hover:text-slate-900">
+        <Popover.Button
+          ref={buttonRef}
+          className="flex items-center text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+        >
           <span>Solutions</span>
           <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
         </Popover.Button>
