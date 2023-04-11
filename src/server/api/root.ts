@@ -4,7 +4,6 @@ import { meRouter } from "./routers/me";
 import { orderRouter } from "./routers/order";
 import { plantRouter } from "./routers/plant";
 import { projectRouter } from "./routers/project";
-import { pythonRouter } from "./routers/python";
 import { replyRouter } from "./routers/replies";
 import { requestForInformationRouter } from "./routers/requestForInformation";
 import { s3Router } from "./routers/s3";
@@ -37,7 +36,6 @@ export const appRouter = createTRPCRouter({
   requestForInformation: requestForInformationRouter,
   reply: replyRouter,
   s3: s3Router,
-  python: pythonRouter,
 });
 
 // export type definition of API
