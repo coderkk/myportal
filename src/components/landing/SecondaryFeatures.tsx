@@ -5,14 +5,13 @@ import { useId } from "react";
 
 import { Container } from "../common/Container";
 
-// TODO: update description
+// TODO: update images
 const features = [
   {
     name: "Site Records",
-    summary:
-      "Now everyone in your team can contribute to the same daily site diary.",
+    summary: "Keep your site records up to date.",
     description:
-      "We talked about reporting in the section above but we needed three items here, so mentioning it one more time for posterity.",
+      "Now everyone in your team can keep be kept in sync through the site diary, avoiding communication errors as much as possible.",
     image: "/images/screenshots/profit-loss.png",
     icon: function ReportingIcon() {
       const id = useId();
@@ -44,10 +43,9 @@ const features = [
   },
   {
     name: "RFIs Management",
-    summary:
-      "Send Requests For Information's (RFIs) to consultants who can answer them seamlessly in a single portal, and keep track of them easily.",
+    summary: "Manage and monitor RFIs with your consultants.",
     description:
-      "We don’t offer this as part of our software but that statement is inarguably true. Accurate inventory tracking would help you for sure.",
+      "Send Requests for Information (RFIs) to consultants who can answer them seamlessly in a single portal, and keep track of them easily.",
     image: "/images/screenshots/inventory.png",
     icon: function InventoryIcon() {
       return (
@@ -72,10 +70,9 @@ const features = [
   },
   {
     name: "Photos Gallery",
-    summary:
-      "Centralise all your site photos in one place, providing easy access to your team to use as proof of records.",
+    summary: "Store all project photos in one central hub.",
     description:
-      "This also isn’t actually a feature, it’s just some friendly advice. We definitely recommend that you do this, you’ll feel really organized and professional.",
+      "Centralise all your site photos in one place, providing easy access to your team to use as proof of records.",
     image: "/images/screenshots/contacts.png",
     icon: function ContactsIcon() {
       return (
