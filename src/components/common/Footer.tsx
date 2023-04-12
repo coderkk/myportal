@@ -23,7 +23,7 @@ export function Footer() {
             <Link
               href="https://twitter.com"
               className="group"
-              aria-label="TaxPal on Twitter"
+              aria-label="HyberBolt on Twitter"
             >
               <svg
                 aria-hidden="true"
@@ -33,9 +33,9 @@ export function Footer() {
               </svg>
             </Link>
             <Link
-              href="https://github.com"
+              href="https://instagram.com"
               className="group"
-              aria-label="TaxPal on GitHub"
+              aria-label="HyberBolt on Instagram"
             >
               <svg
                 aria-hidden="true"
@@ -46,7 +46,7 @@ export function Footer() {
             </Link>
           </div>
           <p className="mt-6 text-sm text-slate-500 sm:mt-0">
-            Copyright &copy; {new Date().getFullYear()} TaxPal. All rights
+            Copyright &copy; {new Date().getFullYear()} HyberBolt. All rights
             reserved.
           </p>
         </div>

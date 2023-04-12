@@ -41,8 +41,10 @@ export const Hero = () => {
       </div>
       <div className="mt-36 lg:mt-44">
         <p className="font-display text-base text-slate-900">
-          Trusted by these six companies so far
+          Download our invoice template and share it with your suppliers to
+          start automating your financial recording process
         </p>
+        {/* TODO: Add download link and remove companies*/}
         <ul
           role="list"
           className="mt-8 flex items-center justify-center gap-x-8 sm:flex-col sm:gap-x-0 sm:gap-y-10 xl:flex-row xl:gap-x-12 xl:gap-y-0"

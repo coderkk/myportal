@@ -5,53 +5,39 @@ import { Container } from "../common/Container";
 const faqs = [
   [
     {
-      question: "Does TaxPal handle VAT?",
+      question: "Why do I need an automated financial tool?",
       answer:
-        "Well no, but if you move your company offshore you can probably ignore it.",
+        "Without such a tool, you would have to manually enter costs from the invoices you receive, which can be a time-consuming process.",
     },
     {
-      question: "Can I pay for my subscription via purchase order?",
-      answer: "Absolutely, we are happy to take your money in all forms.",
-    },
-    {
-      question: "How do I apply for a job at TaxPal?",
+      question:
+        "How do I know if I want to subscribe for the paid packages or not?",
       answer:
-        "We only hire our customers, so subscribe for a minimum of 6 months and then let’s talk.",
+        "There is a free version where you can try out before paying for an upgraded version. No hidden fees.",
     },
   ],
   [
     {
-      question: "What was that testimonial about tax fraud all about?",
+      question: "How accurate is your AI?",
       answer:
-        "TaxPal is just a software application, ultimately your books are your responsibility.",
+        "If you are using our invoice template provided, accuracy rate will be 100%. However, if you are using your own invoice template, we have between an 80-99% accuracy rate, but this improves as the AI learns your business and document types.",
     },
     {
       question:
-        "TaxPal sounds horrible but why do I still feel compelled to purchase?",
+        "Some of the project costs do not have an invoice. How do I record them so that the budget and profit margin can reflect it too?",
       answer:
-        "This is the power of excellent visual design. You just can’t resist it, no matter how poorly it actually functions.",
-    },
-    {
-      question:
-        "I found other companies called TaxPal, are you sure you can use this name?",
-      answer:
-        "Honestly not sure at all. We haven’t actually incorporated or anything, we just thought it sounded cool and made this website.",
+        "You can enter cost data manually aside from costs captured from an invoice.",
     },
   ],
   [
     {
-      question: "How do you generate reports?",
+      question: "Does hyperbolt read my email?",
       answer:
-        "You just tell us what data you need a report for, and we get our kids to create beautiful charts for you using only the finest crayons.",
+        "No, your privacy is important to us, and the email connection is only used to import any invoices that have been sent automatically. Our platform never reads or stores your email data, besides attached documents.",
     },
     {
-      question: "Can we expect more inventory features?",
-      answer: "In life it’s really better to never expect anything at all.",
-    },
-    {
-      question: "I lost my password, how do I get into my account?",
-      answer:
-        "Send us an email and we will send you a copy of our latest password spreadsheet so you can find your information.",
+      question: "How does the financial automation process work? ",
+      answer: "You upload an invoice and our tech takes care of the rest.",
     },
   ],
 ];
