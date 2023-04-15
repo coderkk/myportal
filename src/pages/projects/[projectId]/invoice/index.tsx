@@ -7,11 +7,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js';
 // pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const Invoice = () => {
-  const router = useRouter();
-  const projectId = router.query.projectId as string;
-  const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
+  // const router = useRouter();
+  // const projectId = router.query.projectId as string;
+  // const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
-  const [file, setFile] = useState('docs/invoice.pdf');
+  const [file, setFile] = useState<string>('/docs/invoice.pdf');
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   
@@ -26,7 +26,7 @@ const Invoice = () => {
                 <section>
                     <div className="max-w-screen-xl px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
                         <div
-                            className="grid grid-cols-1 gap-y-8 lg:grid-cols-2 lg:items-center lg:gap-x-16"
+                            className="grid grid-cols-1 gap-y-8 lg:grid-cols-2  lg:gap-x-16"
                         >
                             <div className="mx-auto max-w-lg text-left lg:mx-0 lg:text-left">
                                 <h2 className="text-3xl font-bold sm:text-4xl">Invoice Data Extraction</h2>
@@ -73,9 +73,12 @@ const Invoice = () => {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                <Document file="/docs/invoice.pdf" onLoadSuccess={onDocumentLoadSuccess}>
-                                    <Page pageNumber={pageNumber} />
+                                <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                                    <Page pageNumber={pageNumber} renderTextLayer={false} />
                                 </Document>
+                                <p>
+                                    Page {pageNumber} of {numPages}
+                                </p>
                             </div>
                         </div>
                     </div>
