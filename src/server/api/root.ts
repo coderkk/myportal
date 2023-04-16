@@ -1,3 +1,4 @@
+import { budgetRouter } from "./routers/budget";
 import { laborerRouter } from "./routers/laborer";
 import { materialRouter } from "./routers/material";
 import { meRouter } from "./routers/me";
@@ -36,6 +37,7 @@ export const appRouter = createTRPCRouter({
   requestForInformation: requestForInformationRouter,
   reply: replyRouter,
   s3: s3Router,
+  budget: budgetRouter,
 });
 
 // export type definition of API

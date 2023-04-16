@@ -1,10 +1,5 @@
-import type { RankingInfo } from "@tanstack/match-sorter-utils";
-import type { FilterFn } from "@tanstack/react-table";
-import { createColumnHelper } from "@tanstack/react-table";
-import type { InputHTMLAttributes, ReactNode } from "react";
-import { useMemo } from "react";
-
 import {
+  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getFacetedMinMaxValues,
@@ -15,20 +10,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
-
-import { rankItem } from "@tanstack/match-sorter-utils";
-
-declare module "@tanstack/table-core" {
-  interface FilterFns {
-    fuzzy: FilterFn<unknown>;
-  }
-  interface FilterMeta {
-    itemRank: RankingInfo;
-  }
-}
-
-import { faker } from "@faker-js/faker";
+import type { Dispatch, InputHTMLAttributes, ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   ChevronDoubleLeftIcon,
@@ -37,90 +20,66 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/20/solid";
 import classNames from "classnames";
+import { useRouter } from "next/router";
+import CreateButton from "../budget/CreateButton";
+import Spinner from "./Spinner";
 
-export type Budget = {
+type Budget = {
   costsCode: number;
   description: string;
-  budget: number;
+  expectedBudget: number;
   costsIncurred: number;
   difference: number;
 };
+
+export const initialState = {
+  queryPageIndex: 0,
+  queryPageSize: 10,
+  search_key: "",
+};
+
+const PAGE_CHANGED = "PAGE_CHANGED";
+const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
+const SEARCH_KEY_CHANGED = "SEARCH_KEY_CHANGED";
 
 type actionType = (typeof actionType)[number];
 type state = {
   queryPageIndex: number;
   queryPageSize: number;
-  totalCount: null | number;
+  search_key: string;
+};
+type action = {
+  type: actionType;
+  payload: number | string;
 };
 
 const actionType = [
   "PAGE_CHANGED",
   "PAGE_SIZE_CHANGED",
-  "TOTAL_COUNT_CHANGED",
+  "SEARCH_KEY_CHANGED",
 ] as const;
 
-const initialState = {
-  queryPageIndex: 0,
-  queryPageSize: 10,
-  totalCount: null,
-};
-
-type action = {
-  type: actionType;
-  payload: number;
-};
-
-const PAGE_CHANGED = "PAGE_CHANGED";
-const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
-const TOTAL_COUNT_CHANGED = "TOTAL_COUNT_CHANGED";
-
-const reducer = (state: state, action: action): state => {
+export const reducer = (state: state, action: action): state => {
   switch (action.type) {
     case PAGE_CHANGED:
       return {
         ...state,
-        queryPageIndex: action.payload,
+        queryPageIndex: action.payload as number,
       };
     case PAGE_SIZE_CHANGED:
       return {
         ...state,
-        queryPageSize: action.payload,
+        queryPageSize: action.payload as number,
       };
-    case TOTAL_COUNT_CHANGED:
+    case SEARCH_KEY_CHANGED:
       return {
         ...state,
-        totalCount: action.payload,
+        search_key: action.payload as string,
       };
     default:
       throw new Error(`Unhandled action type`);
   }
 };
-
-const range = (len: number) => {
-  const arr = [];
-  for (let i = 0; i < len; i++) {
-    arr.push(i);
-  }
-  return arr;
-};
-
-const newPerson = (): Budget => {
-  return {
-    costsCode: faker.datatype.number(100),
-    description: faker.name.lastName(),
-    budget: faker.datatype.number(999999),
-    costsIncurred: faker.datatype.number(999999),
-    difference: faker.datatype.number(999999),
-  };
-};
-
-export function makeData(samples: number) {
-  return range(samples).map((): Budget => {
-    return {
-      ...newPerson(),
-    };
-  });
-}
 
 const Button = ({
   children,
@@ -174,23 +133,6 @@ const PageButton = ({
   );
 };
 
-const SortIcon = ({ className }: { className: string }) => {
-  return (
-    <svg
-      className={className}
-      stroke="currentColor"
-      fill="currentColor"
-      strokeWidth="0"
-      viewBox="0 0 320 512"
-      height="1em"
-      width="1em"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"></path>
-    </svg>
-  );
-};
-
 const SortUpIcon = ({ className }: { className: string }) => {
   return (
     <svg
@@ -225,24 +167,23 @@ const SortDownIcon = ({ className }: { className: string }) => {
   );
 };
 
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value as string);
-
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  });
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed;
-};
-
-function Tablee() {
+const Table = ({
+  budgets,
+  count,
+  queryPageSize,
+  dispatch,
+  isFetching,
+}: {
+  budgets: Budget[];
+  count: number;
+  queryPageSize: number;
+  dispatch: Dispatch<action>;
+  isFetching: boolean;
+}) => {
   const [globalFilter, setGlobalFilter] = useState("");
-
+  const { query } = useRouter();
+  const projectId = query.projectId as string;
   const columnHelper = createColumnHelper<Budget>();
-
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.costsCode, {
@@ -257,41 +198,48 @@ function Tablee() {
         header: () => <span>Description</span>,
         footer: (info) => info.column.id,
       }),
-      columnHelper.accessor((row) => row.budget, {
+      columnHelper.accessor((row) => row.expectedBudget, {
         id: "budget",
-        cell: (info) => <i>{info.getValue()}</i>,
+        cell: (info) => (
+          <i>
+            <b>RM</b> {info.getValue()}
+          </i>
+        ),
         header: () => <span>Budget</span>,
         footer: (info) => info.column.id,
       }),
       columnHelper.accessor((row) => row.costsIncurred, {
         id: "costsIncurred",
-        cell: (info) => <i>{info.getValue()}</i>,
+        cell: (info) => (
+          <i>
+            <b>RM</b> {info.getValue()}
+          </i>
+        ),
         header: () => <span>Costs Incurred</span>,
         footer: (info) => info.column.id,
       }),
       columnHelper.accessor((row) => row.difference, {
         id: "difference",
-        cell: (info) => <i>{info.getValue()}</i>,
+        cell: (info) => (
+          <i>
+            <b>RM</b> {info.getValue()}
+          </i>
+        ),
         header: () => <span>Difference</span>,
         footer: (info) => info.column.id,
       }),
     ],
     [columnHelper]
   );
-
-  const [data] = useState<Budget[]>(() => makeData(50000));
-
   const table = useReactTable({
-    data,
+    data: budgets,
     columns,
-    filterFns: {
-      fuzzy: fuzzyFilter,
-    },
+    manualPagination: true,
     state: {
       globalFilter,
     },
+    pageCount: Math.ceil(count / queryPageSize),
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -301,14 +249,45 @@ function Tablee() {
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
   });
 
+  const { pageIndex, pageSize } = table.getState().pagination;
+
+  useEffect(() => {
+    dispatch({
+      type: PAGE_CHANGED,
+      payload: pageIndex,
+    });
+  }, [dispatch, pageIndex]);
+
+  useEffect(() => {
+    dispatch({
+      type: PAGE_SIZE_CHANGED,
+      payload: pageSize,
+    });
+    table.setPageIndex(0);
+  }, [dispatch, pageSize, table]);
+
+  useEffect(() => {
+    dispatch({
+      type: SEARCH_KEY_CHANGED,
+      payload: globalFilter,
+    });
+    table.setPageIndex(0);
+  }, [dispatch, globalFilter, table]);
+
   return (
     <div className="p-2">
-      <div className="sm:flex sm:gap-x-2">
+      <div className="justify-between sm:flex sm:gap-x-2">
         <DebouncedInput
           value={globalFilter ?? ""}
           onChange={(value) => setGlobalFilter(String(value))}
           className="font-lg border-block border p-2 shadow"
           placeholder="Search all columns..."
+        />
+        <CreateButton
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          searchKey={globalFilter}
+          projectId={projectId}
         />
       </div>
       <div className="mt-4 flex flex-col">
@@ -392,6 +371,7 @@ function Tablee() {
           >
             Previous
           </Button>
+          {isFetching && <Spinner size="w-4 h-4" />}
           <Button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
@@ -402,17 +382,14 @@ function Tablee() {
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div className="flex items-baseline gap-x-2">
             <span className="text-sm text-gray-700">
-              Page{" "}
-              <span className="font-medium">
-                {table.getState().pagination.pageIndex + 1}
-              </span>{" "}
-              of <span className="font-medium">{table.getPageCount()}</span>
+              Page <span className="font-medium">{pageIndex + 1}</span> of{" "}
+              <span className="font-medium">{table.getPageCount()}</span>
             </span>
             <label>
               <span className="sr-only">Items Per Page</span>
               <select
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                value={table.getState().pagination.pageSize}
+                value={pageSize}
                 onChange={(e) => {
                   table.setPageSize(Number(e.target.value));
                 }}
@@ -425,6 +402,7 @@ function Tablee() {
               </select>
             </label>
           </div>
+          {isFetching && <Spinner size="w-6 h-6" />}
           <div>
             <nav
               className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm"
@@ -478,7 +456,7 @@ function Tablee() {
       </div>
     </div>
   );
-}
+};
 
 // A debounced input react component
 const DebouncedInput = ({
@@ -519,4 +497,4 @@ const DebouncedInput = ({
   );
 };
 
-export default Tablee;
+export default Table;

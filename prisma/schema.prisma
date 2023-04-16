@@ -71,6 +71,7 @@ model User {
     createdOrders                 Order[]
     createdRequestForInformations RequestForInformation[]
     createdReplies                Reply[]
+    createdBudgets                Budget[]
     createdTasks                  Task[]                  @relation("createdTasks")
     assignedTasks                 Task[]                  @relation("assignedTasks")
     projects                      UsersOnProjects[]
@@ -98,6 +99,7 @@ model Project {
     orders                 Order[]
     requestForInformations RequestForInformation[]
     users                  UsersOnProjects[]
+    budgets                Budget[]
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @updatedAt
 
@@ -284,6 +286,22 @@ model UsersOnProjects {
     @@id([userId, projectId])
     @@index([userId])
     @@index([projectId])
+}
+
+model Budget {
+    id             String   @id @default(cuid())
+    description    String
+    expectedBudget Int
+    costsIncurred  Int
+    project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId      String
+    createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById    String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @default(now()) @updatedAt
+
+    @@index([projectId])
+    @@index([createdById])
 }
 
 enum ProfessionalRole {
