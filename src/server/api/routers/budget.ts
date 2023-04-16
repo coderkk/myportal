@@ -1,6 +1,9 @@
+import { customAlphabet } from "nanoid";
 import { z } from "zod";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+
+const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
 
 export const getBudgetsSchema = z.object({
   projectId: z.string(),
@@ -24,6 +27,7 @@ export const budgetRouter = createTRPCRouter({
         fn: () => {
           return ctx.prisma.budget.create({
             data: {
+              costCode: nanoid(),
               description: input.description,
               expectedBudget: input.expectedBudget,
               costsIncurred: input.costsIncurred,
@@ -54,15 +58,15 @@ export const budgetRouter = createTRPCRouter({
               },
               select: {
                 id: true,
+                costCode: true,
                 description: true,
                 expectedBudget: true,
                 costsIncurred: true,
               },
             });
-            const transformBudgets = budgets.map((budget, i) => {
+            const transformBudgets = budgets.map((budget) => {
               return {
                 ...budget,
-                costsCode: input.pageSize * input.pageIndex + i + 1,
                 difference: budget.expectedBudget - budget.costsIncurred,
               };
             });
@@ -83,23 +87,23 @@ export const budgetRouter = createTRPCRouter({
               },
               select: {
                 id: true,
+                costCode: true,
                 description: true,
                 expectedBudget: true,
                 costsIncurred: true,
               },
             });
             const transformBudgets = budgets
-              .map((budget, i) => {
+              .map((budget) => {
                 return {
                   ...budget,
-                  costsCode: i + 1,
                   difference: budget.expectedBudget - budget.costsIncurred,
                 };
               })
               // prisma does not support full integer search
               .filter((budget) => {
                 if (
-                  String(budget.costsCode)
+                  String(budget.costCode)
                     .toLowerCase()
                     .includes(input.searchKey.toLowerCase()) ||
                   String(budget.expectedBudget)

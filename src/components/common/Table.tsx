@@ -25,7 +25,7 @@ import CreateButton from "../budget/CreateButton";
 import Spinner from "./Spinner";
 
 type Budget = {
-  costsCode: number;
+  costCode: string;
   description: string;
   expectedBudget: number;
   costsIncurred: number;
@@ -186,8 +186,8 @@ const Table = ({
   const columnHelper = createColumnHelper<Budget>();
   const columns = useMemo(
     () => [
-      columnHelper.accessor((row) => row.costsCode, {
-        id: "costsCode",
+      columnHelper.accessor((row) => row.costCode, {
+        id: "costCode",
         cell: (info) => <i>{info.getValue()}</i>,
         header: () => <span>Costs Code</span>,
         footer: (info) => info.column.id,

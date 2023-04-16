@@ -290,6 +290,7 @@ model UsersOnProjects {
 
 model Budget {
     id             String   @id @default(cuid())
+    costCode       String   @default("")
     description    String
     expectedBudget Int
     costsIncurred  Int

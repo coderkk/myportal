@@ -23,38 +23,31 @@ export const useCreateBudget = ({
         },
         (oldBudgets) => {
           if (oldBudgets) {
-            // only opitmistic update if we're on the first page
-            if (pageIndex !== 0)
+            // only opitmistic update if we're on the first page and there is no search key
+            if (pageIndex !== 0 || searchKey !== "")
               return {
                 budgets: oldBudgets.budgets,
                 count: oldBudgets.count + 1,
               };
-            const firstCostsCodeShowing = oldBudgets.budgets[0]?.costsCode || 1;
             const optimisticUpdateObject = {
               id: Date.now().toString(),
-              costsCode: firstCostsCodeShowing,
+              costCode: "UPDATING",
               difference: expectedBudget - costsIncurred,
               description: description,
               expectedBudget: expectedBudget,
               costsIncurred: costsIncurred,
             };
-            const optimisticUpdateBudgets = oldBudgets.budgets
-              .slice(0, oldBudgets.budgets.length - 1)
-              .map((budget, i) => {
-                return {
-                  ...budget,
-                  costsCode: firstCostsCodeShowing + i + 1,
-                };
-              });
-
             return {
-              budgets: [optimisticUpdateObject, ...optimisticUpdateBudgets],
+              budgets: [
+                optimisticUpdateObject,
+                ...oldBudgets.budgets.slice(0, oldBudgets.budgets.length - 1),
+              ],
               count: oldBudgets.count + 1,
             };
           } else {
             const optimisticUpdateObject = {
               id: Date.now().toString(),
-              costsCode: 1,
+              costCode: "UPDATING",
               difference: expectedBudget - costsIncurred,
               description: description,
               expectedBudget: expectedBudget,
