@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
 import { useReducer } from "react";
+import Spinner from "../../../components/common/Spinner";
 import { initialState, reducer } from "../../../components/common/Table";
 import { useGetBudgets } from "../../../hooks/budget";
 import { useGetProject } from "../../../hooks/project";
@@ -22,7 +23,7 @@ const Index = () => {
     reducer,
     initialState
   );
-  const { budgets, count, isFetching } = useGetBudgets({
+  const { budgets, count, isLoading, isFetching } = useGetBudgets({
     projectId: projectId,
     pageSize: queryPageSize,
     pageIndex: queryPageIndex,
@@ -38,13 +39,18 @@ const Index = () => {
           </div>
           <main className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8">
             <div className="mt-6">
-              <Table
-                budgets={budgets}
-                count={count}
-                queryPageSize={queryPageSize}
-                dispatch={dispatch}
-                isFetching={isFetching}
-              />
+              {isLoading ? (
+                <Spinner />
+              ) : (
+                <Table
+                  budgets={budgets}
+                  count={count}
+                  queryPageIndex={queryPageIndex}
+                  queryPageSize={queryPageSize}
+                  dispatch={dispatch}
+                  isFetching={isFetching}
+                />
+              )}
             </div>
           </main>
         </div>

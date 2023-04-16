@@ -19,6 +19,17 @@ export const createBudgetSchema = z.object({
   costsIncurred: z.number(),
 });
 
+export const updateBudgetSchema = z.object({
+  budgetId: z.string(),
+  description: z.string(),
+  expectedBudget: z.number(),
+  costsIncurred: z.number(),
+});
+
+export const deleteBudgetSchema = z.object({
+  budgetId: z.string(),
+});
+
 export const budgetRouter = createTRPCRouter({
   createBudget: protectedProcedure
     .input(createBudgetSchema)
@@ -133,6 +144,39 @@ export const budgetRouter = createTRPCRouter({
           }
         },
         errorMessages: ["Failed to get budgets"],
+      })();
+    }),
+  updateBudget: protectedProcedure
+    .input(updateBudgetSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.budget.update({
+            where: {
+              id: input.budgetId,
+            },
+            data: {
+              description: input.description,
+              expectedBudget: input.expectedBudget,
+              costsIncurred: input.costsIncurred,
+            },
+          });
+        },
+        errorMessages: ["Failed to update budget"],
+      })();
+    }),
+  deleteBudget: protectedProcedure
+    .input(deleteBudgetSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.budget.delete({
+            where: {
+              id: input.budgetId,
+            },
+          });
+        },
+        errorMessages: ["Failed to delete budget"],
       })();
     }),
 });

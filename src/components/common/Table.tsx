@@ -20,11 +20,18 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/20/solid";
 import classNames from "classnames";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import CreateButton from "../budget/CreateButton";
+import { api } from "../../utils/api";
+import EditButton from "../budget/EditButton";
 import Spinner from "./Spinner";
 
+const CreateButton = dynamic(() => import("../budget/CreateButton"));
+
+const DeleteButton = dynamic(() => import("../budget/DeleteButton"));
+
 type Budget = {
+  id: string;
   costCode: string;
   description: string;
   expectedBudget: number;
@@ -170,16 +177,19 @@ const SortDownIcon = ({ className }: { className: string }) => {
 const Table = ({
   budgets,
   count,
+  queryPageIndex,
   queryPageSize,
   dispatch,
   isFetching,
 }: {
   budgets: Budget[];
   count: number;
+  queryPageIndex: number;
   queryPageSize: number;
   dispatch: Dispatch<action>;
   isFetching: boolean;
 }) => {
+  const utils = api.useContext();
   const [globalFilter, setGlobalFilter] = useState("");
   const { query } = useRouter();
   const projectId = query.projectId as string;
@@ -190,13 +200,11 @@ const Table = ({
         id: "costCode",
         cell: (info) => <i>{info.getValue()}</i>,
         header: () => <span>Costs Code</span>,
-        footer: (info) => info.column.id,
       }),
       columnHelper.accessor((row) => row.description, {
         id: "description",
         cell: (info) => <i>{info.getValue()}</i>,
         header: () => <span>Description</span>,
-        footer: (info) => info.column.id,
       }),
       columnHelper.accessor((row) => row.expectedBudget, {
         id: "budget",
@@ -206,7 +214,6 @@ const Table = ({
           </i>
         ),
         header: () => <span>Budget</span>,
-        footer: (info) => info.column.id,
       }),
       columnHelper.accessor((row) => row.costsIncurred, {
         id: "costsIncurred",
@@ -216,7 +223,6 @@ const Table = ({
           </i>
         ),
         header: () => <span>Costs Incurred</span>,
-        footer: (info) => info.column.id,
       }),
       columnHelper.accessor((row) => row.difference, {
         id: "difference",
@@ -226,10 +232,32 @@ const Table = ({
           </i>
         ),
         header: () => <span>Difference</span>,
-        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "id",
+        cell: (info) => {
+          const { id, description, expectedBudget, costsIncurred } =
+            info.getValue();
+          return (
+            <>
+              <EditButton
+                budgetId={id}
+                projectId={projectId}
+                description={description}
+                expectedBudget={expectedBudget}
+                costsIncurred={costsIncurred}
+                pageIndex={queryPageIndex}
+                pageSize={queryPageSize}
+                searchKey={globalFilter}
+              />
+              <DeleteButton budgetId={id} />
+            </>
+          );
+        },
+        header: () => <span>Actions</span>,
       }),
     ],
-    [columnHelper]
+    [columnHelper, globalFilter, projectId, queryPageIndex, queryPageSize]
   );
   const table = useReactTable({
     data: budgets,
@@ -256,7 +284,7 @@ const Table = ({
       type: PAGE_CHANGED,
       payload: pageIndex,
     });
-  }, [dispatch, pageIndex]);
+  }, [dispatch, table, pageIndex]);
 
   useEffect(() => {
     dispatch({
@@ -264,7 +292,7 @@ const Table = ({
       payload: pageSize,
     });
     table.setPageIndex(0);
-  }, [dispatch, pageSize, table]);
+  }, [dispatch, table, pageSize]);
 
   useEffect(() => {
     dispatch({
@@ -272,7 +300,7 @@ const Table = ({
       payload: globalFilter,
     });
     table.setPageIndex(0);
-  }, [dispatch, globalFilter, table]);
+  }, [dispatch, table, globalFilter]);
 
   return (
     <div className="p-2">
@@ -417,6 +445,20 @@ const Table = ({
                 <ChevronDoubleLeftIcon
                   className="h-5 w-5 text-gray-400"
                   aria-hidden="true"
+                  onMouseEnter={() => {
+                    if (!table.getCanPreviousPage()) return;
+                    void utils.budget.getBudgets.prefetch(
+                      {
+                        projectId: projectId,
+                        searchKey: globalFilter,
+                        pageSize: pageSize,
+                        pageIndex: 0,
+                      },
+                      {
+                        staleTime: Infinity,
+                      }
+                    );
+                  }}
                 />
               </PageButton>
               <PageButton
@@ -427,6 +469,20 @@ const Table = ({
                 <ChevronLeftIcon
                   className="h-5 w-5 text-gray-400"
                   aria-hidden="true"
+                  onMouseEnter={() => {
+                    if (!table.getCanPreviousPage()) return;
+                    void utils.budget.getBudgets.prefetch(
+                      {
+                        projectId: projectId,
+                        searchKey: globalFilter,
+                        pageSize: pageSize,
+                        pageIndex: pageIndex - 1,
+                      },
+                      {
+                        staleTime: Infinity,
+                      }
+                    );
+                  }}
                 />
               </PageButton>
               <PageButton
@@ -437,6 +493,20 @@ const Table = ({
                 <ChevronRightIcon
                   className="h-5 w-5 text-gray-400"
                   aria-hidden="true"
+                  onMouseEnter={() => {
+                    if (!table.getCanNextPage()) return;
+                    void utils.budget.getBudgets.prefetch(
+                      {
+                        projectId: projectId,
+                        searchKey: globalFilter,
+                        pageSize: pageSize,
+                        pageIndex: pageIndex + 1,
+                      },
+                      {
+                        staleTime: Infinity,
+                      }
+                    );
+                  }}
                 />
               </PageButton>
               <PageButton
@@ -446,6 +516,20 @@ const Table = ({
               >
                 <span className="sr-only">Last</span>
                 <ChevronDoubleRightIcon
+                  onMouseEnter={() => {
+                    if (!table.getCanNextPage()) return;
+                    void utils.budget.getBudgets.prefetch(
+                      {
+                        projectId: projectId,
+                        searchKey: globalFilter,
+                        pageSize: pageSize,
+                        pageIndex: table.getPageCount() - 1,
+                      },
+                      {
+                        staleTime: Infinity,
+                      }
+                    );
+                  }}
                   className="h-5 w-5 text-gray-400"
                   aria-hidden="true"
                 />

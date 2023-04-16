@@ -11,6 +11,7 @@ type Budget = {
   description: string;
   expectedBudget: number;
   costsIncurred: number;
+  createdAt?: Date;
 };
 
 const range = (len: number) => {
@@ -27,16 +28,25 @@ const newBudget = (): Budget => {
     description: faker.name.lastName(),
     expectedBudget: faker.datatype.number(999999),
     costsIncurred: faker.datatype.number(999999),
+    createdAt: faker.date.past(),
   };
 };
 
-export function makeData(samples: number) {
+// const randomDate = (start: Date, end: Date) => {
+//   return new Date(
+//     start.getTime() + Math.random() * (end.getTime() - start.getTime())
+//   );
+// };
+
+// const d = randomDate(new Date(2012, 0, 1), new Date());
+
+export const makeData = (samples: number) => {
   return range(samples).map((): Budget => {
     return {
       ...newBudget(),
     };
   });
-}
+};
 
 async function main() {
   const userId = env.TEST_USER_ID;
@@ -188,6 +198,7 @@ async function main() {
       };
     }),
   });
+  // await prisma.budget.deleteMany();
 }
 
 // run this for a custom db clean up

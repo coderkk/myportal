@@ -116,3 +116,118 @@ export const useGetBudgets = ({
     isFetching: isFetching,
   };
 };
+
+export const useUpdateBudget = ({
+  pageIndex,
+  pageSize,
+  searchKey,
+  projectId,
+}: {
+  pageIndex: number;
+  pageSize: number;
+  searchKey: string;
+  projectId: string;
+}) => {
+  const utils = api.useContext();
+  const { mutate: updateBudget } = api.budget.updateBudget.useMutation({
+    async onMutate({ budgetId, description, expectedBudget, costsIncurred }) {
+      await utils.budget.getBudgets.cancel();
+      const previousData = utils.budget.getBudgets.getData();
+      utils.budget.getBudgets.setData(
+        {
+          projectId: projectId,
+          searchKey: searchKey,
+          pageSize: pageSize,
+          pageIndex: pageIndex,
+        },
+        (oldBudgets) => {
+          if (oldBudgets) {
+            const newBudgets = { ...oldBudgets };
+            newBudgets.budgets = oldBudgets?.budgets.map((budget) => {
+              return { ...budget };
+            });
+            const budgetToUpdateIndex = newBudgets.budgets.findIndex(
+              (budget) => budget.id === budgetId
+            );
+            const updatedBudget = newBudgets.budgets[budgetToUpdateIndex];
+            if (updatedBudget) {
+              updatedBudget.description = description;
+              updatedBudget.expectedBudget = expectedBudget;
+              updatedBudget.costsIncurred = costsIncurred;
+              updatedBudget.difference = expectedBudget - costsIncurred;
+              newBudgets.budgets[budgetToUpdateIndex] = updatedBudget;
+            }
+            return newBudgets;
+          } else {
+            return oldBudgets;
+          }
+        }
+      );
+      return () =>
+        utils.budget.getBudgets.setData(
+          {
+            projectId: projectId,
+            searchKey: searchKey,
+            pageSize: pageSize,
+            pageIndex: pageIndex,
+          },
+          previousData
+        );
+    },
+    onError(error, values, rollback) {
+      if (rollback) {
+        rollback();
+      }
+    },
+    onSuccess(data, { budgetId, description, expectedBudget, costsIncurred }) {
+      utils.budget.getBudgets.setData(
+        {
+          projectId: projectId,
+          searchKey: searchKey,
+          pageSize: pageSize,
+          pageIndex: pageIndex,
+        },
+        (oldBudgets) => {
+          if (oldBudgets) {
+            const newBudgets = { ...oldBudgets };
+            newBudgets.budgets = oldBudgets?.budgets.map((budget) => {
+              return { ...budget };
+            });
+            const budgetToUpdateIndex = newBudgets.budgets.findIndex(
+              (budget) => budget.id === budgetId
+            );
+            const updatedBudget = newBudgets.budgets[budgetToUpdateIndex];
+            if (updatedBudget) {
+              updatedBudget.description = description;
+              updatedBudget.expectedBudget = expectedBudget;
+              updatedBudget.costsIncurred = costsIncurred;
+              updatedBudget.difference = expectedBudget - costsIncurred;
+              newBudgets.budgets[budgetToUpdateIndex] = updatedBudget;
+            }
+            return newBudgets;
+          } else {
+            return oldBudgets;
+          }
+        }
+      );
+    },
+    async onSettled() {
+      await utils.budget.getBudgets.invalidate();
+    },
+  });
+  return {
+    updateBudget,
+  };
+};
+
+export const useDeleteBudget = () => {
+  const utils = api.useContext();
+  const { mutate: deleteBudget } = api.budget.deleteBudget.useMutation({
+    async onSettled() {
+      await utils.budget.getBudgets.invalidate();
+    },
+  });
+  return {
+    deleteBudget,
+  };
+};
