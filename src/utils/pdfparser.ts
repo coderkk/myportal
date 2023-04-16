@@ -7,14 +7,13 @@ import type {
   TextMarkedContent,
   TypedArray,
 } from "pdfjs-dist/types/src/display/api";
-import { useState } from "react";
 
 export interface InvoiceType {
-    vendorName: string;
+    vendorName: string | undefined;
     invoiceNo: string | undefined;
     invoiceDate: string | undefined;
     invoiceCosts: number | undefined;
-    description: string;
+    description: string | undefined;
 }
 
 GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
