@@ -31,7 +31,7 @@ const Invoice = () => {
   
   function onDocumentLoadSuccess(pdf: PDFDocumentProxy ) {
     setNumPages(pdf.numPages);
-    parseInvoice(pdf);
+    parseInvoice(pdf).catch((error) => console.error(error));
   }
 
   async function parseInvoice(pdf: PDFDocumentProxy) {
