@@ -70,7 +70,11 @@ export const budgetRouter = createTRPCRouter({
                 difference: budget.expectedBudget - budget.costsIncurred,
               };
             });
-            const count = await ctx.prisma.budget.count();
+            const count = await ctx.prisma.budget.count({
+              where: {
+                projectId: input.projectId,
+              },
+            });
             return {
               budgets: transformBudgets,
               count: count,
