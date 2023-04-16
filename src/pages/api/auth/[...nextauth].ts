@@ -1,9 +1,9 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook";
-import TwitchProvider from "next-auth/providers/twitch";
 import AzureADProvider from "next-auth/providers/azure-ad";
+import DiscordProvider from "next-auth/providers/discord";
+import FacebookProvider from "next-auth/providers/facebook";
+import GoogleProvider from "next-auth/providers/google";
+import TwitchProvider from "next-auth/providers/twitch";
 import TwitterProvider from "next-auth/providers/twitter";
 
 // Prisma adapter for NextAuth, optional and can be removed

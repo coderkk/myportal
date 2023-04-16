@@ -1,7 +1,42 @@
 import { faker } from "@faker-js/faker";
 import { MaterialUnit, TaskStatus, WeatherCondition } from "@prisma/client";
+import { customAlphabet } from "nanoid";
 import { env } from "../src/env/server.mjs";
 import { prisma } from "../src/server/db";
+
+const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
+
+type Budget = {
+  costCode: string;
+  description: string;
+  expectedBudget: number;
+  costsIncurred: number;
+};
+
+const range = (len: number) => {
+  const arr = [];
+  for (let i = 0; i < len; i++) {
+    arr.push(i);
+  }
+  return arr;
+};
+
+const newBudget = (): Budget => {
+  return {
+    costCode: nanoid(),
+    description: faker.name.lastName(),
+    expectedBudget: faker.datatype.number(999999),
+    costsIncurred: faker.datatype.number(999999),
+  };
+};
+
+export function makeData(samples: number) {
+  return range(samples).map((): Budget => {
+    return {
+      ...newBudget(),
+    };
+  });
+}
 
 async function main() {
   const userId = env.TEST_USER_ID;
@@ -141,6 +176,18 @@ async function main() {
       },
     });
   }
+
+  // create 50 budgets
+  const budgets = makeData(50);
+  await prisma.budget.createMany({
+    data: budgets.map((budget) => {
+      return {
+        ...budget,
+        projectId: project.id,
+        createdById: userId,
+      };
+    }),
+  });
 }
 
 // run this for a custom db clean up

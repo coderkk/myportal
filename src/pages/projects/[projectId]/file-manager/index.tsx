@@ -57,21 +57,15 @@ const S3Browser = () => {
           fileId: fileData.id,
           projectId: projectId,
         });
-        fetch(preSignedURLForDownload, {
+        const res = await fetch(preSignedURLForDownload, {
           method: "GET",
-        })
-          .then((res) => res.blob())
-          .then((blob) => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            if (hiddenAnchorRef.current) {
-              hiddenAnchorRef.current.href = url;
-              hiddenAnchorRef.current.download = fileData.name;
-              hiddenAnchorRef.current.click();
-            }
-          })
-          .catch(() => {
-            toast.error("Error when downloading file");
-          });
+        });
+        const url = window.URL.createObjectURL(new Blob([await res.blob()]));
+        if (hiddenAnchorRef.current) {
+          hiddenAnchorRef.current.href = url;
+          hiddenAnchorRef.current.download = fileData.name;
+          hiddenAnchorRef.current.click();
+        }
       } catch (error) {
         toast.error("Error when downloading file");
         // This try catch is necessary as getPreSignedURLForDownload
@@ -117,27 +111,24 @@ const S3Browser = () => {
             "Content-Type": file.type,
           },
           body: file,
-        }).catch(() => {
-          toast.error("Error when uploading file");
-        });
-
-        toast
-          .promise(uploadFile, {
-            loading: "Uploading file",
-            success: "File uploaded successfully",
-            error: "Error when uploading file",
-          })
+        })
           .catch(() => {
-            toast.error("Error when uploading file");
+            throw new Error();
+          })
+          .finally(() => {
+            void utils.s3.fetchS3BucketContents.invalidate();
           });
+
+        await toast.promise(uploadFile, {
+          loading: "Uploading file",
+          success: "File uploaded successfully",
+          error: "Error when uploading file",
+        });
       } catch (error) {
-        toast.error("Error when uploading file");
         // This try catch is necessary as getPreSignedURLForDownload
         // returns a promise that can possibly cause a runtime error.
         // we handle this error in src/utils/api.ts so there's no need
         // to do anything here other than catch the error.
-      } finally {
-        void utils.s3.fetchS3BucketContents.invalidate(); // refetch bucket contents
       }
     },
     [
