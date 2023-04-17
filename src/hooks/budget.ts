@@ -37,11 +37,13 @@ export const useCreateBudget = ({
               expectedBudget: expectedBudget,
               costsIncurred: costsIncurred,
             };
+            const budgetsToReturn =
+              oldBudgets.budgets.length === pageSize
+                ? oldBudgets?.budgets.slice(0, oldBudgets.budgets.length - 1)
+                : oldBudgets.budgets;
+
             return {
-              budgets: [
-                optimisticUpdateObject,
-                ...oldBudgets.budgets.slice(0, oldBudgets.budgets.length - 1),
-              ],
+              budgets: [optimisticUpdateObject, ...budgetsToReturn],
               count: oldBudgets.count + 1,
             };
           } else {
