@@ -10,8 +10,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { Dispatch, InputHTMLAttributes, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 
 import {
   ChevronDoubleLeftIcon,
@@ -22,6 +22,7 @@ import {
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import { useGetBudgets } from "../../hooks/budget";
 import { api } from "../../utils/api";
 import EditButton from "../budget/EditButton";
 import Spinner from "./Spinner";
@@ -39,7 +40,7 @@ type Budget = {
   difference: number;
 };
 
-export const initialState = {
+const initialState = {
   queryPageIndex: 0,
   queryPageSize: 10,
   search_key: "",
@@ -66,7 +67,7 @@ const actionType = [
   "SEARCH_KEY_CHANGED",
 ] as const;
 
-export const reducer = (state: state, action: action): state => {
+const reducer = (state: state, action: action): state => {
   switch (action.type) {
     case PAGE_CHANGED:
       return {
@@ -174,25 +175,21 @@ const SortDownIcon = ({ className }: { className: string }) => {
   );
 };
 
-const Table = ({
-  budgets,
-  count,
-  queryPageIndex,
-  queryPageSize,
-  dispatch,
-  isFetching,
-}: {
-  budgets: Budget[];
-  count: number;
-  queryPageIndex: number;
-  queryPageSize: number;
-  dispatch: Dispatch<action>;
-  isFetching: boolean;
-}) => {
+const Table = () => {
   const utils = api.useContext();
-  const [globalFilter, setGlobalFilter] = useState("");
   const { query } = useRouter();
   const projectId = query.projectId as string;
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [{ queryPageIndex, queryPageSize, search_key }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
+  const { budgets, count, isLoading, isFetching } = useGetBudgets({
+    projectId: projectId,
+    pageSize: queryPageSize,
+    pageIndex: queryPageIndex,
+    searchKey: search_key,
+  });
   const columnHelper = createColumnHelper<Budget>();
   const columns = useMemo(
     () => [
@@ -303,242 +300,248 @@ const Table = ({
   }, [dispatch, table, globalFilter]);
 
   return (
-    <div className="p-2">
-      <div className="justify-between sm:flex sm:gap-x-2">
-        <DebouncedInput
-          value={globalFilter ?? ""}
-          onChange={(value) => setGlobalFilter(String(value))}
-          className="font-lg border-block border p-2 shadow"
-          placeholder="Search all columns..."
-        />
-        <CreateButton
-          pageIndex={pageIndex}
-          pageSize={pageSize}
-          searchKey={globalFilter}
-          projectId={projectId}
-        />
-      </div>
-      <div className="mt-4 flex flex-col">
-        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <th
-                            key={header.id}
-                            colSpan={header.colSpan}
-                            scope="col"
-                            className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                          >
-                            {header.isPlaceholder ? null : (
-                              <div
-                                {...{
-                                  className: header.column.getCanSort()
-                                    ? "cursor-pointer select-none flex items-center justify-between"
-                                    : "flex items-center justify-between",
-                                  onClick:
-                                    header.column.getToggleSortingHandler(),
-                                }}
+    <>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <div className="p-2">
+          <div className="justify-between sm:flex sm:gap-x-2">
+            <DebouncedInput
+              value={globalFilter ?? ""}
+              onChange={(value) => setGlobalFilter(String(value))}
+              className="font-lg border-block border p-2 shadow"
+              placeholder="Search all columns..."
+            />
+            <CreateButton
+              pageIndex={pageIndex}
+              pageSize={pageSize}
+              searchKey={globalFilter}
+              projectId={projectId}
+            />
+          </div>
+          <div className="mt-4 flex flex-col">
+            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <tr key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => {
+                            return (
+                              <th
+                                key={header.id}
+                                colSpan={header.colSpan}
+                                scope="col"
+                                className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                               >
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
+                                {header.isPlaceholder ? null : (
+                                  <div
+                                    {...{
+                                      className: header.column.getCanSort()
+                                        ? "cursor-pointer select-none flex items-center justify-between"
+                                        : "flex items-center justify-between",
+                                      onClick:
+                                        header.column.getToggleSortingHandler(),
+                                    }}
+                                  >
+                                    {flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext()
+                                    )}
+                                    {{
+                                      asc: (
+                                        <SortUpIcon className="h-4 w-4 text-gray-400" />
+                                      ),
+                                      desc: (
+                                        <SortDownIcon className="h-4 w-4 text-gray-400" />
+                                      ),
+                                    }[header.column.getIsSorted() as string] ??
+                                      null}
+                                  </div>
                                 )}
-                                {{
-                                  asc: (
-                                    <SortUpIcon className="h-4 w-4 text-gray-400" />
-                                  ),
-                                  desc: (
-                                    <SortDownIcon className="h-4 w-4 text-gray-400" />
-                                  ),
-                                }[header.column.getIsSorted() as string] ??
-                                  null}
-                              </div>
-                            )}
-                          </th>
+                              </th>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {table.getRowModel().rows.map((row) => {
+                        return (
+                          <tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => {
+                              return (
+                                <td
+                                  key={cell.id}
+                                  className="whitespace-nowrap px-6 py-4"
+                                >
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
                         );
                       })}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {table.getRowModel().rows.map((row) => {
-                    return (
-                      <tr key={row.id}>
-                        {row.getVisibleCells().map((cell) => {
-                          return (
-                            <td
-                              key={cell.id}
-                              className="whitespace-nowrap px-6 py-4"
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="flex items-center justify-between py-3">
-        <div className="flex flex-1 justify-between sm:hidden">
-          <Button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          {isFetching && <Spinner size="w-4 h-4" />}
-          <Button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div className="flex items-baseline gap-x-2">
-            <span className="text-sm text-gray-700">
-              Page <span className="font-medium">{pageIndex + 1}</span> of{" "}
-              <span className="font-medium">{table.getPageCount()}</span>
-            </span>
-            <label>
-              <span className="sr-only">Items Per Page</span>
-              <select
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                value={pageSize}
-                onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
-                }}
-              >
-                {[5, 10, 20].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    Show {pageSize}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          {isFetching && <Spinner size="w-6 h-6" />}
-          <div>
-            <nav
-              className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm"
-              aria-label="Pagination"
-            >
-              <PageButton
-                className="rounded-l-md"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <span className="sr-only">First</span>
-                <ChevronDoubleLeftIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                  onMouseEnter={() => {
-                    if (!table.getCanPreviousPage()) return;
-                    void utils.budget.getBudgets.prefetch(
-                      {
-                        projectId: projectId,
-                        searchKey: globalFilter,
-                        pageSize: pageSize,
-                        pageIndex: 0,
-                      },
-                      {
-                        staleTime: Infinity,
-                      }
-                    );
-                  }}
-                />
-              </PageButton>
-              <PageButton
+          <div className="flex items-center justify-between py-3">
+            <div className="flex flex-1 justify-between sm:hidden">
+              <Button
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Previous</span>
-                <ChevronLeftIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                  onMouseEnter={() => {
-                    if (!table.getCanPreviousPage()) return;
-                    void utils.budget.getBudgets.prefetch(
-                      {
-                        projectId: projectId,
-                        searchKey: globalFilter,
-                        pageSize: pageSize,
-                        pageIndex: pageIndex - 1,
-                      },
-                      {
-                        staleTime: Infinity,
-                      }
-                    );
-                  }}
-                />
-              </PageButton>
-              <PageButton
+                Previous
+              </Button>
+              {isFetching && <Spinner size="w-4 h-4" />}
+              <Button
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Next</span>
-                <ChevronRightIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                  onMouseEnter={() => {
-                    if (!table.getCanNextPage()) return;
-                    void utils.budget.getBudgets.prefetch(
-                      {
-                        projectId: projectId,
-                        searchKey: globalFilter,
-                        pageSize: pageSize,
-                        pageIndex: pageIndex + 1,
-                      },
-                      {
-                        staleTime: Infinity,
-                      }
-                    );
-                  }}
-                />
-              </PageButton>
-              <PageButton
-                className="rounded-r-md"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                <span className="sr-only">Last</span>
-                <ChevronDoubleRightIcon
-                  onMouseEnter={() => {
-                    if (!table.getCanNextPage()) return;
-                    void utils.budget.getBudgets.prefetch(
-                      {
-                        projectId: projectId,
-                        searchKey: globalFilter,
-                        pageSize: pageSize,
-                        pageIndex: table.getPageCount() - 1,
-                      },
-                      {
-                        staleTime: Infinity,
-                      }
-                    );
-                  }}
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </PageButton>
-            </nav>
+                Next
+              </Button>
+            </div>
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div className="flex items-baseline gap-x-2">
+                <span className="text-sm text-gray-700">
+                  Page <span className="font-medium">{pageIndex + 1}</span> of{" "}
+                  <span className="font-medium">{table.getPageCount()}</span>
+                </span>
+                <label>
+                  <span className="sr-only">Items Per Page</span>
+                  <select
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    value={pageSize}
+                    onChange={(e) => {
+                      table.setPageSize(Number(e.target.value));
+                    }}
+                  >
+                    {[5, 10, 20].map((pageSize) => (
+                      <option key={pageSize} value={pageSize}>
+                        Show {pageSize}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              {isFetching && <Spinner size="w-6 h-6" />}
+              <div>
+                <nav
+                  className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
+                >
+                  <PageButton
+                    className="rounded-l-md"
+                    onClick={() => table.setPageIndex(0)}
+                    disabled={!table.getCanPreviousPage()}
+                  >
+                    <span className="sr-only">First</span>
+                    <ChevronDoubleLeftIcon
+                      className="h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                      onMouseEnter={() => {
+                        if (!table.getCanPreviousPage()) return;
+                        void utils.budget.getBudgets.prefetch(
+                          {
+                            projectId: projectId,
+                            searchKey: globalFilter,
+                            pageSize: pageSize,
+                            pageIndex: 0,
+                          },
+                          {
+                            staleTime: Infinity,
+                          }
+                        );
+                      }}
+                    />
+                  </PageButton>
+                  <PageButton
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeftIcon
+                      className="h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                      onMouseEnter={() => {
+                        if (!table.getCanPreviousPage()) return;
+                        void utils.budget.getBudgets.prefetch(
+                          {
+                            projectId: projectId,
+                            searchKey: globalFilter,
+                            pageSize: pageSize,
+                            pageIndex: pageIndex - 1,
+                          },
+                          {
+                            staleTime: Infinity,
+                          }
+                        );
+                      }}
+                    />
+                  </PageButton>
+                  <PageButton
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRightIcon
+                      className="h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                      onMouseEnter={() => {
+                        if (!table.getCanNextPage()) return;
+                        void utils.budget.getBudgets.prefetch(
+                          {
+                            projectId: projectId,
+                            searchKey: globalFilter,
+                            pageSize: pageSize,
+                            pageIndex: pageIndex + 1,
+                          },
+                          {
+                            staleTime: Infinity,
+                          }
+                        );
+                      }}
+                    />
+                  </PageButton>
+                  <PageButton
+                    className="rounded-r-md"
+                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                    disabled={!table.getCanNextPage()}
+                  >
+                    <span className="sr-only">Last</span>
+                    <ChevronDoubleRightIcon
+                      onMouseEnter={() => {
+                        if (!table.getCanNextPage()) return;
+                        void utils.budget.getBudgets.prefetch(
+                          {
+                            projectId: projectId,
+                            searchKey: globalFilter,
+                            pageSize: pageSize,
+                            pageIndex: table.getPageCount() - 1,
+                          },
+                          {
+                            staleTime: Infinity,
+                          }
+                        );
+                      }}
+                      className="h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </PageButton>
+                </nav>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
