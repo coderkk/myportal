@@ -176,7 +176,7 @@ const EditButton = ({
                   )
                 }
               >
-                Create
+                Save
               </button>
             </div>
             <Dialog.Close asChild>

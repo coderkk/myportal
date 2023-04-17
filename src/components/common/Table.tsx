@@ -10,8 +10,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { InputHTMLAttributes, ReactNode } from "react";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 
 import {
   ChevronDoubleLeftIcon,
@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 import { useGetBudgets } from "../../hooks/budget";
 import { api } from "../../utils/api";
 import EditButton from "../budget/EditButton";
+import DebouncedInput from "./DebounceInput";
 import Spinner from "./Spinner";
 
 const CreateButton = dynamic(() => import("../budget/CreateButton"));
@@ -179,7 +180,6 @@ const Table = () => {
   const utils = api.useContext();
   const { query } = useRouter();
   const projectId = query.projectId as string;
-  const [globalFilter, setGlobalFilter] = useState("");
   const [{ queryPageIndex, queryPageSize, search_key }, dispatch] = useReducer(
     reducer,
     initialState
@@ -245,7 +245,7 @@ const Table = () => {
                 costsIncurred={costsIncurred}
                 pageIndex={queryPageIndex}
                 pageSize={queryPageSize}
-                searchKey={globalFilter}
+                searchKey={search_key}
               />
               <DeleteButton budgetId={id} />
             </>
@@ -254,17 +254,19 @@ const Table = () => {
         header: () => <span>Actions</span>,
       }),
     ],
-    [columnHelper, globalFilter, projectId, queryPageIndex, queryPageSize]
+    [columnHelper, projectId, queryPageIndex, queryPageSize, search_key]
   );
   const table = useReactTable({
     data: budgets,
     columns,
     manualPagination: true,
     state: {
-      globalFilter,
+      globalFilter: search_key,
     },
     pageCount: Math.ceil(count / queryPageSize),
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: (value: string) => {
+      dispatch({ type: SEARCH_KEY_CHANGED, payload: value });
+    },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -274,6 +276,8 @@ const Table = () => {
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
   });
 
+  // use pageIndex, pageSize to update queryPageIndex, queryPageSize
+  // react-table updates pageIndex, pageSize when user event occurs
   const { pageIndex, pageSize } = table.getState().pagination;
 
   useEffect(() => {
@@ -291,14 +295,18 @@ const Table = () => {
     table.setPageIndex(0);
   }, [dispatch, table, pageSize]);
 
-  useEffect(() => {
-    dispatch({
-      type: SEARCH_KEY_CHANGED,
-      payload: globalFilter,
-    });
-    table.setPageIndex(0);
-  }, [dispatch, table, globalFilter]);
+  const onInputChange = useCallback(
+    (value: string | number) => {
+      dispatch({
+        type: SEARCH_KEY_CHANGED,
+        payload: String(value),
+      });
+      table.setPageIndex(0);
+    },
+    [table]
+  );
 
+  console.log("fbsdafasdf");
   return (
     <>
       {isLoading ? (
@@ -307,15 +315,15 @@ const Table = () => {
         <div className="p-2">
           <div className="justify-between sm:flex sm:gap-x-2">
             <DebouncedInput
-              value={globalFilter ?? ""}
-              onChange={(value) => setGlobalFilter(String(value))}
+              value={search_key ?? ""}
+              onChange={onInputChange}
               className="font-lg border-block border p-2 shadow"
               placeholder="Search all columns..."
             />
             <CreateButton
               pageIndex={pageIndex}
               pageSize={pageSize}
-              searchKey={globalFilter}
+              searchKey={search_key}
               projectId={projectId}
             />
           </div>
@@ -451,7 +459,7 @@ const Table = () => {
                         void utils.budget.getBudgets.prefetch(
                           {
                             projectId: projectId,
-                            searchKey: globalFilter,
+                            searchKey: search_key,
                             pageSize: pageSize,
                             pageIndex: 0,
                           },
@@ -475,7 +483,7 @@ const Table = () => {
                         void utils.budget.getBudgets.prefetch(
                           {
                             projectId: projectId,
-                            searchKey: globalFilter,
+                            searchKey: search_key,
                             pageSize: pageSize,
                             pageIndex: pageIndex - 1,
                           },
@@ -499,7 +507,7 @@ const Table = () => {
                         void utils.budget.getBudgets.prefetch(
                           {
                             projectId: projectId,
-                            searchKey: globalFilter,
+                            searchKey: search_key,
                             pageSize: pageSize,
                             pageIndex: pageIndex + 1,
                           },
@@ -522,7 +530,7 @@ const Table = () => {
                         void utils.budget.getBudgets.prefetch(
                           {
                             projectId: projectId,
-                            searchKey: globalFilter,
+                            searchKey: search_key,
                             pageSize: pageSize,
                             pageIndex: table.getPageCount() - 1,
                           },
@@ -542,45 +550,6 @@ const Table = () => {
         </div>
       )}
     </>
-  );
-};
-
-// A debounced input react component
-const DebouncedInput = ({
-  value: initialValue,
-  onChange,
-  debounce = 500,
-  ...props
-}: {
-  value: string | number;
-  onChange: (value: string | number) => void;
-  debounce?: number;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) => {
-  const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      onChange(value);
-    }, debounce);
-
-    return () => clearTimeout(timeout);
-  }, [debounce, onChange, value]);
-
-  return (
-    <label className="flex items-baseline gap-x-2">
-      <span className="text-gray-700">Search: </span>
-      <input
-        type="text"
-        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        {...props}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </label>
   );
 };
 
