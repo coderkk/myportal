@@ -12,7 +12,7 @@ export const useFetchS3BucketContents = ({
     projectId: projectId,
   });
   return {
-    chonkyFiles: data,
+    files: data,
     isLoading: isLoading,
   };
 };
