@@ -32,7 +32,7 @@ const S3Browser = () => {
   const [folderPrefix, setFolderPrefix] = useState<string>("/");
   const projectId = router.query.projectId as string;
 
-  const { chonkyFiles } = useFetchS3BucketContents({
+  const { files: chonkyFiles } = useFetchS3BucketContents({
     prefix: folderPrefix,
     projectId: projectId,
   });

@@ -8,13 +8,13 @@ import type {
   TypedArray,
 } from "pdfjs-dist/types/src/display/api";
 
-export interface InvoiceType {
-    vendorName: string | undefined;
-    invoiceNo: string | undefined;
-    invoiceDate: string | undefined;
-    invoiceCosts: number | undefined;
-    description: string | undefined;
-}
+export type Invoice = {
+  vendorName: string | undefined;
+  invoiceNo: string | undefined;
+  invoiceDate: string | undefined;
+  invoiceCosts: number | undefined;
+  description: string | undefined;
+};
 
 GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
@@ -33,9 +33,7 @@ const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
     .join("");
 };
 
-export const getPDFText = async (
-  pdf: PDFDocumentProxy
-): Promise<string> => {
+export const getPDFText = async (pdf: PDFDocumentProxy) => {
   const pageTextPromises = [];
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     pageTextPromises.push(getPageText(pdf, pageNumber));
@@ -45,45 +43,47 @@ export const getPDFText = async (
 };
 
 export const loadPDF = async (
-    source: string | URL | TypedArray | ArrayBuffer | DocumentInitParameters
-  ): Promise<string> => {
-    const loadingTask = pdfjsLib.getDocument(source);
-    const pdf = await loadingTask.promise;
-    return await getPDFText(pdf)
+  source: string | URL | TypedArray | ArrayBuffer | DocumentInitParameters
+) => {
+  const loadingTask = pdfjsLib.getDocument(source);
+  const pdf = await loadingTask.promise;
+  return await getPDFText(pdf);
+};
+
+export const parseData = (pdfContent: string) => {
+  const data: Invoice = {
+    vendorName: "ds",
+    invoiceNo: "",
+    invoiceDate: "",
+    invoiceCosts: 0,
+    description: "",
   };
-
-export const parseData = (pdfContent: string) : InvoiceType => {
-    const data: InvoiceType =  {
-        vendorName: "ds",
-        invoiceNo: "",
-        invoiceDate: "",
-        invoiceCosts: 0,
-        description: "",
-    }
-    const pageTexts: string[] = pdfContent.split("\n")
-    for (const pageText of pageTexts) {
-        const pageTextLines = pageText.split(/\r?\n/);
-        pageTextLines.forEach((pageTextLine) => {
-          if (pageTextLine.includes("invoice number")) {
-            data.invoiceNo = pageTextLine.match(/\d/g)?.join("");
-          }
-          if (pageTextLine.includes("invoice date")) {
-            if (pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/))
-            data.invoiceDate = pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/)?.join("");
-            if (pageTextLine.match(/\d{2}-\d{2}-\d{4}/))
-            data.invoiceDate = pageTextLine.match(/\d{2}-\d{2}-\d{4}/)?.join("");
-          }
-          if (
-            pageTextLine.includes("total") &&
-            pageTextLine.split(" ").includes("total")
-          ) {
-            if (pageTextLine.match(/\d/g)) {
-                const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("")
-                data.invoiceCosts = (val == undefined) ? 0 : parseFloat(val);
-            }
-          }
-        });
+  const pageTexts: string[] = pdfContent.split("\n");
+  for (const pageText of pageTexts) {
+    const pageTextLines = pageText.split(/\r?\n/);
+    pageTextLines.forEach((pageTextLine) => {
+      if (pageTextLine.includes("invoice number")) {
+        data.invoiceNo = pageTextLine.match(/\d/g)?.join("");
       }
+      if (pageTextLine.includes("invoice date")) {
+        if (pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/))
+          data.invoiceDate = pageTextLine
+            .match(/\d{2}\/\d{2}\/\d{4}/)
+            ?.join("");
+        if (pageTextLine.match(/\d{2}-\d{2}-\d{4}/))
+          data.invoiceDate = pageTextLine.match(/\d{2}-\d{2}-\d{4}/)?.join("");
+      }
+      if (
+        pageTextLine.includes("total") &&
+        pageTextLine.split(" ").includes("total")
+      ) {
+        if (pageTextLine.match(/\d/g)) {
+          const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
+          data.invoiceCosts = val == undefined ? 0 : parseFloat(val);
+        }
+      }
+    });
+  }
 
-    return data;
-}
+  return data;
+};
