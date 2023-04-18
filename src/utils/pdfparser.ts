@@ -33,7 +33,7 @@ const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
     .join("");
 };
 
-export const getPDFText = async (pdf: PDFDocumentProxy): Promise<string> => {
+export const getPDFText = async (pdf: PDFDocumentProxy) => {
   const pageTextPromises = [];
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     pageTextPromises.push(getPageText(pdf, pageNumber));
@@ -44,13 +44,13 @@ export const getPDFText = async (pdf: PDFDocumentProxy): Promise<string> => {
 
 export const loadPDF = async (
   source: string | URL | TypedArray | ArrayBuffer | DocumentInitParameters
-): Promise<string> => {
+) => {
   const loadingTask = pdfjsLib.getDocument(source);
   const pdf = await loadingTask.promise;
   return await getPDFText(pdf);
 };
 
-export const parseData = (pdfContent: string): Invoice => {
+export const parseData = (pdfContent: string) => {
   const data: Invoice = {
     vendorName: "ds",
     invoiceNo: "",

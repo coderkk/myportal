@@ -16,7 +16,6 @@ import dynamic from "next/dynamic";
 import type { Invoice } from "../../../../utils/pdfparser";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
-// pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const Document = dynamic(() =>
   import("react-pdf").then((module) => module.Document)
@@ -28,7 +27,6 @@ const InvoicePage = () => {
   const router = useRouter();
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
-  // const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [invoiceData, setInvoiceData] = useState<Invoice>({
