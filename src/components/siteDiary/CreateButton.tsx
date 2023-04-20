@@ -1,7 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
-import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
 import ReactDatePicker from "react-datepicker";
 import type { ControllerRenderProps } from "react-hook-form";
@@ -47,7 +46,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
               <div className="sm:flex sm:flex-1 sm:flex-row sm:gap-2">
                 <input
                   className={`mt-5 mb-3 h-10 w-full rounded-lg border border-gray-300 py-2 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-1 ${
-                    errors.name && "border-red-400  focus:border-red-400 "
+                    errors.name ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="name"
                   placeholder="Name of new site diary"
@@ -70,7 +69,9 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                         name={name}
                         selected={value}
                         className={`mt-5 mb-3 h-10 py-2 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-2 ${
-                          errors.date && "border-red-400   focus:ring-red-400"
+                          errors.date
+                            ? "border-red-400   focus:ring-red-400"
+                            : ""
                         }`}
                         onChange={(date) => {
                           if (date) {
