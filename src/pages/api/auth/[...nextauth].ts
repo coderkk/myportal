@@ -5,6 +5,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import TwitchProvider from "next-auth/providers/twitch";
 import TwitterProvider from "next-auth/providers/twitter";
+import EmailProvider from "next-auth/providers/email";
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -62,6 +63,17 @@ export const authOptions: NextAuthOptions = {
       clientId: env.TWITTER_CLIENT_ID,
       clientSecret: env.TWITTER_CLIENT_SECRET,
       version: "2.0",
+    }),
+    EmailProvider({
+      server: {
+        host: env.EMAIL_SERVER_HOST,
+        port: env.EMAIL_SERVER_PORT,
+        auth: {
+         user: env.EMAIL_SERVER_USER,
+         pass: env.EMAIL_SERVER_PASSWORD
+        },
+      },
+      from: env.EMAIL_FROM,
     }),
     /**
      * ...add more providers here
