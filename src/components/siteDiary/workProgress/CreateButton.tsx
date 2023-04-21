@@ -47,7 +47,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                       : ""
                   }`}
                   id="comments"
-                  placeholder={"My new comment"}
+                  placeholder={"e.g. Bob poured cement"}
                   {...register("comments", {
                     required: true,
                   })}
