@@ -8,21 +8,22 @@ export const projectFeatures = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"
         />
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"
         />
       </svg>
     ),
+    current: true,
   },
   {
     name: "Invoice processing",
@@ -33,16 +34,17 @@ export const projectFeatures = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M7.5 3.75H6A2.25 2.25 0 003.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0120.25 6v1.5m0 9V18A2.25 2.25 0 0118 20.25h-1.5m-9 0H6A2.25 2.25 0 013.75 18v-1.5M15 12a3 3 0 11-6 0 3 3 0 016 0z"
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "Site diary",
@@ -63,6 +65,7 @@ export const projectFeatures = [
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "File management",
@@ -84,6 +87,7 @@ export const projectFeatures = [
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "Request for information (RFI)",
@@ -104,6 +108,7 @@ export const projectFeatures = [
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "Team",
@@ -124,6 +129,7 @@ export const projectFeatures = [
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "Task management",
@@ -134,21 +140,22 @@ export const projectFeatures = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "Photo gallery",
     description: "Store all project photos in one central hub.",
-    href: "/task",
+    href: "/photo-gallery",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -164,11 +171,12 @@ export const projectFeatures = [
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "Settings",
     description: "Setup your profile and upgrade subscription package.",
-    href: "/order",
+    href: "/settings",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -189,6 +197,7 @@ export const projectFeatures = [
         />
       </svg>
     ),
+    current: false,
   },
   {
     name: "Orders",
@@ -199,15 +208,16 @@ export const projectFeatures = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"
         />
       </svg>
     ),
+    current: false,
   },
 ];

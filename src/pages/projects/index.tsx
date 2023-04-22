@@ -48,7 +48,11 @@ const Projects = () => {
               >
                 <span
                   className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500"
-                  onClick={() => void router.push(`/projects/${project.id}`)}
+                  onClick={() =>
+                    void router.push(
+                      `/projects/${project.id}/financial-dashboard`
+                    )
+                  }
                 >
                   <div>
                     <span className="mr-4">{project.name}</span>
