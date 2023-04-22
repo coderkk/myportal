@@ -44,7 +44,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                 className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-1 sm:row-start-1 sm:flex sm:items-end"
                 htmlFor="type"
               >
-                Role
+                Type
               </label>
               <input
                 className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-1 sm:row-start-2 sm:mb-0 sm:text-left ${
@@ -66,7 +66,8 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                   errors.amount ? "border-red-400  focus:border-red-400 " : ""
                 }`}
                 id="amount"
-                defaultValue={1}
+                placeholder="Nr."
+                // defaultValue={1}
                 type="number"
                 {...register("amount", {
                   required: true,
@@ -76,7 +77,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
             </fieldset>
             {errors.type && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Role is required
+                Type is required
               </span>
             )}
             {errors.amount && (
