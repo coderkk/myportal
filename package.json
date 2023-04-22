@@ -53,6 +53,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^13.1.5",
     "@types/node": "^18.11.18",
+    "@types/nodemailer": "^6.4.7",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.26",
     "@types/react-datepicker": "^4.8.0",
