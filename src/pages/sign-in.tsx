@@ -4,6 +4,7 @@ import GoogleButton from "../components/oauth/GoogleButton";
 import MicrosoftButton from "../components/oauth/MicrosoftButton";
 import TwitchButton from "../components/oauth/TwitchButton";
 import TwitterButton from "../components/oauth/TwitterButton";
+import EmailButton from "../components/oauth/EmailButton";
 
 export default function signin() {
   return (
@@ -23,6 +24,17 @@ export default function signin() {
                 <GoogleButton />
                 <MicrosoftButton />
               </div>
+
+              <div
+                className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
+                <p
+                  className="mx-4 mb-0 text-center font-semibold dark:text-white">
+                  Or
+                </p>
+              </div>
+
+              <EmailButton />
+              
               <p className="prose prose-sm mx-auto mt-6 max-w-[18rem] text-xs text-gray-500">
                 By signing in, you agree to our{" "}
                 <a href="/info/terms-of-service">Terms of Service</a> and{" "}
