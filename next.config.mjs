@@ -13,6 +13,9 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["tailwindui.com", "cdn.discordapp.com"],
+  },
   async redirects() {
     return [
       {

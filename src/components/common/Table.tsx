@@ -24,11 +24,12 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useGetBudgets } from "../../hooks/budget";
 import { api } from "../../utils/api";
-import EditButton from "../budget/EditButton";
 import DebouncedInput from "./DebounceInput";
 import Spinner from "./Spinner";
 
 const CreateButton = dynamic(() => import("../budget/CreateButton"));
+
+const EditButton = dynamic(() => import("../budget/EditButton"));
 
 const DeleteButton = dynamic(() => import("../budget/DeleteButton"));
 
@@ -43,7 +44,7 @@ type Budget = {
 
 const initialState = {
   queryPageIndex: 0,
-  queryPageSize: 10,
+  queryPageSize: 5,
   search_key: "",
 };
 
@@ -263,6 +264,11 @@ const Table = () => {
     state: {
       globalFilter: search_key,
     },
+    initialState: {
+      pagination: {
+        pageSize: 5,
+      },
+    },
     pageCount: Math.ceil(count / queryPageSize),
     onGlobalFilterChange: (value: string) => {
       dispatch({ type: SEARCH_KEY_CHANGED, payload: value });
@@ -306,26 +312,27 @@ const Table = () => {
     [table]
   );
 
-  console.log("fbsdafasdf");
   return (
     <>
       {isLoading ? (
         <Spinner />
       ) : (
         <div className="p-2">
-          <div className="justify-between sm:flex sm:gap-x-2">
+          <div className="flex items-center justify-between gap-x-2">
             <DebouncedInput
               value={search_key ?? ""}
               onChange={onInputChange}
               className="font-lg border-block border p-2 shadow"
               placeholder="Search all columns..."
             />
-            <CreateButton
-              pageIndex={pageIndex}
-              pageSize={pageSize}
-              searchKey={search_key}
-              projectId={projectId}
-            />
+            <span>
+              <CreateButton
+                pageIndex={pageIndex}
+                pageSize={pageSize}
+                searchKey={search_key}
+                projectId={projectId}
+              />
+            </span>
           </div>
           <div className="mt-4 flex flex-col">
             <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

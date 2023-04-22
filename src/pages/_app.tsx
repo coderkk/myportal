@@ -2,16 +2,15 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { Toaster } from "react-hot-toast";
 import PermissionToProject from "../components/auth/PermissionToProject";
-// import { ProjectHeader } from "../components/project/ProjectHeader";
-import dynamic from "next/dynamic";
 import "../styles/globals.css";
 import { api } from "../utils/api";
 
-const ProjectHeader = dynamic(
-  () => import("../components/project/ProjectHeader")
+const ProjectSidebar = dynamic(
+  () => import("../components/project/ProjectSidebar")
 );
 
 const MyApp: AppType<{ session: Session | null }> = ({
@@ -21,14 +20,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const router = useRouter();
   let component = <Component {...pageProps} />;
   if (router.asPath.match("/projects/.*")) {
-    const projectId = router.query.projectId as string;
-    if (!projectId) {
-      component = <div>{null}</div>;
-    } else {
+    const projectId = router.query.projectId;
+    if (projectId && typeof projectId === "string") {
       component = (
         <PermissionToProject projectId={projectId}>
-          <ProjectHeader />
-          <Component {...pageProps} />
+          <ProjectSidebar>
+            <Component {...pageProps} />
+          </ProjectSidebar>
         </PermissionToProject>
       );
     }

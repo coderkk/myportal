@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const _404 = () => {
+  const router = useRouter();
   return (
     <main className="flex h-screen min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
       <div className="m-auto text-center">
@@ -12,12 +14,12 @@ const _404 = () => {
           Sorry, we couldn’t find the page you’re looking for.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Link
-            href="/"
+          <span
+            onClick={() => router.back()}
             className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
-            Go back home
-          </Link>
+            Go back
+          </span>
           <Link
             href="/contactus"
             className="text-sm font-semibold text-gray-900"
