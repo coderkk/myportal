@@ -44,13 +44,13 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
             <fieldset className="mb-4 gap-3 sm:mb-7 sm:flex ">
               <div className="flex flex-1 flex-col">
                 <label
-                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-1 sm:row-start-1 sm:flex sm:items-end"
+                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:flex sm:items-end"
                   htmlFor="type"
                 >
                   Type
                 </label>
                 <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-1 sm:row-start-2 sm:mb-0 sm:text-left ${
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
                     errors.type ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="type"
@@ -60,7 +60,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
               </div>
               <div className="flex flex-col">
                 <label
-                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-2 sm:row-start-1 sm:flex sm:items-end"
+                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:flex sm:items-end"
                   htmlFor="units"
                 >
                   Units
@@ -69,7 +69,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                   id="units"
                   defaultValue="M2"
                   {...register("units", { required: true })}
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-2 sm:row-start-2 sm:mb-0 sm:text-left ${
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
                     errors.units ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                 >
@@ -82,13 +82,13 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
 
               <div className="flex flex-1 flex-col">
                 <label
-                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-3 sm:row-start-1 sm:flex sm:items-end"
+                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:flex sm:items-end"
                   htmlFor="amount"
                 >
                   Quantity
                 </label>
                 <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-3 sm:row-start-2 sm:mb-0 sm:text-left ${
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
                     errors.amount ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="amount"
@@ -127,7 +127,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
               </button>
               <Dialog.Close asChild>
                 <button
-                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0"
                   aria-label="Close"
                   type="button"
                 >
