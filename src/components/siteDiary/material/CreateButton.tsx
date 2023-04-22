@@ -41,60 +41,66 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
             new material
           </Dialog.Title>
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
-            <fieldset className="mb-4 sm:mb-7 sm:grid sm:grid-cols-3 sm:grid-rows-2 sm:gap-y-0  sm:gap-x-3 ">
-              <label
-                className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-1 sm:row-start-1 sm:flex sm:items-end"
-                htmlFor="type"
-              >
-                Type
-              </label>
-              <input
-                className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-1 sm:row-start-2 sm:mb-0 sm:text-left ${
-                  errors.type ? "border-red-400  focus:border-red-400 " : ""
-                }`}
-                id="type"
-                placeholder="e.g. Plywood"
-                {...register("type", { required: true })}
-              />
-              <label
-                className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-2 sm:row-start-1 sm:flex sm:items-end"
-                htmlFor="units"
-              >
-                Units
-              </label>
-              <select
-                id="units"
-                defaultValue="M2"
-                {...register("units", { required: true })}
-                className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-2 sm:row-start-2 sm:mb-0 sm:text-left ${
-                  errors.units ? "border-red-400  focus:border-red-400 " : ""
-                }`}
-              >
-                <option value="M">M</option>
-                <option value="M2">M2</option>
-                <option value="M3">M3</option>
-                <option value="NR">NR</option>
-              </select>
+            <fieldset className="mb-4 gap-3 sm:mb-7 sm:flex ">
+              <div className="flex flex-1 flex-col">
+                <label
+                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-1 sm:row-start-1 sm:flex sm:items-end"
+                  htmlFor="type"
+                >
+                  Type
+                </label>
+                <input
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-1 sm:row-start-2 sm:mb-0 sm:text-left ${
+                    errors.type ? "border-red-400  focus:border-red-400 " : ""
+                  }`}
+                  id="type"
+                  placeholder="e.g. Plywood"
+                  {...register("type", { required: true })}
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-2 sm:row-start-1 sm:flex sm:items-end"
+                  htmlFor="units"
+                >
+                  Units
+                </label>
+                <select
+                  id="units"
+                  defaultValue="M2"
+                  {...register("units", { required: true })}
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-2 sm:row-start-2 sm:mb-0 sm:text-left ${
+                    errors.units ? "border-red-400  focus:border-red-400 " : ""
+                  }`}
+                >
+                  <option value="M">M</option>
+                  <option value="M2">M2</option>
+                  <option value="M3">M3</option>
+                  <option value="NR">NR</option>
+                </select>
+              </div>
 
-              <label
-                className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-3 sm:row-start-1 sm:flex sm:items-end"
-                htmlFor="amount"
-              >
-                Quantity
-              </label>
-              <input
-                className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-3 sm:row-start-2 sm:mb-0 sm:text-left ${
-                  errors.amount ? "border-red-400  focus:border-red-400 " : ""
-                }`}
-                id="amount"
-                defaultValue={1}
-                placeholder="e.g. 5"
-                type="number"
-                {...register("amount", {
-                  required: true,
-                  valueAsNumber: true,
-                })}
-              />
+              <div className="flex flex-1 flex-col">
+                <label
+                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:col-start-3 sm:row-start-1 sm:flex sm:items-end"
+                  htmlFor="amount"
+                >
+                  Quantity
+                </label>
+                <input
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-3 sm:row-start-2 sm:mb-0 sm:text-left ${
+                    errors.amount ? "border-red-400  focus:border-red-400 " : ""
+                  }`}
+                  id="amount"
+                  defaultValue={1}
+                  placeholder="e.g. 5"
+                  type="number"
+                  {...register("amount", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
+                />
+              </div>
             </fieldset>
             {errors.type && (
               <span className="flex justify-center text-xs italic text-red-400">
