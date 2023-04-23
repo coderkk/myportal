@@ -1,7 +1,7 @@
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import classNames from "classnames";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -200,25 +200,63 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                         </ul>
                       </li>
                       <li className="-mx-6 mt-auto">
-                        <a
-                          href="#"
-                          className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800"
-                        >
-                          <Image
-                            className="h-8 w-8 rounded-full bg-gray-800"
-                            src={
-                              session.data?.user?.image ||
-                              "/images/default-photo.jpg"
-                            }
-                            alt="Your Profile Picture"
-                            width={32}
-                            height={32}
-                          />
-                          <span className="sr-only">Your profile</span>
-                          <span aria-hidden="true">
-                            {session.data?.user?.name}
-                          </span>
-                        </a>
+                        <Menu as="div" className="relative">
+                          <div>
+                            <Menu.Button className="flex w-full items-center justify-between px-6 py-3 text-sm font-semibold leading-6 text-black hover:bg-gray-100">
+                              <span className="flex w-44 items-center">
+                                <span className="sr-only">
+                                  Your profile picture
+                                </span>
+                                <Image
+                                  className="mr-4 h-8 w-8 rounded-full bg-gray-800"
+                                  src={
+                                    session.data?.user?.image ||
+                                    "/images/default-photo.jpg"
+                                  }
+                                  alt="Your Profile Picture"
+                                  width={32}
+                                  height={32}
+                                />
+                                <span className="sr-only">
+                                  Your profile name
+                                </span>
+                                <span aria-hidden="true">
+                                  {session.data?.user?.name}
+                                </span>
+                              </span>
+                            </Menu.Button>
+                          </div>
+                          <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-100"
+                            enterFrom="transform opacity-0 scale-95"
+                            enterTo="transform opacity-100 scale-100"
+                            leave="transition ease-in duration-75"
+                            leaveFrom="transform opacity-100 scale-100"
+                            leaveTo="transform opacity-0 scale-95"
+                          >
+                            <Menu.Items className="absolute bottom-14 left-4 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <span
+                                    className={classNames(
+                                      active ? "bg-gray-100" : "",
+                                      "block px-4 py-2 text-sm text-gray-700"
+                                    )}
+                                    onClick={() =>
+                                      void (async () => {
+                                        await router.push("/");
+                                        await signOut();
+                                      })()
+                                    }
+                                  >
+                                    Sign out
+                                  </span>
+                                )}
+                              </Menu.Item>
+                            </Menu.Items>
+                          </Transition>
+                        </Menu>
                       </li>
                     </ul>
                   </nav>
@@ -229,7 +267,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         </Dialog>
       </Transition.Root>
       {/* Static sidebar for desktop */}
-      <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
+      <div className="hidden xl:fixed xl:inset-y-0 xl:flex xl:w-72 xl:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-black/5">
           <div className="flex h-16 shrink-0 items-center">
             <Image
@@ -275,23 +313,59 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                 </ul>
               </li>
               <li className="-mx-6 mt-auto">
-                <a
-                  href="#"
-                  className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-black hover:bg-gray-100"
-                >
-                  <Image
-                    className="h-8 w-8 rounded-full bg-gray-800"
-                    src={
-                      session.data?.user?.image || "/images/default-photo.jpg"
-                    }
-                    alt="Your Profile Picture"
-                    width={32}
-                    height={32}
-                    unoptimized={true}
-                  />
-                  <span className="sr-only">Your profile</span>
-                  <span aria-hidden="true">{session.data?.user?.name}</span>
-                </a>
+                <Menu as="div" className="relative">
+                  <div>
+                    <Menu.Button className="flex w-full items-center justify-between px-6 py-3 text-sm font-semibold leading-6 text-black hover:bg-gray-100">
+                      <span className="flex w-44 items-center">
+                        <span className="sr-only">Your profile picture</span>
+                        <Image
+                          className="mr-4 h-8 w-8 rounded-full bg-gray-800"
+                          src={
+                            session.data?.user?.image ||
+                            "/images/default-photo.jpg"
+                          }
+                          alt="Your Profile Picture"
+                          width={32}
+                          height={32}
+                        />
+                        <span className="sr-only">Your profile name</span>
+                        <span aria-hidden="true">
+                          {session.data?.user?.name}
+                        </span>
+                      </span>
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute bottom-14 left-4 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <span
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
+                            onClick={() =>
+                              void (async () => {
+                                await router.push("/");
+                                await signOut();
+                              })()
+                            }
+                          >
+                            Sign out
+                          </span>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
               </li>
             </ul>
           </nav>
@@ -299,7 +373,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       </div>
 
       <div className="xl:pl-72">
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
+        <div className="sticky top-0  flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
             <Logo className="h-10 w-auto" />
           </Link>
