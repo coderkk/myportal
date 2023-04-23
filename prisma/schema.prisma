@@ -2,348 +2,370 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider     = "mysql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+  provider     = "mysql"
+  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // Necessary for Next auth
 model Account {
-    id                String   @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?  @db.Text // Why db.Text is needed: https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    access_token      String?  @db.Text
-    expires_at        Int?
-    ext_expires_in    Int?
-    token_type        String?
-    scope             String?
-    id_token          String?  @db.Text
-    session_state     String?
-    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdAt         DateTime @default(now())
-    updatedAt         DateTime @default(now()) @updatedAt
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text // Why db.Text is needed: https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  access_token      String?  @db.Text
+  expires_at        Int?
+  ext_expires_in    Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @default(now()) @updatedAt
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
-    @@index([userId])
+  @@index([userId])
 }
 
 model User {
-    id                            String                  @id @default(cuid())
-    name                          String?
-    email                         String?                 @unique
-    emailVerified                 DateTime?
-    image                         String?                 @db.Text
-    phoneNumber                   String?                 @default("") // Must have a default value: https://create.t3.gg/en/usage/next-auth#adding-new-fields-to-your-models
-    company                       String?                 @default("")
-    professionalRole              ProfessionalRole        @default(PROJECT_MEMBER)
-    accounts                      Account[]
-    sessions                      Session[]
-    createdProjects               Project[]
-    createdSiteDiaries            SiteDiary[]
-    createdPlants                 Plant[]
-    createdLaborers               Laborer[]
-    createdMaterials              Material[]
-    createdSiteProblems           SiteProblem[]
-    createdWorkProgresses         WorkProgress[]
-    createdOrders                 Order[]
-    createdRequestForInformations RequestForInformation[]
-    createdReplies                Reply[]
-    createdBudgets                Budget[]
-    createdTasks                  Task[]                  @relation("createdTasks")
-    assignedTasks                 Task[]                  @relation("assignedTasks")
-    projects                      UsersOnProjects[]
-    createdAt                     DateTime                @default(now())
-    updatedAt                     DateTime                @default(now()) @updatedAt
+  id                            String                  @id @default(cuid())
+  name                          String?
+  email                         String?                 @unique
+  emailVerified                 DateTime?
+  image                         String?                 @db.Text
+  phoneNumber                   String?                 @default("") // Must have a default value: https://create.t3.gg/en/usage/next-auth#adding-new-fields-to-your-models
+  company                       String?                 @default("")
+  professionalRole              ProfessionalRole        @default(PROJECT_MEMBER)
+  accounts                      Account[]
+  sessions                      Session[]
+  createdProjects               Project[]
+  createdSiteDiaries            SiteDiary[]
+  createdPlants                 Plant[]
+  createdLaborers               Laborer[]
+  createdMaterials              Material[]
+  createdSiteProblems           SiteProblem[]
+  createdWorkProgresses         WorkProgress[]
+  createdOrders                 Order[]
+  createdRequestForInformations RequestForInformation[]
+  createdReplies                Reply[]
+  createdBudgets                Budget[]
+  createdTasks                  Task[]                  @relation("createdTasks")
+  assignedTasks                 Task[]                  @relation("assignedTasks")
+  projects                      UsersOnProjects[]
+  createdAt                     DateTime                @default(now())
+  updatedAt                     DateTime                @default(now()) @updatedAt
+  supplierInvoices              SupplierInvoice[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 model Project {
-    id                     String                  @id @default(cuid())
-    name                   String
-    createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById            String
-    siteDiaries            SiteDiary[]
-    tasks                  Task[]
-    orders                 Order[]
-    requestForInformations RequestForInformation[]
-    users                  UsersOnProjects[]
-    budgets                Budget[]
-    createdAt              DateTime                @default(now())
-    updatedAt              DateTime                @updatedAt
+  id                     String                  @id @default(cuid())
+  name                   String
+  createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById            String
+  siteDiaries            SiteDiary[]
+  tasks                  Task[]
+  orders                 Order[]
+  requestForInformations RequestForInformation[]
+  users                  UsersOnProjects[]
+  budgets                Budget[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  supplierInvoices       SupplierInvoice[]
 
-    @@index([createdById])
+  @@index([createdById])
 }
 
 model SiteDiary {
-    id             String         @id @default(cuid())
-    name           String
-    date           DateTime
-    createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById    String
-    project        Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId      String
-    weather        Weather?
-    plants         Plant[]
-    laborers       Laborer[]
-    materials      Material[]
-    siteProblems   SiteProblem[]
-    workProgresses WorkProgress[]
-    createdAt      DateTime       @default(now())
-    updatedAt      DateTime       @updatedAt
+  id             String         @id @default(cuid())
+  name           String
+  date           DateTime
+  createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById    String
+  project        Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      String
+  weather        Weather?
+  plants         Plant[]
+  laborers       Laborer[]
+  materials      Material[]
+  siteProblems   SiteProblem[]
+  workProgresses WorkProgress[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
-    @@index([projectId])
-    @@index([createdById])
+  @@index([projectId])
+  @@index([createdById])
 }
 
 model Weather {
-    id          String            @id @default(cuid())
-    morning     WeatherCondition?
-    afternoon   WeatherCondition?
-    evening     WeatherCondition?
-    siteDiary   SiteDiary         @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    siteDiaryId String            @unique
-    createdAt   DateTime          @default(now())
-    updatedAt   DateTime          @default(now()) @updatedAt
+  id          String            @id @default(cuid())
+  morning     WeatherCondition?
+  afternoon   WeatherCondition?
+  evening     WeatherCondition?
+  siteDiary   SiteDiary         @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
+  siteDiaryId String            @unique
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @default(now()) @updatedAt
 }
 
 model Plant {
-    id          String    @id @default(cuid())
-    type        String
-    amount      Int
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById String
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @default(now()) @updatedAt
+  id          String    @id @default(cuid())
+  type        String
+  amount      Int
+  siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
+  siteDiaryId String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
-    @@index([siteDiaryId])
-    @@index([createdById])
+  @@index([siteDiaryId])
+  @@index([createdById])
 }
 
 model Laborer {
-    id          String    @id @default(cuid())
-    type        String
-    amount      Int
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById String
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @default(now()) @updatedAt
+  id          String    @id @default(cuid())
+  type        String
+  amount      Int
+  siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
+  siteDiaryId String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
-    @@index([siteDiaryId])
-    @@index([createdById])
+  @@index([siteDiaryId])
+  @@index([createdById])
 }
 
 model Material {
-    id          String       @id @default(cuid())
-    type        String
-    units       MaterialUnit
-    amount      Int
-    siteDiary   SiteDiary    @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    siteDiaryId String
-    createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById String
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @default(now()) @updatedAt
+  id          String       @id @default(cuid())
+  type        String
+  units       MaterialUnit
+  amount      Int
+  siteDiary   SiteDiary    @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
+  siteDiaryId String
+  createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt
 
-    @@index([siteDiaryId])
-    @@index([createdById])
+  @@index([siteDiaryId])
+  @@index([createdById])
 }
 
 model SiteProblem {
-    id          String    @id @default(cuid())
-    comments    String
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById String
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @default(now()) @updatedAt
+  id          String    @id @default(cuid())
+  comments    String
+  siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
+  siteDiaryId String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
-    @@index([siteDiaryId])
-    @@index([createdById])
+  @@index([siteDiaryId])
+  @@index([createdById])
 }
 
 model WorkProgress {
-    id          String    @id @default(cuid())
-    comments    String
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    siteDiaryId String
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById String
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @default(now()) @updatedAt
+  id          String    @id @default(cuid())
+  comments    String
+  siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
+  siteDiaryId String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
-    @@index([siteDiaryId])
-    @@index([createdById])
+  @@index([siteDiaryId])
+  @@index([createdById])
 }
 
 model Task {
-    id           String     @id @default(cuid())
-    description  String
-    status       TaskStatus
-    createdBy    User       @relation("createdTasks", fields: [createdById], references: [id], onDelete: Restrict)
-    createdById  String
-    assignedTo   User?      @relation("assignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
-    assignedToId String?
-    project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId    String
-    createdAt    DateTime   @default(now())
-    updatedAt    DateTime   @updatedAt
+  id           String     @id @default(cuid())
+  description  String
+  status       TaskStatus
+  createdBy    User       @relation("createdTasks", fields: [createdById], references: [id], onDelete: Restrict)
+  createdById  String
+  assignedTo   User?      @relation("assignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedToId String?
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-    @@index([projectId])
-    @@index([createdById])
-    @@index([assignedToId])
+  @@index([projectId])
+  @@index([createdById])
+  @@index([assignedToId])
 }
 
 model Order {
-    id                   String             @id @default(cuid())
-    note                 String
-    supplierEmailAddress String
-    arrivalOnSite        OrderArrivalOnSite
-    orderNumber          String
-    createdBy            User               @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById          String
-    project              Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId            String
-    createdAt            DateTime           @default(now())
-    updatedAt            DateTime           @updatedAt
+  id                   String             @id @default(cuid())
+  note                 String
+  supplierEmailAddress String
+  arrivalOnSite        OrderArrivalOnSite
+  orderNumber          String
+  createdBy            User               @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById          String
+  project              Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId            String
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
 
-    @@index([projectId])
-    @@index([createdById])
+  @@index([projectId])
+  @@index([createdById])
 }
 
 model RequestForInformation {
-    id          String                      @id @default(cuid())
-    topic       String
-    status      RequestForInformationStatus
-    replies     Reply[]
-    createdBy   User                        @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById String
-    project     Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId   String
-    createdAt   DateTime                    @default(now())
-    updatedAt   DateTime                    @updatedAt
+  id          String                      @id @default(cuid())
+  topic       String
+  status      RequestForInformationStatus
+  replies     Reply[]
+  createdBy   User                        @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById String
+  project     Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  createdAt   DateTime                    @default(now())
+  updatedAt   DateTime                    @updatedAt
 
-    @@index([projectId])
-    @@index([createdById])
+  @@index([projectId])
+  @@index([createdById])
 }
 
 model Reply {
-    id                      String                @id @default(cuid())
-    description             String
-    createdBy               User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById             String
-    createdAt               DateTime              @default(now())
-    updatedAt               DateTime              @updatedAt
-    requestForInformation   RequestForInformation @relation(fields: [requestForInformationId], references: [id], onDelete: Cascade)
-    requestForInformationId String
+  id                      String                @id @default(cuid())
+  description             String
+  createdBy               User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById             String
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  requestForInformation   RequestForInformation @relation(fields: [requestForInformationId], references: [id], onDelete: Cascade)
+  requestForInformationId String
 
-    @@index([requestForInformationId])
-    @@index([createdById])
+  @@index([requestForInformationId])
+  @@index([createdById])
 }
 
 model UsersOnProjects {
-    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId    String
-    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
 
-    @@id([userId, projectId])
-    @@index([userId])
-    @@index([projectId])
+  @@id([userId, projectId])
+  @@index([userId])
+  @@index([projectId])
 }
 
 model Budget {
-    id             String   @id @default(cuid())
-    costCode       String   @default("")
-    description    String
-    expectedBudget Int
-    costsIncurred  Int
-    project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId      String
-    createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById    String
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @default(now()) @updatedAt
+  id             String   @id @default(cuid())
+  costCode       String   @default("")
+  description    String
+  expectedBudget Int
+  costsIncurred  Int
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      String
+  createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
 
-    @@index([projectId])
-    @@index([createdById])
+  @@index([projectId])
+  @@index([createdById])
+}
+
+model SupplierInvoice {
+  id           String   @id @default(cuid())
+  costCode     String   @default("")
+  description  String
+  invoiceNo    String
+  invoiceDate  DateTime
+  venderName   String
+  supplierName String
+  totalCost    Float
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
+  createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  createdById  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  @@index([projectId])
+  @@index([createdById])
 }
 
 enum ProfessionalRole {
-    ACCOUNTANT
-    DOCUMENT_CONTROLLER
-    FOREMAN
-    PROJECT_ENGINEER
-    PROJECT_MEMBER
-    PROJECT_MANAGER
-    PROJECT_DIRECTOR
-    QUANTITY_SURVEYOR
-    SITE_SUPERVISORS
-    SITE_ENGINEER
-    SITE_ADMIN
+  ACCOUNTANT
+  DOCUMENT_CONTROLLER
+  FOREMAN
+  PROJECT_ENGINEER
+  PROJECT_MEMBER
+  PROJECT_MANAGER
+  PROJECT_DIRECTOR
+  QUANTITY_SURVEYOR
+  SITE_SUPERVISORS
+  SITE_ENGINEER
+  SITE_ADMIN
 }
 
 enum WeatherCondition {
-    SUNNY
-    CLOUDY
-    RAINY
+  SUNNY
+  CLOUDY
+  RAINY
 }
 
 enum MaterialUnit {
-    M
-    M2
-    M3
-    NR
+  M
+  M2
+  M3
+  NR
 }
 
 enum TaskStatus {
-    NOT_STARTED
-    IN_PROGRESS
-    COMPLETED
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
 }
 
 enum OrderArrivalOnSite {
-    YES
-    NO
+  YES
+  NO
 }
 
 enum RequestForInformationStatus {
-    PENDING
-    CLOSED_OUT
+  PENDING
+  CLOSED_OUT
 }
