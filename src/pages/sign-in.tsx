@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -11,6 +12,7 @@ import TwitterButton from "../components/oauth/TwitterButton";
 
 export default function Signin() {
   const router = useRouter();
+  const session = useSession();
   const [callbackUrl, setCallbackUrl] = useState("/projects");
   useEffect(() => {
     if (router.query.error && router.query.error === "SessionRequired") {
@@ -22,7 +24,10 @@ export default function Signin() {
     ) {
       setCallbackUrl(router.query.callbackUrl);
     }
-  }, [router.query.callbackUrl, router.query.error]);
+    if (session.status === "authenticated") {
+      void router.push("/");
+    }
+  }, [router, session.status]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center space-y-8 bg-[url('/images/background-auth.jpg')] bg-cover py-12 sm:px-6 lg:space-y-12 lg:px-8">
