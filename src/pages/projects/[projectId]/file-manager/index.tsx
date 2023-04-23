@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 
 const FileBrowser = dynamic(
@@ -11,11 +12,13 @@ const S3Browser = () => {
   const projectId = router.query.projectId as string;
   return (
     <SessionAuth>
-      <div className="flex h-screen max-h-[80vh] justify-center">
-        <div className="my-16 w-11/12 lg:w-9/12">
-          <FileBrowser projectId={projectId} />
+      <PermissionToProject projectId={projectId}>
+        <div className="flex h-screen max-h-[80vh] justify-center">
+          <div className="my-16 w-11/12 lg:w-9/12">
+            <FileBrowser projectId={projectId} />
+          </div>
         </div>
-      </div>
+      </PermissionToProject>
     </SessionAuth>
   );
 };

@@ -8,7 +8,7 @@ type FormValues = {
   email: string;
 };
 
-const EmailButton = () => {
+const EmailButton = ({ callbackUrl }: { callbackUrl: string }) => {
   const {
     register,
     handleSubmit,
@@ -24,7 +24,7 @@ const EmailButton = () => {
     reset();
     void signIn("email", {
       email: data.email,
-      callbackUrl: "/projects",
+      callbackUrl: callbackUrl,
     });
   };
   return (

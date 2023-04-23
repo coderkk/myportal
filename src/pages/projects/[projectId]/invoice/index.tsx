@@ -13,6 +13,7 @@ import { api } from "../../../../utils/api";
 import { getPDFText, parseData } from "../../../../utils/pdfparser";
 
 import dynamic from "next/dynamic";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import type { Invoice } from "../../../../utils/pdfparser";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
@@ -160,123 +161,125 @@ const InvoicePage = () => {
 
   return (
     <SessionAuth>
-      <div className="flex">
-        <div className="m-auto">
-          <section>
-            <div className="max-w-screen-xl px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
-              <div className="mb-5 flex justify-between">
-                <h2 className="text-3xl font-bold sm:text-4xl">
-                  Invoice Data Extraction
-                </h2>
-                <button
-                  type="button"
-                  className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-                  onClick={handleUploadClick}
-                >
-                  {uploadFile ? `${uploadFile.name}` : "Click to select"}
-                </button>
+      <PermissionToProject projectId={projectId}>
+        <div className="flex">
+          <div className="m-auto">
+            <section>
+              <div className="max-w-screen-xl px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
+                <div className="mb-5 flex justify-between">
+                  <h2 className="text-3xl font-bold sm:text-4xl">
+                    Invoice Data Extraction
+                  </h2>
+                  <button
+                    type="button"
+                    className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
+                    onClick={handleUploadClick}
+                  >
+                    {uploadFile ? `${uploadFile.name}` : "Click to select"}
+                  </button>
 
-                <input
-                  type="file"
-                  ref={inputRef}
-                  onChange={(e) => {
-                    void handleFileChange(e);
-                  }}
-                  aria-label="Upload file"
-                  className="hidden"
-                />
-                <button
-                  className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-                  onClick={() => void handleLoadFile()}
-                >
-                  Load File
-                </button>
-              </div>
-              <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-2  lg:gap-x-16">
-                <div className="mx-auto max-w-lg text-left lg:mx-0 lg:text-left">
-                  <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-                    <div className="px-4 py-5 sm:px-6">
-                      <h3 className="text-base font-semibold leading-6 text-gray-900">
-                        Automated Data
-                      </h3>
-                      <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                        Extract data from PDF file
-                      </p>
-                    </div>
-                    <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-                      <dl className="sm:divide-y sm:divide-gray-200">
-                        <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                          <dt className="text-sm font-medium text-gray-500">
-                            Vendor name
-                          </dt>
-                          <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                            {invoiceData.vendorName}
-                          </dd>
-                        </div>
-                        <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                          <dt className="text-sm font-medium text-gray-500">
-                            Invoice No
-                          </dt>
-                          <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                            {invoiceData.invoiceNo}
-                          </dd>
-                        </div>
-                        <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                          <dt className="text-sm font-medium text-gray-500">
-                            Invoice Date
-                          </dt>
-                          <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                            {invoiceData.invoiceDate}
-                          </dd>
-                        </div>
-                        <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                          <dt className="text-sm font-medium text-gray-500">
-                            Invoice Costs
-                          </dt>
-                          <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                            {invoiceData.invoiceCosts}
-                          </dd>
-                        </div>
-                        <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                          <dt className="text-sm font-medium text-gray-500">
-                            Invoice Description
-                          </dt>
-                          <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                            {invoiceData.description}
-                          </dd>
-                        </div>
-                        <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                          <dt className="text-sm font-medium text-gray-500">
-                            Assign to
-                          </dt>
-                          <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                            <select title="Assign to">
-                              <option></option>
-                            </select>
-                          </dd>
-                        </div>
-                      </dl>
+                  <input
+                    type="file"
+                    ref={inputRef}
+                    onChange={(e) => {
+                      void handleFileChange(e);
+                    }}
+                    aria-label="Upload file"
+                    className="hidden"
+                  />
+                  <button
+                    className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
+                    onClick={() => void handleLoadFile()}
+                  >
+                    Load File
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-2  lg:gap-x-16">
+                  <div className="mx-auto max-w-lg text-left lg:mx-0 lg:text-left">
+                    <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+                      <div className="px-4 py-5 sm:px-6">
+                        <h3 className="text-base font-semibold leading-6 text-gray-900">
+                          Automated Data
+                        </h3>
+                        <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                          Extract data from PDF file
+                        </p>
+                      </div>
+                      <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                        <dl className="sm:divide-y sm:divide-gray-200">
+                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+                            <dt className="text-sm font-medium text-gray-500">
+                              Vendor name
+                            </dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                              {invoiceData.vendorName}
+                            </dd>
+                          </div>
+                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+                            <dt className="text-sm font-medium text-gray-500">
+                              Invoice No
+                            </dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                              {invoiceData.invoiceNo}
+                            </dd>
+                          </div>
+                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+                            <dt className="text-sm font-medium text-gray-500">
+                              Invoice Date
+                            </dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                              {invoiceData.invoiceDate}
+                            </dd>
+                          </div>
+                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+                            <dt className="text-sm font-medium text-gray-500">
+                              Invoice Costs
+                            </dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                              {invoiceData.invoiceCosts}
+                            </dd>
+                          </div>
+                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+                            <dt className="text-sm font-medium text-gray-500">
+                              Invoice Description
+                            </dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                              {invoiceData.description}
+                            </dd>
+                          </div>
+                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
+                            <dt className="text-sm font-medium text-gray-500">
+                              Assign to
+                            </dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                              <select title="Assign to">
+                                <option></option>
+                              </select>
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="clear-both border-2 border-solid border-sky-500">
-                  <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                    <Page
-                      pageNumber={pageNumber}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                    />
-                  </Document>
-                  <p>
-                    Page {pageNumber} of {numPages}
-                  </p>
+                  <div className="clear-both border-2 border-solid border-sky-500">
+                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+                      <Page
+                        pageNumber={pageNumber}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                      />
+                    </Document>
+                    <p>
+                      Page {pageNumber} of {numPages}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
-      </div>
+      </PermissionToProject>
     </SessionAuth>
   );
 };
