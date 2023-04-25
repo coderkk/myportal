@@ -504,7 +504,6 @@ const SiteDiary = () => {
                               siteDiary={siteDiary}
                               projectId={projectId}
                             />
-                            Edit
                           </span>
                         </div>
                         <div className="-ml-px flex w-0 flex-1">
@@ -514,7 +513,6 @@ const SiteDiary = () => {
                               projectId={projectId}
                               pendingDeleteCountRef={pendingDeleteCountRef}
                             />
-                            Delete
                           </span>
                         </div>
                       </div>

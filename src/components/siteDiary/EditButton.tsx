@@ -53,7 +53,10 @@ const EditButton = ({
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <Edit className="h-6 w-6  text-green-500" />
+        <span className="flex items-center">
+          <Edit className="mr-2 h-6 w-6 text-green-500" />
+          Edit
+        </span>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
