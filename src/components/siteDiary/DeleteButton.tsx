@@ -23,7 +23,10 @@ const DeleteButton = ({
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>
-        <Delete className="h-6 w-6 text-red-500" />
+        <span className="flex items-center">
+          <Delete className="mr-2 h-6 w-6 text-red-500" />
+          Delete
+        </span>
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -71,6 +74,9 @@ const DeleteButton = ({
                 onClick={() => {
                   deleteSiteDiary({
                     siteDiaryId: siteDiaryId,
+                    siteDiaryName: "",
+                    startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
+                    endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
                   });
                   if (navigateBack) {
                     router.back();

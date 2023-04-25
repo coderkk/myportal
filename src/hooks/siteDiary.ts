@@ -14,20 +14,31 @@ export const useCreateSiteDiary = () => {
   const session = useSession();
   const { mutate: createSiteDiary } = api.siteDiary.createSiteDiary.useMutation(
     {
-      async onMutate(values) {
+      async onMutate({
+        projectId,
+        siteDiaryName,
+        siteDiaryDate,
+        startDate,
+        endDate,
+      }) {
         await utils.siteDiary.getSiteDiaries.cancel();
         const previousData = utils.siteDiary.getSiteDiaries.getData();
         utils.siteDiary.getSiteDiaries.setData(
-          { projectId: values.projectId },
+          {
+            projectId: projectId,
+            siteDiaryName: siteDiaryName,
+            startDate: startDate,
+            endDate: endDate,
+          },
           (oldSiteDiaries) => {
             const optimisticUpdateObject = {
               id: Date.now().toString(),
-              name: values.siteDiaryName,
-              date: values.siteDiaryDate,
+              name: siteDiaryName,
+              date: siteDiaryDate,
               createdBy: { name: session.data?.user?.name || "You" },
             };
             if (oldSiteDiaries) {
-              return [...oldSiteDiaries, optimisticUpdateObject];
+              return [optimisticUpdateObject, ...oldSiteDiaries];
             } else {
               return [optimisticUpdateObject];
             }
@@ -35,7 +46,12 @@ export const useCreateSiteDiary = () => {
         );
         return () =>
           utils.siteDiary.getSiteDiaries.setData(
-            { projectId: values.projectId },
+            {
+              projectId: projectId,
+              siteDiaryName: siteDiaryName,
+              startDate: startDate,
+              endDate: endDate,
+            },
             previousData
           );
       },
@@ -54,10 +70,28 @@ export const useCreateSiteDiary = () => {
   };
 };
 
-export const useGetSiteDiaries = ({ projectId }: { projectId: string }) => {
-  const { data, isLoading } = api.siteDiary.getSiteDiaries.useQuery({
-    projectId: projectId,
-  });
+export const useGetSiteDiaries = ({
+  projectId,
+  siteDiaryName,
+  startDate,
+  endDate,
+}: {
+  projectId: string;
+  siteDiaryName: string;
+  startDate?: Date;
+  endDate?: Date;
+}) => {
+  const { data, isLoading } = api.siteDiary.getSiteDiaries.useQuery(
+    {
+      projectId: projectId,
+      siteDiaryName: siteDiaryName,
+      startDate: startDate || new Date(Date.parse("0001-01-01T18:00:00Z")),
+      endDate: endDate || new Date(Date.parse("9999-12-31T18:00:00Z")),
+    },
+    {
+      keepPreviousData: true,
+    }
+  );
   return {
     siteDiaries: data,
     isLoading: isLoading,
@@ -78,11 +112,22 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
   const { mutate: updateSiteDiary } = api.siteDiary.updateSiteDiary.useMutation(
     {
-      async onMutate({ siteDiaryId, siteDiaryName, siteDiaryDate }) {
+      async onMutate({
+        siteDiaryId,
+        siteDiaryName,
+        siteDiaryDate,
+        startDate,
+        endDate,
+      }) {
         await utils.siteDiary.getSiteDiaries.cancel();
         const previousData = utils.siteDiary.getSiteDiaries.getData();
         utils.siteDiary.getSiteDiaries.setData(
-          { projectId: projectId },
+          {
+            projectId: projectId,
+            siteDiaryName: siteDiaryName,
+            startDate: startDate,
+            endDate: endDate,
+          },
           (oldSiteDiaries) => {
             if (oldSiteDiaries) {
               const newSiteDiaries = oldSiteDiaries.map((oldSiteDiary) => {
@@ -105,7 +150,12 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
         );
         return () =>
           utils.siteDiary.getSiteDiaries.setData(
-            { projectId: projectId },
+            {
+              projectId: projectId,
+              siteDiaryName: siteDiaryName,
+              startDate: startDate,
+              endDate: endDate,
+            },
             previousData
           );
       },
@@ -114,9 +164,17 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
           rollback();
         }
       },
-      onSuccess(data, { siteDiaryId, siteDiaryName, siteDiaryDate }) {
+      onSuccess(
+        data,
+        { siteDiaryId, siteDiaryName, siteDiaryDate, startDate, endDate }
+      ) {
         utils.siteDiary.getSiteDiaries.setData(
-          { projectId: projectId },
+          {
+            projectId: projectId,
+            siteDiaryName: siteDiaryName,
+            startDate: startDate,
+            endDate: endDate,
+          },
           (oldSiteDiaries) => {
             if (oldSiteDiaries) {
               const newSiteDiaries = oldSiteDiaries.map((oldSiteDiary) => {
@@ -159,12 +217,17 @@ export const useDeleteSiteDiary = ({
 
   const { mutate: deleteSiteDiary } = api.siteDiary.deleteSiteDiary.useMutation(
     {
-      async onMutate({ siteDiaryId }) {
+      async onMutate({ siteDiaryId, siteDiaryName, startDate, endDate }) {
         if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
         await utils.siteDiary.getSiteDiaries.cancel();
         const previousData = utils.siteDiary.getSiteDiaries.getData();
         utils.siteDiary.getSiteDiaries.setData(
-          { projectId: projectId },
+          {
+            projectId: projectId,
+            siteDiaryName: siteDiaryName,
+            startDate: startDate,
+            endDate: endDate,
+          },
           (oldSiteDiaries) => {
             const newSiteDiaries = oldSiteDiaries?.filter(
               (newSiteDiary) => newSiteDiary.id !== siteDiaryId
@@ -174,7 +237,12 @@ export const useDeleteSiteDiary = ({
         );
         return () =>
           utils.siteDiary.getSiteDiaries.setData(
-            { projectId: projectId },
+            {
+              projectId: projectId,
+              siteDiaryName: siteDiaryName,
+              startDate: startDate,
+              endDate: endDate,
+            },
             previousData
           );
       },
@@ -183,9 +251,14 @@ export const useDeleteSiteDiary = ({
           rollback();
         }
       },
-      onSuccess(data, { siteDiaryId }) {
+      onSuccess(data, { siteDiaryId, siteDiaryName, startDate, endDate }) {
         utils.siteDiary.getSiteDiaries.setData(
-          { projectId: projectId },
+          {
+            projectId: projectId,
+            siteDiaryName: siteDiaryName,
+            startDate: startDate,
+            endDate: endDate,
+          },
           (oldSiteDiaries) => {
             const newSiteDiaries = oldSiteDiaries?.filter(
               (newSiteDiary) => newSiteDiary.id !== siteDiaryId

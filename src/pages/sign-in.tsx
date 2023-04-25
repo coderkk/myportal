@@ -25,7 +25,7 @@ export default function Signin() {
       setCallbackUrl(router.query.callbackUrl);
     }
     if (session.status === "authenticated") {
-      void router.push("/");
+      void router.push("/projects");
     }
   }, [router, session.status]);
 
