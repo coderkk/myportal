@@ -5,7 +5,6 @@ import { type AppType } from "next/app";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { Toaster } from "react-hot-toast";
-import PermissionToProject from "../components/auth/PermissionToProject";
 import "../styles/globals.css";
 import { api } from "../utils/api";
 
@@ -23,11 +22,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
     const projectId = router.query.projectId;
     if (projectId && typeof projectId === "string") {
       component = (
-        <PermissionToProject projectId={projectId}>
-          <ProjectSidebar>
-            <Component {...pageProps} />
-          </ProjectSidebar>
-        </PermissionToProject>
+        <ProjectSidebar>
+          <Component {...pageProps} />
+        </ProjectSidebar>
       );
     }
   }

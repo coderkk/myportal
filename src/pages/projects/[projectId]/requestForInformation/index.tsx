@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import { CommentDots } from "styled-icons/boxicons-regular";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { useGetRequestForInformations } from "../../../../hooks/requestForInformation";
 
@@ -28,46 +29,54 @@ const RequestForInformation = () => {
 
   return (
     <SessionAuth>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="flex h-[80vh]">
-          <div className="m-auto">
-            <div className="flex justify-between">
-              <div className="text-lg font-medium">Request For Information</div>
-              <CreateButton projectId={projectId} />
-            </div>
-            {requestForInformations?.map((requestForInformation) => (
-              <div key={requestForInformation.id} className="flex">
-                <span className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500">
-                  <div>
-                    <span className="mr-4">
-                      {requestForInformation.createdBy.name}
-                    </span>
-                    <span className="mr-4">{requestForInformation.topic}</span>
-                    <span className="mr-4">{requestForInformation.status}</span>
-                  </div>
-                </span>
-                <EditButton
-                  requestForInformation={requestForInformation}
-                  projectId={projectId}
-                />
-                <DeleteButton
-                  requestForInformationId={requestForInformation.id}
-                  projectId={projectId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
-                />
-                <Link
-                  target="_blank"
-                  href={`/projects/${projectId}/requestForInformation/${requestForInformation.id}/reply`}
-                >
-                  <CommentDots className="h-6 w-6  text-blue-500" />
-                </Link>
+      <PermissionToProject projectId={projectId}>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="flex h-[80vh]">
+            <div className="m-auto">
+              <div className="flex justify-between">
+                <div className="text-lg font-medium">
+                  Request For Information
+                </div>
+                <CreateButton projectId={projectId} />
               </div>
-            ))}
+              {requestForInformations?.map((requestForInformation) => (
+                <div key={requestForInformation.id} className="flex">
+                  <span className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500">
+                    <div>
+                      <span className="mr-4">
+                        {requestForInformation.createdBy.name}
+                      </span>
+                      <span className="mr-4">
+                        {requestForInformation.topic}
+                      </span>
+                      <span className="mr-4">
+                        {requestForInformation.status}
+                      </span>
+                    </div>
+                  </span>
+                  <EditButton
+                    requestForInformation={requestForInformation}
+                    projectId={projectId}
+                  />
+                  <DeleteButton
+                    requestForInformationId={requestForInformation.id}
+                    projectId={projectId}
+                    pendingDeleteCountRef={pendingDeleteCountRef}
+                  />
+                  <Link
+                    target="_blank"
+                    href={`/projects/${projectId}/requestForInformation/${requestForInformation.id}/reply`}
+                  >
+                    <CommentDots className="h-6 w-6  text-blue-500" />
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </PermissionToProject>
     </SessionAuth>
   );
 };

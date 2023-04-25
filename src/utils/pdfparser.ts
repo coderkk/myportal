@@ -51,6 +51,7 @@ export const loadPDF = async (
 };
 
 export const parseData = (pdfContent: string) => {
+  console.log(pdfContent);
   const data: Invoice = {
     vendorName: "ds",
     invoiceNo: "",
