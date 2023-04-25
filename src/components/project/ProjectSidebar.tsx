@@ -38,7 +38,12 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         break;
       case "/site-diary":
         void utils.siteDiary.getSiteDiaries.prefetch(
-          { projectId: projectId },
+          {
+            projectId: projectId,
+            siteDiaryName: "",
+            startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
+            endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
+          },
           {
             staleTime: Infinity,
           }
@@ -373,7 +378,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       </div>
 
       <div className="xl:pl-72">
-        <div className="sticky top-0  flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
+        <div className="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
             <Logo className="h-10 w-auto" />
           </Link>

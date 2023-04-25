@@ -1,6 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
 import ReactDatePicker from "react-datepicker";
 import type { ControllerRenderProps } from "react-hook-form";
@@ -27,13 +26,17 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
       projectId: projectId,
       siteDiaryDate: data.date as Date,
       siteDiaryName: data.name as string,
+      startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
+      endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
     });
   };
   const [open, setOpen] = useState(false);
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <PlusSquareFill className="h-6 w-6  text-blue-500" />
+        <span className="ml-2 inline-flex items-center rounded-lg border border-blue-500 bg-blue-600 py-2 px-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300">
+          Add
+        </span>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -86,6 +89,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                         previousMonthButtonLabel=<ChevronLeftIcon />
                         nextMonthButtonLabel=<ChevronRightIcon />
                         popperClassName="react-datepicker-bottom"
+                        dateFormat="dd/MM/yyyy"
                       />
                     );
                   }}

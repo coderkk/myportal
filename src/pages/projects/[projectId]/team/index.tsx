@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import SearchAndAdd from "../../../../components/team/SearchAndAdd";
 import { useIsCreatorOfProject } from "../../../../hooks/me";
@@ -49,42 +50,45 @@ const Team = () => {
 
   return (
     <SessionAuth>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="flex h-[80vh]">
-          <div className="m-auto">
-            <div className="flex justify-between">
-              <div className="text-lg font-medium">Team</div>
-            </div>
-            {usersForProject?.map((userForProject) => (
-              <div key={userForProject.id} className="flex">
-                <span className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500">
-                  <div>
-                    <span className="mr-4">{userForProject.name}</span>
-                    <span className="mr-4">{userForProject.email}</span>
-                  </div>
-                </span>
-                {isCreator && session.data?.user?.id !== userForProject.id && (
-                  <UninviteButton
-                    userId={userForProject.id}
+      <PermissionToProject projectId={projectId}>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="flex h-[80vh]">
+            <div className="m-auto">
+              <div className="flex justify-between">
+                <div className="text-lg font-medium">Team</div>
+              </div>
+              {usersForProject?.map((userForProject) => (
+                <div key={userForProject.id} className="flex">
+                  <span className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500">
+                    <div>
+                      <span className="mr-4">{userForProject.name}</span>
+                      <span className="mr-4">{userForProject.email}</span>
+                    </div>
+                  </span>
+                  {isCreator &&
+                    session.data?.user?.id !== userForProject.id && (
+                      <UninviteButton
+                        userId={userForProject.id}
+                        projectId={projectId}
+                        pendingRemoveCountRef={pendingRemoveCountRef}
+                      />
+                    )}
+                </div>
+              ))}
+              <div className="mt-4 flex max-w-md justify-between">
+                {isCreator && (
+                  <SearchAndAdd
                     projectId={projectId}
-                    pendingRemoveCountRef={pendingRemoveCountRef}
+                    formattedUsers={formattedUsers || []}
                   />
                 )}
               </div>
-            ))}
-            <div className="mt-4 flex max-w-md justify-between">
-              {isCreator && (
-                <SearchAndAdd
-                  projectId={projectId}
-                  formattedUsers={formattedUsers || []}
-                />
-              )}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </PermissionToProject>
     </SessionAuth>
   );
 };

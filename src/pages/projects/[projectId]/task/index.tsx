@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { useGetTasks } from "../../../../hooks/task";
 
@@ -26,36 +27,38 @@ const Task = () => {
 
   return (
     <SessionAuth>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="flex h-[80vh]">
-          <div className="m-auto">
-            <div className="flex justify-between">
-              <div className="text-lg font-medium">Tasks</div>
-              <CreateButton projectId={projectId} />
-            </div>
-            {tasks?.map((task) => (
-              <div key={task.id} className="flex">
-                <span className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500">
-                  <div>
-                    <span className="mr-4">{task.description}</span>
-                    <span className="mr-4">{task.createdBy.name}</span>
-                    <span className="mr-4">{task.assignedTo?.email}</span>
-                    <span className="mr-4">{task.status}</span>
-                  </div>
-                </span>
-                <EditButton task={task} projectId={projectId} />
-                <DeleteButton
-                  taskId={task.id}
-                  projectId={projectId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
-                />
+      <PermissionToProject projectId={projectId}>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="flex h-[80vh]">
+            <div className="m-auto">
+              <div className="flex justify-between">
+                <div className="text-lg font-medium">Tasks</div>
+                <CreateButton projectId={projectId} />
               </div>
-            ))}
+              {tasks?.map((task) => (
+                <div key={task.id} className="flex">
+                  <span className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500">
+                    <div>
+                      <span className="mr-4">{task.description}</span>
+                      <span className="mr-4">{task.createdBy.name}</span>
+                      <span className="mr-4">{task.assignedTo?.email}</span>
+                      <span className="mr-4">{task.status}</span>
+                    </div>
+                  </span>
+                  <EditButton task={task} projectId={projectId} />
+                  <DeleteButton
+                    taskId={task.id}
+                    projectId={projectId}
+                    pendingDeleteCountRef={pendingDeleteCountRef}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </PermissionToProject>
     </SessionAuth>
   );
 };

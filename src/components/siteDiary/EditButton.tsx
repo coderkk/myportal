@@ -45,13 +45,18 @@ const EditButton = ({
       siteDiaryId: siteDiary.id,
       siteDiaryName: data.name as string,
       siteDiaryDate: data.date as Date,
+      startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
+      endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
     });
   };
   const [open, setOpen] = useState(false);
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <Edit className="h-6 w-6  text-green-500" />
+        <span className="flex items-center">
+          <Edit className="mr-2 h-6 w-6 text-green-500" />
+          Edit
+        </span>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
@@ -117,6 +122,7 @@ const EditButton = ({
                       previousMonthButtonLabel=<ChevronLeftIcon />
                       nextMonthButtonLabel=<ChevronRightIcon />
                       popperClassName="react-datepicker-bottom"
+                      dateFormat="dd/MM/yyyy"
                     />
                   );
                 }}

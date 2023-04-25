@@ -1,6 +1,4 @@
-import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { useGetSupplierInvoices } from '../../../../hooks/supplierInvoice';
 
@@ -14,7 +12,7 @@ const SupplierInvoice = () => {
   const handleAddSupplierInvoice = () => {
     void router.push('/projects/' + projectId + "/invoice/upload");
   }
-
+ 
   return (
     <SessionAuth>
       {isLoading ? (
