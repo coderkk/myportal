@@ -4,7 +4,6 @@ export const trycatch = <T>({
   fn,
   errorMessages,
 }: {
-  // fn: () => Promise<unknown>;
   fn: () => Promise<T>;
   errorMessages: string[]; // [message for INTERNAL_SERVER_ERROR, message for UNAUTHORIZED, message for BAD_REQUEST, ]
 }) => {

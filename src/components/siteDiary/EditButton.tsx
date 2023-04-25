@@ -45,6 +45,8 @@ const EditButton = ({
       siteDiaryId: siteDiary.id,
       siteDiaryName: data.name as string,
       siteDiaryDate: data.date as Date,
+      startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
+      endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
     });
   };
   const [open, setOpen] = useState(false);
@@ -117,6 +119,7 @@ const EditButton = ({
                       previousMonthButtonLabel=<ChevronLeftIcon />
                       nextMonthButtonLabel=<ChevronRightIcon />
                       popperClassName="react-datepicker-bottom"
+                      dateFormat="dd/MM/yyyy"
                     />
                   );
                 }}
