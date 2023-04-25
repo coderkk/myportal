@@ -3,8 +3,7 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import type { BaseSyntheticEvent } from "react";
-import { useRef, useState } from "react";
+import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -35,17 +34,27 @@ const SiteDiary = () => {
   const router = useRouter();
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
-  const [siteDiaryName, setSiteDiaryName] = useState("");
+  const [siteDiaryName, setSiteDiaryName] = useState<string | undefined>(
+    undefined
+  );
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [unsavedChangesToastId, setUnsavedChangesToastId] = useState<
+    string | undefined
+  >(undefined);
   const { siteDiaries, isLoading } = useGetSiteDiaries({
     projectId: projectId,
-    siteDiaryName: siteDiaryName,
+    siteDiaryName: siteDiaryName || "",
     startDate: startDate,
     endDate: endDate,
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
-  const { register, handleSubmit, control } = useForm<FormValues>();
+  const { register, handleSubmit, control, watch } = useForm<FormValues>();
+  const {
+    siteDiaryName: currentSiteDiaryName,
+    startDate: currentStartDate,
+    endDate: currentEndDate,
+  } = watch();
 
   const onSubmit = (
     { siteDiaryName, startDate, endDate }: FormValues,
@@ -54,12 +63,52 @@ const SiteDiary = () => {
     e?.preventDefault();
     if (startDate && endDate && startDate.getTime() > endDate.getTime()) {
       toast.error("Start date must be before end date");
+
       return;
     }
     setSiteDiaryName(siteDiaryName);
     setStartDate(startDate);
     setEndDate(endDate);
+    toast.dismiss(unsavedChangesToastId);
+    setUnsavedChangesToastId(undefined);
   };
+
+  useEffect(() => {
+    console.log(
+      currentEndDate,
+      currentSiteDiaryName,
+      currentStartDate,
+      endDate,
+      siteDiaryName,
+      startDate,
+      unsavedChangesToastId
+    );
+    if (!!unsavedChangesToastId) return;
+    if (
+      currentSiteDiaryName !== siteDiaryName ||
+      currentStartDate?.getTime() !== startDate?.getTime() ||
+      currentEndDate?.getTime() !== endDate?.getTime()
+    ) {
+      const toastId = toast(
+        <span className="animate-bounce p-2 text-blue-500">
+          You have unsaved changes
+        </span>,
+        {
+          duration: Infinity,
+          position: "bottom-center",
+        }
+      );
+      setUnsavedChangesToastId(toastId);
+    }
+  }, [
+    currentEndDate,
+    currentSiteDiaryName,
+    currentStartDate,
+    endDate,
+    siteDiaryName,
+    startDate,
+    unsavedChangesToastId,
+  ]);
 
   return (
     <SessionAuth>
