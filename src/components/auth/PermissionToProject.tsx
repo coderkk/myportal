@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useHasPermissionToProject } from "../../hooks/me";
@@ -13,15 +14,18 @@ export default function PermissionToProject({
   const { hasPermission, isLoading, isError } = useHasPermissionToProject({
     projectId: projectId,
   });
+  const router = useRouter();
 
   useEffect(() => {
     if (isLoading) return;
     if (!hasPermission) {
       toast.error("No permission to access this project");
+      void router.push("/");
     } else if (isError) {
       toast.error("Something went wrong");
+      void router.push("/");
     }
-  }, [hasPermission, isError, isLoading]);
+  }, [hasPermission, isError, isLoading, router]);
 
   if (isLoading) {
     return (
