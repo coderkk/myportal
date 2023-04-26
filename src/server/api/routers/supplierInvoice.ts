@@ -43,7 +43,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
               invoiceNo: input.supplierInvoiceNo,
               invoiceDate: input.supplierInvoiceDate,
               description: input.description,
-              venderName: input.vendorName,
+              vendorName: input.vendorName,
               supplierName: input.supplierName,
               totalCost: input.totalCost,
               projectId: input.projectId,
@@ -63,12 +63,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
               id: input.projectId,
             },
             include: {
-              createdBy: {
-                select: {
-                  name: true,
-                },
-              },
-              supplierInvoices: {
+              supplierInvoices:{
                 include: {
                   createdBy: {
                     select: {
@@ -77,7 +72,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
                   },
                 },
               },
-            },
+            }
           });
           return project.supplierInvoices.map((supplierInvoice) => ({
             id: supplierInvoice.id,
@@ -85,7 +80,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
             invoiceDate: supplierInvoice.invoiceDate,
             costCode: supplierInvoice.costCode,
             description: supplierInvoice.description,
-            venderName: supplierInvoice.venderName,
+            // vendorName: supplierInvoice.vendorName,
             supplierName: supplierInvoice.supplierName,
             totalCost: supplierInvoice.totalCost,
             createdBy: supplierInvoice.createdBy,
@@ -103,17 +98,13 @@ export const supplierInvoiceRouter = createTRPCRouter({
             where: {
               id: input.supplierInvoiceId,
             },
-            select: {
-              invoiceNo: true,
+            include: {
               createdBy: {
                 select: {
                   name: true,
                 },
               },
-              invoiceDate: true,
-              venderName: true,
-              supplierName: true,
-            },
+            }
           });
         },
         errorMessages: ["Failed to get supplier invoice"],
