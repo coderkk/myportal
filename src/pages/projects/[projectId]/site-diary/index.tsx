@@ -91,6 +91,12 @@ const SiteDiary = () => {
       );
       setUnsavedChangesToastId(toastId);
     }
+    return () => {
+      if (unsavedChangesToastId !== undefined) {
+        toast.dismiss(unsavedChangesToastId);
+      }
+      // setUnsavedChangesToastId(undefined);
+    };
   }, [
     currentEndDate,
     currentSiteDiaryName,
