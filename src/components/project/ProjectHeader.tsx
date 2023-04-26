@@ -41,7 +41,12 @@ export const ProjectHeader = () => {
         break;
       case "/site-diary":
         void utils.siteDiary.getSiteDiaries.prefetch(
-          { projectId: projectId },
+          {
+            projectId: projectId,
+            siteDiaryName: "",
+            startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
+            endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
+          },
           {
             staleTime: Infinity,
           }

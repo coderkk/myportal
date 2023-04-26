@@ -4,7 +4,7 @@ import { useRef } from "react";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { useGetSupplierInvoices } from '../../../../hooks/supplierInvoice';
 
-const SupplierInvoice = () => {
+const SupplierInvoice = (props) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { supplierInvoices, isLoading } = useGetSupplierInvoices({

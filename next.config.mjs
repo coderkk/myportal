@@ -14,7 +14,11 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["cdn.discordapp.com", "images.unsplash.com"],
+    domains: [
+      "cdn.discordapp.com",
+      "images.unsplash.com",
+      "lh3.googleusercontent.com",
+    ],
   },
   async redirects() {
     return [

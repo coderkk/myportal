@@ -20,10 +20,10 @@ export default function PermissionToProject({
     if (isLoading) return;
     if (!hasPermission) {
       toast.error("No permission to access this project");
-      void router.push("/");
+      // void router.push("/");
     } else if (isError) {
       toast.error("Something went wrong");
-      void router.push("/");
+      // void router.push("/");
     }
   }, [hasPermission, isError, isLoading, router]);
 

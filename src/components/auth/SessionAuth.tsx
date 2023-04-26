@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { getBaseUrl } from "../../utils/api";
 import Spinner from "../common/Spinner";
 
 export default function SessionAuth({
@@ -19,7 +20,11 @@ export default function SessionAuth({
       </div>
     );
   } else if (session.status === "unauthenticated") {
-    void router.push("/sign-in?error=fromSessionAuth");
+    void router.push(
+      `/sign-in?error=SessionRequired&callbackUrl=${getBaseUrl()}${
+        router.asPath
+      }`
+    );
     return (
       <div className="max-h-screen-xl flex min-h-[70vh]">
         <div className="m-auto">
