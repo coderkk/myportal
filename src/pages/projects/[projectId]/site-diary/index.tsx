@@ -3,12 +3,14 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
+import type { BaseSyntheticEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
+import DebouncedInput from "../../../../components/common/DebounceInput";
 import { useGetSiteDiaries } from "../../../../hooks/siteDiary";
 import { api } from "../../../../utils/api";
 
@@ -34,9 +36,7 @@ const SiteDiary = () => {
   const router = useRouter();
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
-  const [siteDiaryName, setSiteDiaryName] = useState<string | undefined>(
-    undefined
-  );
+  const [siteDiaryName, setSiteDiaryName] = useState("");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [unsavedChangesToastId, setUnsavedChangesToastId] = useState<
@@ -44,12 +44,12 @@ const SiteDiary = () => {
   >(undefined);
   const { siteDiaries, isLoading } = useGetSiteDiaries({
     projectId: projectId,
-    siteDiaryName: siteDiaryName || "",
+    siteDiaryName: siteDiaryName,
     startDate: startDate,
     endDate: endDate,
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
-  const { register, handleSubmit, control, watch } = useForm<FormValues>();
+  const { handleSubmit, control, watch } = useForm<FormValues>();
   const {
     siteDiaryName: currentSiteDiaryName,
     startDate: currentStartDate,
@@ -63,7 +63,6 @@ const SiteDiary = () => {
     e?.preventDefault();
     if (startDate && endDate && startDate.getTime() > endDate.getTime()) {
       toast.error("Start date must be before end date");
-
       return;
     }
     setSiteDiaryName(siteDiaryName);
@@ -74,20 +73,12 @@ const SiteDiary = () => {
   };
 
   useEffect(() => {
-    console.log(
-      currentEndDate,
-      currentSiteDiaryName,
-      currentStartDate,
-      endDate,
-      siteDiaryName,
-      startDate,
-      unsavedChangesToastId
-    );
-    if (!!unsavedChangesToastId) return;
     if (
-      currentSiteDiaryName !== siteDiaryName ||
-      currentStartDate?.getTime() !== startDate?.getTime() ||
-      currentEndDate?.getTime() !== endDate?.getTime()
+      unsavedChangesToastId === undefined && // only show toast if there is no existing toast
+      ((currentSiteDiaryName !== undefined && // siteDiaryName is never undefined
+        currentSiteDiaryName !== siteDiaryName) ||
+        currentStartDate?.getTime() !== startDate?.getTime() ||
+        currentEndDate?.getTime() !== endDate?.getTime())
     ) {
       const toastId = toast(
         <span className="animate-bounce p-2 text-blue-500">
@@ -125,12 +116,23 @@ const SiteDiary = () => {
                 Search
               </label>
               <div className="mr-4 w-full">
-                <input
-                  type="text"
-                  id="search"
-                  className="block w-full rounded-lg border border-gray-300 bg-gray-200/10 py-2 pl-10  text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Search site diary name"
-                  {...register("siteDiaryName")}
+                <Controller
+                  name="siteDiaryName"
+                  control={control}
+                  render={({ field }) => {
+                    const { onChange, value } = field;
+                    // we need a debounced input here because otherwise the input suffers from a race condition and we might see multiple toasts
+                    return (
+                      <DebouncedInput
+                        type="text"
+                        id="search"
+                        className="block w-full rounded-lg border border-gray-300 bg-gray-200/10 py-2 pl-10  text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Search site diary name"
+                        value={value || ""}
+                        onChange={(e) => onChange(e)}
+                      />
+                    );
+                  }}
                 />
               </div>
               <div className="hidden items-center md:flex">
