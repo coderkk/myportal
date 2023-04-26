@@ -1,24 +1,14 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
 import { useRouter } from "next/router";
-import type { MutableRefObject } from "react";
-import { useDeleteSiteDiary } from "../../hooks/siteDiary";
 
 const DeleteButton = ({
-  siteDiaryId,
-  projectId,
-  pendingDeleteCountRef,
+  onDelete,
   navigateBack = false,
 }: {
-  siteDiaryId: string;
-  projectId: string;
-  pendingDeleteCountRef?: MutableRefObject<number>;
+  onDelete: () => void;
   navigateBack?: boolean;
 }) => {
-  const { deleteSiteDiary } = useDeleteSiteDiary({
-    pendingDeleteCountRef: pendingDeleteCountRef,
-    projectId: projectId,
-  });
   const router = useRouter();
   return (
     <AlertDialog.Root>
@@ -30,9 +20,9 @@ const DeleteButton = ({
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
-        <AlertDialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+        <AlertDialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
           <AlertDialog.Title
-            className="mt-3 mb-5  flex flex-col gap-3 text-center text-lg font-bold leading-6 text-gray-900 sm:mt-5 sm:flex-row sm:items-start sm:text-left"
+            className="mb-5 mt-3  flex flex-col gap-3 text-center text-lg font-bold leading-6 text-gray-900 sm:mt-5 sm:flex-row sm:items-start sm:text-left"
             aria-describedby="This action cannot be undone."
           >
             <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10 ">
@@ -72,12 +62,7 @@ const DeleteButton = ({
               <button
                 type="button"
                 onClick={() => {
-                  deleteSiteDiary({
-                    siteDiaryId: siteDiaryId,
-                    siteDiaryName: "",
-                    startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
-                    endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
-                  });
+                  onDelete();
                   if (navigateBack) {
                     router.back();
                   }
