@@ -2,6 +2,7 @@ import { type WorkProgress } from "@prisma/client";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { useDeleteWorkProgress } from "../../../hooks/workProgress";
 
 export type WorkProgressProps = WorkProgress & {
   createdBy: {
@@ -13,7 +14,7 @@ const CreateButton = dynamic(() => import("./CreateButton"));
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../../common/DeleteButton"));
 
 export const WorkProgressView = ({
   workProgresses,
@@ -23,18 +24,24 @@ export const WorkProgressView = ({
   const router = useRouter();
   const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
+  const { deleteWorkProgress } = useDeleteWorkProgress({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    siteDiaryId: siteDiaryId,
+  });
   return (
     <div className="flex justify-between">
       <ul>
         {workProgresses.map((workProgress) => (
-          <li key={workProgress.id}>
-            <span className="mr-4">{workProgress.comments}</span>
-            <span className="mr-4">{workProgress.createdBy.name}</span>
+          <li key={workProgress.id} className=" inline-flex gap-3">
+            <span>{workProgress.comments}</span>
+            <span>{workProgress.createdBy.name}</span>
             <EditButton workProgress={workProgress} siteDiaryId={siteDiaryId} />
             <DeleteButton
-              workProgressId={workProgress.id}
-              siteDiaryId={siteDiaryId}
-              pendingDeleteCountRef={pendingDeleteCountRef}
+              onDelete={() =>
+                deleteWorkProgress({
+                  workProgressId: workProgress.id,
+                })
+              }
             />
           </li>
         ))}

@@ -5,9 +5,11 @@ import { useRouter } from "next/router";
 const DeleteButton = ({
   onDelete,
   navigateBack = false,
+  description,
 }: {
   onDelete: () => void;
   navigateBack?: boolean;
+  description?: string;
 }) => {
   const router = useRouter();
   return (
@@ -15,7 +17,7 @@ const DeleteButton = ({
       <AlertDialog.Trigger asChild>
         <span className="flex items-center">
           <Delete className="mr-2 h-6 w-6 text-red-500" />
-          Delete
+          {description}
         </span>
       </AlertDialog.Trigger>
       <AlertDialog.Portal>

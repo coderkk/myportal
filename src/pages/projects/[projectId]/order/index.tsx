@@ -3,14 +3,14 @@ import { useRouter } from "next/router";
 import { useRef } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetOrders } from "../../../../hooks/order";
+import { useDeleteOrder, useGetOrders } from "../../../../hooks/order";
 
 const CreateButton = dynamic(
   () => import("../../../../components/order/CreateButton")
 );
 
 const DeleteButton = dynamic(
-  () => import("../../../../components/order/DeleteButton")
+  () => import("../../../../components/common/DeleteButton")
 );
 
 const EditButton = dynamic(
@@ -25,6 +25,10 @@ const Order = () => {
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
+  const { deleteOrder } = useDeleteOrder({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    projectId: projectId,
+  });
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -49,9 +53,11 @@ const Order = () => {
                   </span>
                   <EditButton order={order} projectId={projectId} />
                   <DeleteButton
-                    orderId={order.id}
-                    projectId={projectId}
-                    pendingDeleteCountRef={pendingDeleteCountRef}
+                    onDelete={() => {
+                      deleteOrder({
+                        orderId: order.id,
+                      });
+                    }}
                   />
                 </div>
               ))}

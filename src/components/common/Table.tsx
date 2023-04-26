@@ -22,7 +22,7 @@ import {
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useGetBudgets } from "../../hooks/budget";
+import { useDeleteBudget, useGetBudgets } from "../../hooks/budget";
 import { api } from "../../utils/api";
 import DebouncedInput from "./DebounceInput";
 import Spinner from "./Spinner";
@@ -31,7 +31,7 @@ const CreateButton = dynamic(() => import("../budget/CreateButton"));
 
 const EditButton = dynamic(() => import("../budget/EditButton"));
 
-const DeleteButton = dynamic(() => import("../budget/DeleteButton"));
+const DeleteButton = dynamic(() => import("./DeleteButton"));
 
 type Budget = {
   id: string;
@@ -236,8 +236,10 @@ const Table = () => {
         cell: (info) => {
           const { id, description, expectedBudget, costsIncurred } =
             info.getValue();
+
+          const { deleteBudget } = useDeleteBudget();
           return (
-            <>
+            <div className=" inline-flex gap-3">
               <EditButton
                 budgetId={id}
                 projectId={projectId}
@@ -248,8 +250,14 @@ const Table = () => {
                 pageSize={queryPageSize}
                 searchKey={search_key}
               />
-              <DeleteButton budgetId={id} />
-            </>
+              <DeleteButton
+                onDelete={() => {
+                  deleteBudget({
+                    budgetId: id,
+                  });
+                }}
+              />
+            </div>
           );
         },
         header: () => <span>Actions</span>,
@@ -335,7 +343,7 @@ const Table = () => {
             </span>
           </div>
           <div className="mt-4 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                 <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
