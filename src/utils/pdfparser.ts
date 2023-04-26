@@ -109,7 +109,7 @@ export const parseData = (pdfContent: string) => {
         const result = (/recipient (.*)/g).exec(pageTextLine);
         data.vendorName = (result == null) ? "" : result[1];
       }
-       
+      
       if (pageTextLine.includes("invoice date")) {
         if (pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/))
           data.invoiceDate = pageTextLine

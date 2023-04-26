@@ -31,7 +31,7 @@ export const useCreateSupplierInvoice = () => {
               invoiceNo: values.supplierInvoiceNo,
               invoiceDate: values.supplierInvoiceDate,
               description: values.description,
-              venderName: values.vendorName,
+              vendorName: values.vendorName,
               supplierName: values.supplierName,
               totalCost: values.totalCost,
               createdBy: { name: session.data?.user?.name || "You" },

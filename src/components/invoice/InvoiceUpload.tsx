@@ -138,7 +138,7 @@ const InvoiceUpload = ({onData} : Props) => {
         if (files && files[0]) {
           const fileName = files[0].name;
           try {
-            await validatePdfFile(files[0]);
+            void await validatePdfFile(files[0]);
             // if exists, don't upload
             s3Files?.map((file) => {
               if (file?.name == fileName) {
@@ -166,36 +166,36 @@ const InvoiceUpload = ({onData} : Props) => {
         <div>
             <div className="mb-5 text-right">
               <button
-                  type="button"
-                  className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-                  onClick={handleUploadClick}
+                type="button"
+                className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
+                onClick={handleUploadClick}
               >
-                  {uploadFile ? `${uploadFile.name}` : "Upload file"}
+                {uploadFile ? `${uploadFile.name}` : "Upload file"}
               </button>
               <input
-                  type="file"
-                  ref={inputRef}
-                  onChange={(e) => {
-                  void handleFileChange(e);
-                  }}
-                  aria-label="Upload file"
-                  className="hidden"
+                type="file"
+                ref={inputRef}
+                onChange={(e) => {
+                void handleFileChange(e);
+                }}
+                aria-label="Upload file"
+                className="hidden"
               />
             </div>
             <div className="border-2 border-solid border-sky-500 p-5">
                 <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                    <Page
+                  <Page
                     pageNumber={pageNumber}
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
-                    />
+                  />
                 </Document>
                 <p>
                     Page {pageNumber} of {numPages}
                 </p>
             </div>
         </div>
-    );
+    );``
 }
 
 export default InvoiceUpload;
