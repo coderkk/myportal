@@ -1,30 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
     provider = "prisma-client-js"
 }
 
 datasource db {
     provider     = "mysql"
+    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+    // Further reading:
+    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url          = env("DATABASE_URL")
     relationMode = "prisma"
 }
 
+// Necessary for Next auth
 model Account {
     id                String   @id @default(cuid())
     userId            String
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String?  @db.Text
+    refresh_token     String?  @db.Text // Why db.Text is needed: https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     access_token      String?  @db.Text
     expires_at        Int?
+    ext_expires_in    Int?
     token_type        String?
     scope             String?
     id_token          String?  @db.Text
     session_state     String?
+    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     createdAt         DateTime @default(now())
     updatedAt         DateTime @default(now()) @updatedAt
-    ext_expires_in    Int?
-    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
     @@index([userId])
@@ -35,9 +43,9 @@ model Session {
     sessionToken String   @unique
     userId       String
     expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     createdAt    DateTime @default(now())
     updatedAt    DateTime @default(now()) @updatedAt
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@index([userId])
 }
@@ -48,11 +56,9 @@ model User {
     email                         String?                 @unique
     emailVerified                 DateTime?
     image                         String?                 @db.Text
-    phoneNumber                   String?                 @default("")
+    phoneNumber                   String?                 @default("") // Must have a default value: https://create.t3.gg/en/usage/next-auth#adding-new-fields-to-your-models
     company                       String?                 @default("")
     professionalRole              ProfessionalRole        @default(PROJECT_MEMBER)
-    createdAt                     DateTime                @default(now())
-    updatedAt                     DateTime                @default(now()) @updatedAt
     accounts                      Account[]
     sessions                      Session[]
     createdProjects               Project[]
@@ -70,6 +76,8 @@ model User {
     assignedTasks                 Task[]                  @relation("assignedTasks")
     projects                      UsersOnProjects[]
     supplierInvoices              SupplierInvoice[]
+    createdAt                     DateTime                @default(now())
+    updatedAt                     DateTime                @default(now()) @updatedAt
 }
 
 model VerificationToken {
@@ -85,10 +93,8 @@ model VerificationToken {
 model Project {
     id                     String                  @id @default(cuid())
     name                   String
-    createdById            String
-    createdAt              DateTime                @default(now())
-    updatedAt              DateTime                @updatedAt
     createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById            String
     siteDiaries            SiteDiary[]
     tasks                  Task[]
     orders                 Order[]
@@ -96,6 +102,8 @@ model Project {
     users                  UsersOnProjects[]
     budgets                Budget[]
     supplierInvoices       SupplierInvoice[]
+    createdAt              DateTime                @default(now())
+    updatedAt              DateTime                @updatedAt
 
     @@index([createdById])
 }
@@ -104,18 +112,18 @@ model SiteDiary {
     id             String         @id @default(cuid())
     name           String
     date           DateTime
-    createdById    String
-    projectId      String
-    createdAt      DateTime       @default(now())
-    updatedAt      DateTime       @updatedAt
     createdBy      User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById    String
     project        Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId      String
     weather        Weather?
     plants         Plant[]
     laborers       Laborer[]
     materials      Material[]
     siteProblems   SiteProblem[]
     workProgresses WorkProgress[]
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
 
     @@index([projectId])
     @@index([createdById])
@@ -126,22 +134,22 @@ model Weather {
     morning     WeatherCondition?
     afternoon   WeatherCondition?
     evening     WeatherCondition?
+    siteDiary   SiteDiary         @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String            @unique
     createdAt   DateTime          @default(now())
     updatedAt   DateTime          @default(now()) @updatedAt
-    siteDiary   SiteDiary         @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
 }
 
 model Plant {
     id          String    @id @default(cuid())
     type        String
     amount      Int
+    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @default(now()) @updatedAt
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -151,12 +159,12 @@ model Laborer {
     id          String    @id @default(cuid())
     type        String
     amount      Int
+    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @default(now()) @updatedAt
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -167,12 +175,12 @@ model Material {
     type        String
     units       MaterialUnit
     amount      Int
+    siteDiary   SiteDiary    @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
+    createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime     @default(now())
     updatedAt   DateTime     @default(now()) @updatedAt
-    siteDiary   SiteDiary    @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -181,12 +189,12 @@ model Material {
 model SiteProblem {
     id          String    @id @default(cuid())
     comments    String
+    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @default(now()) @updatedAt
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -195,12 +203,12 @@ model SiteProblem {
 model WorkProgress {
     id          String    @id @default(cuid())
     comments    String
+    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
     siteDiaryId String
+    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
     createdAt   DateTime  @default(now())
     updatedAt   DateTime  @default(now()) @updatedAt
-    siteDiary   SiteDiary @relation(fields: [siteDiaryId], references: [id], onDelete: Cascade)
-    createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
     @@index([siteDiaryId])
     @@index([createdById])
@@ -210,14 +218,14 @@ model Task {
     id           String     @id @default(cuid())
     description  String
     status       TaskStatus
+    createdBy    User       @relation("createdTasks", fields: [createdById], references: [id], onDelete: Restrict)
     createdById  String
+    assignedTo   User?      @relation("assignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
     assignedToId String?
+    project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId    String
     createdAt    DateTime   @default(now())
     updatedAt    DateTime   @updatedAt
-    createdBy    User       @relation("createdTasks", fields: [createdById], references: [id], onDelete: Restrict)
-    assignedTo   User?      @relation("assignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
-    project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
     @@index([projectId])
     @@index([createdById])
@@ -230,12 +238,12 @@ model Order {
     supplierEmailAddress String
     arrivalOnSite        OrderArrivalOnSite
     orderNumber          String
+    createdBy            User               @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById          String
+    project              Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId            String
     createdAt            DateTime           @default(now())
     updatedAt            DateTime           @updatedAt
-    createdBy            User               @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    project              Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
     @@index([projectId])
     @@index([createdById])
@@ -245,13 +253,13 @@ model RequestForInformation {
     id          String                      @id @default(cuid())
     topic       String
     status      RequestForInformationStatus
+    replies     Reply[]
+    createdBy   User                        @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById String
+    project     Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId   String
     createdAt   DateTime                    @default(now())
     updatedAt   DateTime                    @updatedAt
-    replies     Reply[]
-    createdBy   User                        @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    project     Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
     @@index([projectId])
     @@index([createdById])
@@ -260,22 +268,22 @@ model RequestForInformation {
 model Reply {
     id                      String                @id @default(cuid())
     description             String
+    createdBy               User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById             String
     createdAt               DateTime              @default(now())
     updatedAt               DateTime              @updatedAt
-    requestForInformationId String
-    createdBy               User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
     requestForInformation   RequestForInformation @relation(fields: [requestForInformationId], references: [id], onDelete: Cascade)
+    requestForInformationId String
 
     @@index([requestForInformationId])
     @@index([createdById])
 }
 
 model UsersOnProjects {
-    userId    String
-    projectId String
     user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
     project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId String
 
     @@id([userId, projectId])
     @@index([userId])
@@ -288,12 +296,12 @@ model Budget {
     description    String
     expectedBudget Int
     costsIncurred  Int
+    project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId      String
+    createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById    String
     createdAt      DateTime @default(now())
     updatedAt      DateTime @default(now()) @updatedAt
-    project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
     @@index([projectId])
     @@index([createdById])
@@ -309,11 +317,11 @@ model SupplierInvoice {
     supplierName String
     totalCost    Float
     projectId    String
+    project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById  String
     createdAt    DateTime @default(now())
     updatedAt    DateTime @default(now()) @updatedAt
-    project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
 
     @@index([projectId])
     @@index([createdById])
