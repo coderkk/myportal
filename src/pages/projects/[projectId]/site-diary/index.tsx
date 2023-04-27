@@ -95,7 +95,6 @@ const SiteDiary = () => {
       if (unsavedChangesToastId !== undefined) {
         toast.dismiss(unsavedChangesToastId);
       }
-      // setUnsavedChangesToastId(undefined);
     };
   }, [
     currentEndDate,

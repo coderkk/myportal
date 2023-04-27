@@ -24,14 +24,14 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useGetBudgets } from "../../hooks/budget";
 import { api } from "../../utils/api";
-import DebouncedInput from "./DebounceInput";
-import Spinner from "./Spinner";
+import DebouncedInput from "../common/DebounceInput";
+import Spinner from "../common/Spinner";
 
-const CreateButton = dynamic(() => import("../budget/CreateButton"));
+const CreateButton = dynamic(() => import("./CreateButton"));
 
-const EditButton = dynamic(() => import("../budget/EditButton"));
+const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("../budget/DeleteButton"));
+const DeleteButton = dynamic(() => import("./DeleteButton"));
 
 type Budget = {
   id: string;
@@ -42,34 +42,34 @@ type Budget = {
   difference: number;
 };
 
-const initialState = {
+export const initialState = {
   queryPageIndex: 0,
   queryPageSize: 5,
   search_key: "",
 };
 
-const PAGE_CHANGED = "PAGE_CHANGED";
-const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
-const SEARCH_KEY_CHANGED = "SEARCH_KEY_CHANGED";
+export const PAGE_CHANGED = "PAGE_CHANGED";
+export const PAGE_SIZE_CHANGED = "PAGE_SIZE_CHANGED";
+export const SEARCH_KEY_CHANGED = "SEARCH_KEY_CHANGED";
 
-type actionType = (typeof actionType)[number];
-type state = {
-  queryPageIndex: number;
-  queryPageSize: number;
-  search_key: string;
-};
-type action = {
-  type: actionType;
-  payload: number | string;
-};
-
-const actionType = [
+export const actionLiterals = [
   "PAGE_CHANGED",
   "PAGE_SIZE_CHANGED",
   "SEARCH_KEY_CHANGED",
 ] as const;
+export type actionType = (typeof actionLiterals)[number];
 
-const reducer = (state: state, action: action): state => {
+export type state = {
+  queryPageIndex: number;
+  queryPageSize: number;
+  search_key: string;
+};
+export type action = {
+  type: actionType;
+  payload: number | string;
+};
+
+export const reducer = (state: state, action: action): state => {
   switch (action.type) {
     case PAGE_CHANGED:
       return {
@@ -91,7 +91,7 @@ const reducer = (state: state, action: action): state => {
   }
 };
 
-const Button = ({
+export const Button = ({
   children,
   className,
   onClick,
@@ -117,7 +117,7 @@ const Button = ({
   );
 };
 
-const PageButton = ({
+export const PageButton = ({
   children,
   className,
   onClick,
@@ -143,7 +143,7 @@ const PageButton = ({
   );
 };
 
-const SortUpIcon = ({ className }: { className: string }) => {
+export const SortUpIcon = ({ className }: { className: string }) => {
   return (
     <svg
       className={className}
@@ -160,7 +160,7 @@ const SortUpIcon = ({ className }: { className: string }) => {
   );
 };
 
-const SortDownIcon = ({ className }: { className: string }) => {
+export const SortDownIcon = ({ className }: { className: string }) => {
   return (
     <svg
       className={className}
@@ -335,7 +335,7 @@ const Table = () => {
             </span>
           </div>
           <div className="mt-4 flex flex-col">
-            <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                 <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">

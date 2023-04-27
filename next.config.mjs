@@ -18,6 +18,8 @@ const config = {
       "cdn.discordapp.com",
       "images.unsplash.com",
       "lh3.googleusercontent.com",
+      "static-cdn.jtvnw.net", // Twitch
+      "pbs.twimg.com", // Twitter
     ],
   },
   async redirects() {
