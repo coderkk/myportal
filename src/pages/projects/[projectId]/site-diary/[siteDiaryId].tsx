@@ -14,13 +14,16 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import DeleteButton from "../../../../components/siteDiary/DeleteButton";
+import DeleteButton from "../../../../components/common/DeleteButton";
 import { LaborerView } from "../../../../components/siteDiary/laborer/LaborerView";
 import { MaterialView } from "../../../../components/siteDiary/material/MaterialView";
 import { PlantView } from "../../../../components/siteDiary/plant/PlantView";
 import { SiteProblemView } from "../../../../components/siteDiary/siteProblem/siteProblemView";
 import { WorkProgressView } from "../../../../components/siteDiary/workProgress/workProgressView";
-import { useGetSiteDiary } from "../../../../hooks/siteDiary";
+import {
+  useDeleteSiteDiary,
+  useGetSiteDiary,
+} from "../../../../hooks/siteDiary";
 import { useUpdateSiteDiaryWeather } from "../../../../hooks/weather";
 
 export type siteDiary = {
@@ -126,6 +129,10 @@ const SiteDiary = () => {
     }
   };
 
+  const { deleteSiteDiary } = useDeleteSiteDiary({
+    projectId: projectId,
+  });
+
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -141,9 +148,18 @@ const SiteDiary = () => {
                       {siteDiary.name}
                     </span>
                     <DeleteButton
-                      projectId={projectId}
-                      siteDiaryId={siteDiaryId}
+                      description="Delete"
                       navigateBack={true}
+                      onDelete={() => {
+                        deleteSiteDiary({
+                          siteDiaryId: siteDiaryId,
+                          siteDiaryName: "",
+                          startDate: new Date(
+                            Date.parse("0001-01-01T18:00:00Z")
+                          ),
+                          endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
+                        });
+                      }}
                     />
                   </div>
                   <div className="mt-4 flex justify-evenly text-xs text-gray-400 md:hidden">

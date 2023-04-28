@@ -27,9 +27,9 @@ const DeleteButton = ({
             className="mb-5 mt-3  flex flex-col gap-3 text-center text-lg font-bold leading-6 text-gray-900 sm:mt-5 sm:flex-row sm:items-start sm:text-left"
             aria-describedby="This action cannot be undone."
           >
-            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10 ">
+            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10 ">
               <svg
-                class="h-6 w-6 text-red-600"
+                className="h-6 w-6 text-red-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width="1.5"

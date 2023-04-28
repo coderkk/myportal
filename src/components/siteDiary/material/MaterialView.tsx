@@ -69,9 +69,11 @@ export const MaterialView = ({ materials }: { materials: Material[] }) => {
               <div className="flex-shrink-0 items-center pr-2">
                 <EditButton material={material} siteDiaryId={siteDiaryId} />
                 <DeleteButton
-                  materialId={material.id}
-                  siteDiaryId={siteDiaryId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
+                  onDelete={() =>
+                    deleteMaterial({
+                      materialId: material.id,
+                    })
+                  }
                 />
               </div>
             </div>

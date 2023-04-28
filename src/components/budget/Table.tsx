@@ -31,7 +31,7 @@ const CreateButton = dynamic(() => import("./CreateButton"));
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../common/DeleteButton"));
 
 type Budget = {
   id: string;
