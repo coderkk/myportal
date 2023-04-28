@@ -20,7 +20,6 @@ export const serverSchema = z.object({
     process.env.VERCEL ? z.string() : z.string().url()
   ),
   AWS_S3_BUCKET_REGION_: z.string(),
-  AWS_S3_BUCKET_NAME_: z.string(),
   AWS_ACCESS_KEY_ID_: z.string(),
   AWS_SECRET_ACCESS_KEY_: z.string(),
   DISCORD_CLIENT_ID: z.string(),
@@ -50,7 +49,8 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-  // NEXT_PUBLIC_AWS_S3_BUCKET_NAME: z.string(),
+  NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME: z.string(),
+  NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME: z.string(),
 });
 
 /**
@@ -60,5 +60,8 @@ export const clientSchema = z.object({
  * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
 export const clientEnv = {
-  // NEXT_PUBLIC_AWS_S3_BUCKET_NAME: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
+  NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME:
+    process.env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
+  NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME:
+    process.env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
 };

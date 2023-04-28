@@ -1,287 +1,125 @@
 import { useRouter } from "next/router";
-import type { PDFDocumentProxy } from "pdfjs-dist";
-import { useCallback, useRef, useState } from "react";
-import toast from "react-hot-toast";
-import { pdfjs } from "react-pdf";
-import SessionAuth from "../../../../components/auth/SessionAuth";
-import {
-  useFetchS3BucketContents,
-  useGetPreSignedURLForDownload,
-  useGetPreSignedURLForUpload,
-} from "../../../../hooks/s3";
-import { api } from "../../../../utils/api";
-import { getPDFText, parseData } from "../../../../utils/pdfparser";
-
-import dynamic from "next/dynamic";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
-import type { Invoice } from "../../../../utils/pdfparser";
+import SessionAuth from "../../../../components/auth/SessionAuth";
+import { useGetSupplierInvoices } from "../../../../hooks/supplierInvoice";
 
-pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
-
-const Document = dynamic(() =>
-  import("react-pdf").then((module) => module.Document)
-);
-
-const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
-
-const InvoicePage = () => {
+const Invoices = () => {
   const router = useRouter();
-  const utils = api.useContext();
   const projectId = router.query.projectId as string;
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const [invoiceData, setInvoiceData] = useState<Invoice>({
-    vendorName: "ds",
-    invoiceNo: "",
-    invoiceDate: "",
-    invoiceCosts: 0,
-    description: "",
-  });
-  const [uploadFile, setUploadFile] = useState<File | undefined | null>(
-    undefined
-  );
-  const [file, setFile] = useState("/docs/invoice.pdf");
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber] = useState<number>(1);
-  const [folderPrefix] = useState("/");
-
-  const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
-
-  const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
-
-  const { files: s3Files } = useFetchS3BucketContents({
-    prefix: folderPrefix,
+  const { supplierInvoices, isLoading } = useGetSupplierInvoices({
     projectId: projectId,
   });
-
-  const onDocumentLoadSuccess = (pdf: PDFDocumentProxy) => {
-    setNumPages(pdf.numPages);
-    void parseInvoice(pdf);
-  };
-
-  const parseInvoice = async (pdf: PDFDocumentProxy) => {
-    const pdfText = await getPDFText(pdf);
-    const data = parseData(pdfText);
-    setInvoiceData(data);
-  };
-
-  // Retreive AWS file at https://hyperbolt-ai-invoices.s3.amazonaws.com/clg6rqmfw0005td2oh53bfnqw/Invoice%20Template%20Costing%20AI%20feature%20280323.pdf
-  const handleLoadFile = async () => {
-    try {
-      const { preSignedURLForDownload } = await getPreSignedURLForDownload({
-        fileId:
-          "clg6rqmfw0005td2oh53bfnqw/Invoice Template Costing AI feature 280323.docx.pdf",
-        projectId: projectId,
-      });
-
-      const res = await fetch(preSignedURLForDownload, {
-        method: "GET",
-      });
-      const resBlob = await res.blob();
-      const url = window.URL.createObjectURL(new Blob([resBlob]));
-      setFile(url);
-    } catch (error) {
-      toast.error("Error when downloading file");
-      // This try catch is necessary as getPreSignedURLForDownload
-      // returns a promise that can possibly cause a runtime error.
-      // we handle this error in src/utils/api.ts so there's no need
-      // to do anything here other than catch the error.
-    }
-  };
-
-  const handleUploadClick = () => {
-    // 👇 We redirect the click event onto the hidden input element
-    inputRef.current?.click();
-  };
-
-  const handleUploadFile = useCallback(
-    async (file: File) => {
-      const fileId =
-        folderPrefix === "/" ? file.name : folderPrefix + file.name;
-      try {
-        const { preSignedURLForUpload } = await getPreSignedURLForUpload({
-          fileId: fileId,
-          projectId: projectId,
-        });
-
-        const uploadFile = fetch(preSignedURLForUpload, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type,
-          },
-          body: file,
-        })
-          .catch(() => {
-            throw new Error();
-          })
-          .finally(() => {
-            setUploadFile(undefined);
-            void utils.s3.fetchS3BucketContents.invalidate();
-          });
-
-        await toast.promise(uploadFile, {
-          loading: "Uploading file",
-          success: "File uploaded successfully",
-          error: "Error when uploading file",
-        });
-      } catch (error) {
-        // This try catch is necessary as getPreSignedURLForDownload
-        // returns a promise that can possibly cause a runtime error.
-        // we handle this error in src/utils/api.ts so there's no need
-        // to do anything here other than catch the error.
-      }
-    },
-    [
-      folderPrefix,
-      getPreSignedURLForUpload,
-      projectId,
-      utils.s3.fetchS3BucketContents,
-    ]
-  );
-
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const files = event.target.files;
-    if (files && files[0]) {
-      const fileName = files[0].name;
-      setUploadFile(files[0]);
-      // if exists, don't upload
-      s3Files?.map((file) => {
-        if (file?.name == fileName) {
-          toast.error("Duplicate file name. Delete existing file first");
-          return;
-        }
-      });
-      await handleUploadFile(files[0]);
-      event.target.value = ""; // clear the input
-    }
-    // 🚩 do the file upload here normally...
-  };
 
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
-        <div className="flex">
-          <div className="m-auto">
-            <section>
-              <div className="max-w-screen-xl px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
-                <div className="mb-5 flex justify-between">
-                  <h2 className="text-3xl font-bold sm:text-4xl">
-                    Invoice Data Extraction
-                  </h2>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="pt-5">
+            <div className="px-4 sm:px-6 lg:px-8">
+              <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                  <h1 className="text-base font-semibold leading-6 text-gray-900">
+                    Supplier Invoice
+                  </h1>
+                  <p className="mt-2 text-sm text-gray-700">
+                    User will upload and enter the supplier invoice
+                  </p>
+                </div>
+                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                   <button
                     type="button"
-                    className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-                    onClick={handleUploadClick}
-                  >
-                    {uploadFile ? `${uploadFile.name}` : "Click to select"}
-                  </button>
-
-                  <input
-                    type="file"
-                    ref={inputRef}
-                    onChange={(e) => {
-                      void handleFileChange(e);
+                    onClick={() => {
+                      void router.push(
+                        "/projects/" + projectId + "/invoice/upload"
+                      );
                     }}
-                    aria-label="Upload file"
-                    className="hidden"
-                  />
-                  <button
-                    className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-                    onClick={() => void handleLoadFile()}
+                    className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
-                    Load File
+                    Add Supplier Invoice
                   </button>
                 </div>
-                <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-2  lg:gap-x-16">
-                  <div className="mx-auto max-w-lg text-left lg:mx-0 lg:text-left">
-                    <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-                      <div className="px-4 py-5 sm:px-6">
-                        <h3 className="text-base font-semibold leading-6 text-gray-900">
-                          Automated Data
-                        </h3>
-                        <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                          Extract data from PDF file
-                        </p>
-                      </div>
-                      <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-                        <dl className="sm:divide-y sm:divide-gray-200">
-                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Vendor name
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                              {invoiceData.vendorName}
-                            </dd>
-                          </div>
-                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt className="text-sm font-medium text-gray-500">
+              </div>
+              <div className="mt-8 flow-root">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-300">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th
+                              scope="col"
+                              className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                            >
+                              Supplier Name
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
                               Invoice No
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                              {invoiceData.invoiceNo}
-                            </dd>
-                          </div>
-                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt className="text-sm font-medium text-gray-500">
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
                               Invoice Date
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                              {invoiceData.invoiceDate}
-                            </dd>
-                          </div>
-                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Invoice Costs
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                              {invoiceData.invoiceCosts}
-                            </dd>
-                          </div>
-                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Invoice Description
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                              {invoiceData.description}
-                            </dd>
-                          </div>
-                          <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Assign to
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                              <select title="Assign to">
-                                <option></option>
-                              </select>
-                            </dd>
-                          </div>
-                        </dl>
-                      </div>
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
+                              Total Price
+                            </th>
+                            <th
+                              scope="col"
+                              className="relative py-3.5 pl-3 pr-4 sm:pr-6"
+                            >
+                              <span className="sr-only">Edit</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 bg-white">
+                          {supplierInvoices?.map((supplierInvoice) => (
+                            <tr key={supplierInvoice.id}>
+                              <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                {supplierInvoice.supplierName}
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.invoiceNo}
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.invoiceDate.toString()}
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.totalCost}
+                              </td>
+                              <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                <a
+                                  href="#"
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                >
+                                  Edit
+                                  <span className="sr-only">
+                                    , {supplierInvoice.invoiceNo}
+                                  </span>
+                                </a>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  </div>
-
-                  <div className="clear-both border-2 border-solid border-sky-500">
-                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                      <Page
-                        pageNumber={pageNumber}
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false}
-                      />
-                    </Document>
-                    <p>
-                      Page {pageNumber} of {numPages}
-                    </p>
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
           </div>
-        </div>
+        )}
       </PermissionToProject>
     </SessionAuth>
   );
 };
 
-export default InvoicePage;
+export default Invoices;

@@ -16,7 +16,7 @@ const ProjectInformation = dynamic(
   () => import("../../../../components/financialDashboard/ProjectInformation")
 );
 
-const Table = dynamic(() => import("../../../../components/common/Table"), {
+const Table = dynamic(() => import("../../../../components/budget/Table"), {
   ssr: false,
 });
 
