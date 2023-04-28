@@ -67,7 +67,7 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
         const { preSignedURLForUpload } = await getPreSignedURLForUpload({
           fileId: fileId,
           projectId: projectId,
-          aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
+          aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME as string,
         });
 
         const uploadFile = fetch(preSignedURLForUpload, {
@@ -84,7 +84,7 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
             setFile(file);
             setUploadFile(undefined);
             void utils.s3.fetchS3BucketContents.invalidate({
-              aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
+              aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME as string,
               projectId: projectId,
               prefix: folderPrefix,
             });
