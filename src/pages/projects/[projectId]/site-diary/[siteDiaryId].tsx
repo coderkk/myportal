@@ -136,17 +136,56 @@ const SiteDiary = () => {
             <main>
               <h1 className="m-4">
                 <span className="font-semibold text-black">
-                  <div className="flex items-center justify-between gap-x-3">
-                    <h1 className="flex gap-x-3 text-base leading-7">
-                      <span className="text-xl text-black">
-                        {siteDiary.name}
-                      </span>
-                    </h1>
+                  <div className="mx-4 flex items-center justify-between gap-x-3">
+                    <span className="font-serif text-xl text-black">
+                      {siteDiary.name}
+                    </span>
                     <DeleteButton
                       projectId={projectId}
                       siteDiaryId={siteDiaryId}
                       navigateBack={true}
                     />
+                  </div>
+                  <div className="mt-4 flex justify-evenly text-xs text-gray-400 md:hidden">
+                    <span className="flex flex-col">
+                      Morning{" "}
+                      <Dropdown
+                        weatherCondition={siteDiary.weather?.morning}
+                        onWeatherChange={(value: WeatherCondition) =>
+                          onWeatherChange({
+                            weather: siteDiary.weather,
+                            time: "M",
+                            value: value,
+                          })
+                        }
+                      />
+                    </span>
+                    <span className="flex flex-col">
+                      Afternoon{" "}
+                      <Dropdown
+                        weatherCondition={siteDiary.weather?.afternoon}
+                        onWeatherChange={(value: WeatherCondition) =>
+                          onWeatherChange({
+                            weather: siteDiary.weather,
+                            time: "A",
+                            value: value,
+                          })
+                        }
+                      />
+                    </span>
+                    <span className="flex flex-col">
+                      Evening
+                      <Dropdown
+                        weatherCondition={siteDiary.weather?.evening}
+                        onWeatherChange={(value: WeatherCondition) =>
+                          onWeatherChange({
+                            weather: siteDiary.weather,
+                            time: "E",
+                            value: value,
+                          })
+                        }
+                      />
+                    </span>
                   </div>
                 </span>
               </h1>
@@ -197,7 +236,7 @@ const SiteDiary = () => {
                     </ul>
                   </Transition>
                   <div className="mr-4 flex items-center text-xs text-gray-400">
-                    <div className="mr-2 flex">
+                    <div className="mr-2 hidden md:flex">
                       <span className="mr-2 flex flex-col">
                         Morning:{" "}
                         <Dropdown
