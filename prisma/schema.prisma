@@ -75,6 +75,7 @@ model User {
     createdTasks                  Task[]                  @relation("createdTasks")
     assignedTasks                 Task[]                  @relation("assignedTasks")
     projects                      UsersOnProjects[]
+    supplierInvoices              SupplierInvoice[]
     createdAt                     DateTime                @default(now())
     updatedAt                     DateTime                @default(now()) @updatedAt
 }
@@ -100,6 +101,7 @@ model Project {
     requestForInformations RequestForInformation[]
     users                  UsersOnProjects[]
     budgets                Budget[]
+    supplierInvoices       SupplierInvoice[]
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @updatedAt
 
@@ -300,6 +302,26 @@ model Budget {
     createdById    String
     createdAt      DateTime @default(now())
     updatedAt      DateTime @default(now()) @updatedAt
+
+    @@index([projectId])
+    @@index([createdById])
+}
+
+model SupplierInvoice {
+    id           String   @id @default(cuid())
+    costCode     String   @default("")
+    description  String
+    invoiceNo    String
+    invoiceDate  DateTime
+    vendorName   String
+    supplierName String
+    totalCost    Float
+    projectId    String
+    project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById  String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @default(now()) @updatedAt
 
     @@index([projectId])
     @@index([createdById])
