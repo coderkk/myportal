@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { ReactNode } from "react";
 import { Fragment, useEffect, useState } from "react";
+import { env } from "../../env/client.mjs";
 import { api } from "../../utils/api";
 import { Logo } from "../common/Logo";
 import { projectFeatures } from "../project/data";
@@ -30,7 +31,23 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
     switch (href) {
       case "/file-manager":
         void utils.s3.fetchS3BucketContents.prefetch(
-          { projectId: projectId, prefix: "/" },
+          {
+            projectId: projectId,
+            prefix: "/",
+            aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
+          },
+          {
+            staleTime: Infinity,
+          }
+        );
+        break;
+      case "/invoice":
+        void utils.s3.fetchS3BucketContents.prefetch(
+          {
+            projectId: projectId,
+            prefix: "/",
+            aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
+          },
           {
             staleTime: Infinity,
           }

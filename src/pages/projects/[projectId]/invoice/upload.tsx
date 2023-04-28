@@ -9,11 +9,11 @@ import { Controller, useForm } from 'react-hook-form';
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import parse from 'date-fns/parse'
 
-import InvoiceUpload from '../../../../components/invoice/InvoiceUpload'
+import InvoiceUpload from "../../../../components/invoice/InvoiceUpload";
 
 const InvoiceUploadPage = () => {
   const router = useRouter();
-  const projectId = router.query.projectId as string
+  const projectId = router.query.projectId as string;
 
   const [invoiceData, setInvoiceData] = useState<supplierInvoice>({
     projectId: projectId,

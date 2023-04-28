@@ -91,7 +91,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
               id: input.projectId,
             },
             include: {
-              supplierInvoices:{
+              supplierInvoices: {
                 include: {
                   createdBy: {
                     select: {
@@ -100,7 +100,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
                   },
                 },
               },
-            }
+            },
           });
           return project.supplierInvoices.map((supplierInvoice) => ({
             id: supplierInvoice.id,
@@ -139,7 +139,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
                   name: true,
                 },
               },
-            }
+            },
           });
         },
         errorMessages: ["Failed to get supplier invoice"],

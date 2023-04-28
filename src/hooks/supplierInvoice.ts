@@ -30,11 +30,12 @@ export type supplierInvoice = {
 export const useCreateSupplierInvoice = () => {
   const utils = api.useContext();
   const session = useSession();
-  const { mutate: createSupplierInvoice } = api.supplierInvoice.createSupplierInvoice.useMutation(
-    {
+  const { mutate: createSupplierInvoice } =
+    api.supplierInvoice.createSupplierInvoice.useMutation({
       async onMutate(values) {
         await utils.supplierInvoice.getSupplierInvoices.cancel();
-        const previousData = utils.supplierInvoice.getSupplierInvoices.getData();
+        const previousData =
+          utils.supplierInvoice.getSupplierInvoices.getData();
         utils.supplierInvoice.getSupplierInvoices.setData(
           { projectId: values.projectId },
           (oldSupplierInvoices) => {
@@ -77,14 +78,17 @@ export const useCreateSupplierInvoice = () => {
       async onSettled() {
         await utils.supplierInvoice.getSupplierInvoices.invalidate();
       },
-    }
-  );
+    });
   return {
     createSupplierInvoice,
   };
 };
 
-export const useGetSupplierInvoices = ({ projectId }: { projectId: string }) => {
+export const useGetSupplierInvoices = ({
+  projectId,
+}: {
+  projectId: string;
+}) => {
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoices.useQuery({
     projectId: projectId,
   });
@@ -94,7 +98,11 @@ export const useGetSupplierInvoices = ({ projectId }: { projectId: string }) => 
   };
 };
 
-export const useGetSupplierInvoice = ({ invoiceId }: { invoiceId: string }) => {
+export const useGetSupplierInvoice = ({ 
+  invoiceId, 
+}: { 
+  invoiceId: string 
+}) => {
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoice.useQuery({
     invoiceId: invoiceId,
   });
@@ -104,13 +112,18 @@ export const useGetSupplierInvoice = ({ invoiceId }: { invoiceId: string }) => {
   };
 };
 
-export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) => {
+export const useUpdateSupplierInvoice = ({
+  projectId,
+}: {
+  projectId: string;
+}) => {
   const utils = api.useContext();
   const { mutate: updateSupplierInvoice } = api.supplierInvoice.updateSupplierInvoice.useMutation(
     {
       async onMutate(values) {
         await utils.supplierInvoice.getSupplierInvoices.cancel();
-        const previousData = utils.supplierInvoice.getSupplierInvoices.getData();
+        const previousData =
+          utils.supplierInvoice.getSupplierInvoices.getData();
         utils.supplierInvoice.getSupplierInvoices.setData(
           { projectId: projectId },
           (oldSupplierInvoices) => {
@@ -118,10 +131,12 @@ export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) =
               const newSupplierInvoices = oldSupplierInvoices.map((oldSupplierInvoice) => {
                 return { ...oldSupplierInvoice };
               });
-              const supplierInvoiceToUpdateIndex = newSupplierInvoices?.findIndex(
-                (supplierInvoice) => supplierInvoice.id === values.invoiceId
-              );
-              const updatedSupplierInvoice = newSupplierInvoices[supplierInvoiceToUpdateIndex];
+              const supplierInvoiceToUpdateIndex =
+                newSupplierInvoices?.findIndex(
+                  (supplierInvoice) => supplierInvoice.id === values.invoiceId
+                );
+              const updatedSupplierInvoice =
+                newSupplierInvoices[supplierInvoiceToUpdateIndex];
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = values.invoiceNo;
                 updatedSupplierInvoice.invoiceDate = values.invoiceDate;
@@ -161,10 +176,12 @@ export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) =
               const newSupplierInvoices = oldSupplierInvoices.map((oldSupplierInvoice) => {
                 return { ...oldSupplierInvoice };
               });
-              const supplierInvoiceToUpdateIndex = newSupplierInvoices?.findIndex(
-                (supplierInvoice) => supplierInvoice.id === invoiceId
-              );
-              const updatedSupplierInvoice = newSupplierInvoices[supplierInvoiceToUpdateIndex];
+              const supplierInvoiceToUpdateIndex = 
+                newSupplierInvoices?.findIndex(
+                  (supplierInvoice) => supplierInvoice.id === invoiceId
+                );
+              const updatedSupplierInvoice =
+                newSupplierInvoices[supplierInvoiceToUpdateIndex];
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = invoiceNo;
                 updatedSupplierInvoice.invoiceDate = invoiceDate;
@@ -180,8 +197,7 @@ export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) =
       async onSettled() {
         await utils.supplierInvoice.getSupplierInvoices.invalidate();
       },
-    }
-  );
+    });
   return {
     updateSupplierInvoice,
   };
@@ -196,17 +212,19 @@ export const useDeleteSupplierInvoice = ({
 }) => {
   const utils = api.useContext();
 
-  const { mutate: deleteSupplierInvoice } = api.supplierInvoice.deleteSupplierInvoice.useMutation(
-    {
+  const { mutate: deleteSupplierInvoice } =
+    api.supplierInvoice.deleteSupplierInvoice.useMutation({
       async onMutate({ supplierInvoiceId }) {
         if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
         await utils.supplierInvoice.getSupplierInvoices.cancel();
-        const previousData = utils.supplierInvoice.getSupplierInvoices.getData();
+        const previousData =
+          utils.supplierInvoice.getSupplierInvoices.getData();
         utils.supplierInvoice.getSupplierInvoices.setData(
           { projectId: projectId },
           (oldSupplierInvoices) => {
             const newSupplierInvoices = oldSupplierInvoices?.filter(
-              (newSupplierInvoice) => newSupplierInvoice.id !== supplierInvoiceId
+              (newSupplierInvoice) =>
+                newSupplierInvoice.id !== supplierInvoiceId
             );
             return newSupplierInvoices;
           }
@@ -227,7 +245,8 @@ export const useDeleteSupplierInvoice = ({
           { projectId: projectId },
           (oldSupplierInvoices) => {
             const newSupplierInvoices = oldSupplierInvoices?.filter(
-              (newSupplierInvoice) => newSupplierInvoice.id !== supplierInvoiceId
+              (newSupplierInvoice) =>
+                newSupplierInvoice.id !== supplierInvoiceId
             );
             return newSupplierInvoices;
           }
@@ -243,8 +262,7 @@ export const useDeleteSupplierInvoice = ({
           await utils.supplierInvoice.getSupplierInvoices.invalidate();
         }
       },
-    }
-  );
+    });
   return {
     deleteSupplierInvoice,
   };

@@ -75,7 +75,7 @@ model User {
     createdTasks                  Task[]                  @relation("createdTasks")
     assignedTasks                 Task[]                  @relation("assignedTasks")
     projects                      UsersOnProjects[]
-    supplierInvoices              SupplierInvoice[]
+    createdSupplierInvoices       SupplierInvoice[]
     createdAt                     DateTime                @default(now())
     updatedAt                     DateTime                @default(now()) @updatedAt
 }

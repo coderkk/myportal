@@ -21,28 +21,33 @@ const s3 = new S3(s3Config);
 export const fetchS3BucketContentsSchema = z.object({
   prefix: z.string(),
   projectId: z.string(),
+  aws_s3_bucket_name: z.string(),
 });
 
 export const deleteS3ObjectSchema = z.object({
   prefix: z.string(),
   fileId: z.string(),
   projectId: z.string(),
+  aws_s3_bucket_name: z.string(),
 });
 
 export const getPreSignedURLForDownloadSchema = z.object({
   fileId: z.string(),
   projectId: z.string(),
+  aws_s3_bucket_name: z.string(),
 });
 
 export const getPreSignedURLForUploadSchema = z.object({
   fileId: z.string(),
   projectId: z.string(),
+  aws_s3_bucket_name: z.string(),
 });
 
 export const createFolderSchema = z.object({
   prefix: z.string(),
   folderName: z.string(),
   projectId: z.string(),
+  aws_s3_bucket_name: z.string(),
 });
 
 const removeFromStringIfStartsWith = (
@@ -71,7 +76,7 @@ export const s3Router = createTRPCRouter({
               : input.projectId + "/";
           const data = await s3
             .listObjectsV2({
-              Bucket: env.AWS_S3_BUCKET_NAME_,
+              Bucket: input.aws_s3_bucket_name,
               Delimiter: "/",
               Prefix: prefix,
             })
@@ -167,7 +172,7 @@ export const s3Router = createTRPCRouter({
             await s3.deleteObjects(deleteParams).promise();
             if (listedObjects.IsTruncated) await deleteHelper(bucket, dir); // listObjectsV2 has a MaxKeys and the number of files may be >MaxKeys
           };
-          return await deleteHelper(env.AWS_S3_BUCKET_NAME_, input.fileId);
+          return await deleteHelper(input.aws_s3_bucket_name, input.fileId);
         },
         errorMessages: [
           "Failed to delete S3 object",
@@ -185,7 +190,7 @@ export const s3Router = createTRPCRouter({
             projectId: input.projectId,
           });
           const preSignedURLForDownload = s3.getSignedUrl("getObject", {
-            Bucket: env.AWS_S3_BUCKET_NAME_,
+            Bucket: input.aws_s3_bucket_name,
             Key: input.fileId,
             Expires: 900, // 15 mins
           });
@@ -209,7 +214,7 @@ export const s3Router = createTRPCRouter({
             projectId: input.projectId,
           });
           const preSignedURLForUpload = s3.getSignedUrl("putObject", {
-            Bucket: env.AWS_S3_BUCKET_NAME_,
+            Bucket: input.aws_s3_bucket_name,
             Key: input.projectId + "/" + input.fileId,
             Expires: 900, // 15 mins
           });
@@ -245,7 +250,7 @@ export const s3Router = createTRPCRouter({
           }
           return await s3
             .upload({
-              Bucket: env.AWS_S3_BUCKET_NAME_,
+              Bucket: input.aws_s3_bucket_name,
               Key: key,
               Body: "body does not matter", // needs to be here for api compatibility
             })

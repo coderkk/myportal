@@ -13,6 +13,7 @@ import { ChonkyIconFA } from "chonky-icon-fontawesome";
 import path from "path";
 import { useCallback, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { env } from "../../env/client.mjs";
 import {
   useCreateFolder,
   useDeleteS3Object,
@@ -30,6 +31,7 @@ const FileBrowser = ({ projectId }: { projectId: string }) => {
   const { files: chonkyFiles } = useFetchS3BucketContents({
     prefix: folderPrefix,
     projectId: projectId,
+    aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
   });
 
   const { deleteS3Object } = useDeleteS3Object();
@@ -51,6 +53,7 @@ const FileBrowser = ({ projectId }: { projectId: string }) => {
         const { preSignedURLForDownload } = await getPreSignedURLForDownload({
           fileId: fileData.id,
           projectId: projectId,
+          aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
         });
         const res = await fetch(preSignedURLForDownload, {
           method: "GET",
@@ -98,6 +101,7 @@ const FileBrowser = ({ projectId }: { projectId: string }) => {
         const { preSignedURLForUpload } = await getPreSignedURLForUpload({
           fileId: fileId,
           projectId: projectId,
+          aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
         });
 
         const uploadFile = fetch(preSignedURLForUpload, {
@@ -111,7 +115,12 @@ const FileBrowser = ({ projectId }: { projectId: string }) => {
             throw new Error();
           })
           .finally(() => {
-            void utils.s3.fetchS3BucketContents.invalidate();
+            void utils.s3.fetchS3BucketContents.invalidate({
+              prefix: folderPrefix,
+              projectId: projectId,
+              aws_s3_bucket_name:
+                env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
+            });
           });
 
         await toast.promise(uploadFile, {
@@ -179,6 +188,7 @@ const FileBrowser = ({ projectId }: { projectId: string }) => {
             prefix: folderPrefix,
             fileId: file.id,
             projectId: projectId,
+            aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
           });
         }
       } else if (data.id === ChonkyActions.DownloadFiles.id) {
@@ -198,6 +208,7 @@ const FileBrowser = ({ projectId }: { projectId: string }) => {
             prefix: folderPrefix,
             folderName: folderName,
             projectId: projectId,
+            aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
           });
       }
     },
