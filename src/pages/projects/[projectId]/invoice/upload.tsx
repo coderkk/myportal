@@ -1,14 +1,14 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import SessionAuth from "../../../../components/auth/SessionAuth";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
+import SessionAuth from "../../../../components/auth/SessionAuth";
 import type { Invoice } from "../../../../utils/pdfparser";
 
-import InvoiceUpload from '../../../../components/invoice/InvoiceUpload'
+import InvoiceUpload from "../../../../components/invoice/InvoiceUpload";
 
 const InvoiceUploadPage = () => {
   const router = useRouter();
-  const projectId = router.query.projectId as string
+  const projectId = router.query.projectId as string;
 
   const [invoiceData, setInvoiceData] = useState<Invoice>({
     vendorName: "",
@@ -20,8 +20,8 @@ const InvoiceUploadPage = () => {
   });
 
   const handleData = (data: Invoice) => {
-    setInvoiceData(data)
-  }
+    setInvoiceData(data);
+  };
 
   return (
     <SessionAuth>
@@ -29,7 +29,7 @@ const InvoiceUploadPage = () => {
         <div className="flex">
           <div className="m-auto">
             <section>
-              <div className="max-w-screen-xl px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
+              <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
                 <div className="mb-5 flex justify-between">
                   <h2 className="text-3xl font-bold sm:text-4xl">
                     Invoice Data Extraction
@@ -53,7 +53,12 @@ const InvoiceUploadPage = () => {
                               Vendor name
                             </dt>
                             <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                              <input type="text" value={invoiceData.vendorName} title="vendor name" />
+                              <input
+                                type="text"
+                                value={invoiceData.vendorName}
+                                title="vendor name"
+                                readOnly
+                              />
                             </dd>
                           </div>
                           <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 sm:py-5">
@@ -103,7 +108,7 @@ const InvoiceUploadPage = () => {
                     </div>
                   </div>
                   <div>
-                    <InvoiceUpload onData={handleData}></InvoiceUpload>
+                    <InvoiceUpload onData={handleData} />
                   </div>
                 </div>
               </div>

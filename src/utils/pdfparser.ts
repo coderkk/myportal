@@ -39,46 +39,52 @@ export const getPDFText = async (pdf: PDFDocumentProxy) => {
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     pageTextPromises.push(getPageText(pdf, pageNumber));
   }
-  return await Promise.all(pageTextPromises).then(
-    res => {
+  return await Promise.all(pageTextPromises)
+    .then((res) => {
       return res.join("\n");
-    }
-  ).catch(error => {throw error});
-}
-
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
 
 export const loadFilename = async (
   source: string | URL | TypedArray | ArrayBuffer | DocumentInitParameters
 ) => {
   const loadingTask = pdfjsLib.getDocument(source);
-  return await loadingTask.promise.then(async (pdf) => {
-    return await getPDFText(pdf).then(res => { 
-      return res
-    }).catch(error => {throw error});
-  }).catch((error: Error) => {
-    throw error;
-  });
-  
+  return await loadingTask.promise
+    .then(async (pdf) => {
+      return await getPDFText(pdf)
+        .then((res) => {
+          return res;
+        })
+        .catch((error) => {
+          throw error;
+        });
+    })
+    .catch((error: Error) => {
+      throw error;
+    });
 };
 
-export const loadFileObject = async (
-  source: File
-) => {
+export const loadFileObject = async (source: File) => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
     fileReader.onload = async () => {
       const result = fileReader.result;
-      if (result == null || typeof(result) == "string") {
+      if (result == null || typeof result == "string") {
         resolve("");
       } else {
         const typedarray = new Uint8Array(result);
-        await loadFilename(typedarray).then((text) => {
-          resolve(text);
-        }).catch(error => {
-          reject(error);
-        });
+        await loadFilename(typedarray)
+          .then((text) => {
+            resolve(text);
+          })
+          .catch((error) => {
+            reject(error);
+          });
       }
-    }
+    };
     fileReader.onerror = reject;
     fileReader.readAsArrayBuffer(source);
   });
@@ -102,14 +108,14 @@ export const parseData = (pdfContent: string) => {
         data.invoiceNo = pageTextLine.match(/\d/g)?.join("");
       }
       if (pageTextLine.includes("supplier")) {
-        const result = (/supplier (.*)/g).exec(pageTextLine);
-        data.supplierName = (result == null) ? "" : result[1];
+        const result = /supplier (.*)/g.exec(pageTextLine);
+        data.supplierName = result == null ? "" : result[1];
       }
       if (pageTextLine.includes("recipient")) {
-        const result = (/recipient (.*)/g).exec(pageTextLine);
-        data.vendorName = (result == null) ? "" : result[1];
+        const result = /recipient (.*)/g.exec(pageTextLine);
+        data.vendorName = result == null ? "" : result[1];
       }
-      
+
       if (pageTextLine.includes("invoice date")) {
         if (pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/))
           data.invoiceDate = pageTextLine
@@ -130,5 +136,5 @@ export const parseData = (pdfContent: string) => {
     });
   }
 
-  return ((JSON.stringify(data) === JSON.stringify(emptyData))) ? null : data;
+  return JSON.stringify(data) === JSON.stringify(emptyData) ? null : data;
 };

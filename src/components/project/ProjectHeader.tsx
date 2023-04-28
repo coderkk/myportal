@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useRef } from "react";
+import { env } from "../../env/client.mjs";
 import { api } from "../../utils/api";
 import { Header, MobileNavLink } from "../common/Header";
 import { projectFeatures } from "./data";
@@ -33,7 +34,23 @@ export const ProjectHeader = () => {
     switch (href) {
       case "/file-manager":
         void utils.s3.fetchS3BucketContents.prefetch(
-          { projectId: projectId, prefix: "/" },
+          {
+            projectId: projectId,
+            prefix: "/",
+            aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME,
+          },
+          {
+            staleTime: Infinity,
+          }
+        );
+        break;
+      case "/invoice":
+        void utils.s3.fetchS3BucketContents.prefetch(
+          {
+            projectId: projectId,
+            prefix: "/",
+            aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
+          },
           {
             staleTime: Infinity,
           }
@@ -178,7 +195,7 @@ export const ProjectHeader = () => {
       <Disclosure as="div" className="-mx-3">
         {({ open }) => (
           <>
-            <Disclosure.Button className="flex w-full items-center justify-between rounded-lg pr-3.5 pl-3 leading-7 hover:bg-gray-50">
+            <Disclosure.Button className="flex w-full items-center justify-between rounded-lg pl-3 pr-3.5 leading-7 hover:bg-gray-50">
               Features
               <ChevronDownIcon
                 className={`h-5 w-5 flex-none ${open ? "rotate-180" : ""}`}
