@@ -7,15 +7,9 @@ import type {
   TextMarkedContent,
   TypedArray,
 } from "pdfjs-dist/types/src/display/api";
+import parse from 'date-fns/parse';
 
-export type Invoice = {
-  vendorName: string | undefined;
-  supplierName: string | undefined;
-  invoiceNo: string | undefined;
-  invoiceDate: string | undefined;
-  invoiceCosts: number | undefined;
-  description: string | undefined;
-};
+import type { supplierInvoice } from "../hooks/supplierInvoice";
 
 GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
@@ -85,15 +79,31 @@ export const loadFileObject = async (
 };
 
 export const parseData = (pdfContent: string) => {
-  const emptyData: Invoice = {
-    vendorName: "",
-    supplierName: "",
+  const emptyData: supplierInvoice = {
+    projectId: "",
     invoiceNo: "",
-    invoiceDate: "",
-    invoiceCosts: 0,
+    invoiceDate: null,
+    costCode: "",
+    vendorName: "",
+    vendorAddress: "",
+    vendorPhone: "",
+    supplierName: "",
+    supplierId: "",
+    supplierAddress: "",
+    supplierPhone: "",
+    paymentDueDate: null,
+    salePerson: "",
+    paymentTerm: "",
+    deliveryDate: null,
+    shipmentMethod: "",
+    shipmentTerm: "",
+    totalDiscount: 0,
     description: "",
+    grandAmount: 0,
+    taxAmount: 0,
+    netAmount: 0
   };
-  const data: Invoice = Object.assign({}, emptyData);
+  const data: supplierInvoice = Object.assign({}, emptyData);
   const pageTexts: string[] = pdfContent.split("\n");
   for (const pageText of pageTexts) {
     const pageTextLines = pageText.split(/\r?\n/);
@@ -111,12 +121,16 @@ export const parseData = (pdfContent: string) => {
       }
       
       if (pageTextLine.includes("invoice date")) {
-        if (pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/))
-          data.invoiceDate = pageTextLine
+        if (pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/)) {
+          const dateString = pageTextLine
             .match(/\d{2}\/\d{2}\/\d{4}/)
             ?.join("");
-        if (pageTextLine.match(/\d{2}-\d{2}-\d{4}/))
-          data.invoiceDate = pageTextLine.match(/\d{2}-\d{2}-\d{4}/)?.join("");
+          if (dateString != undefined) data.invoiceDate = parse(dateString, "dd/MM/yyyy", new Date());
+        }
+        if (pageTextLine.match(/\d{2}-\d{2}-\d{4}/)) {
+          const dateString = pageTextLine.match(/\d{2}-\d{2}-\d{4}/)?.join("");
+          if (dateString != undefined) data.invoiceDate = parse(dateString, "dd-MM-yyyy", new Date());
+        }
       }
       if (
         pageTextLine.includes("total") &&
@@ -124,7 +138,7 @@ export const parseData = (pdfContent: string) => {
       ) {
         if (pageTextLine.match(/\d/g)) {
           const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
-          data.invoiceCosts = val == undefined ? 0 : parseFloat(val);
+          data.netAmount = val == undefined ? 0 : parseFloat(val);
         }
       }
     });

@@ -308,20 +308,30 @@ model Budget {
 }
 
 model SupplierInvoice {
-    id           String   @id @default(cuid())
-    costCode     String   @default("")
-    description  String
-    invoiceNo    String
-    invoiceDate  DateTime
-    vendorName   String
-    supplierName String
-    totalCost    Float
-    projectId    String
-    project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById  String
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @default(now()) @updatedAt
+    id              String   @id @default(cuid())
+    costCode        String   @default("")
+    description     String
+    invoiceNo       String
+    invoiceDate     DateTime
+    vendorName      String
+    vendorAddress   String
+    vendorPhone     String
+    paymentDue      DateTime
+    salePerson      String
+    supplierName    String
+    supplierAddress String
+    supplierPhone   String
+    deliveryMethod  String
+    deliveryTerm    String
+    grandAmount     Float
+    taxAmount       Float
+    netAmount       Float
+    projectId       String
+    project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    createdBy       User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById     String
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @default(now()) @updatedAt
 
     @@index([projectId])
     @@index([createdById])

@@ -3,15 +3,28 @@ import type { MutableRefObject } from "react";
 import { api } from "../utils/api";
 
 export type supplierInvoice = {
-  id: string;
-  costCode: string;
-  invoiceNo: string;
-  invoiceDate: string;
-  description: string;
-  vendorName: string;
-  supplierName: string;
-  totalCost: number;
-  createdBy: string | null;
+  projectId?: string;
+  invoiceNo?: string;
+  invoiceDate?: Date | null;
+  costCode?: string;
+  vendorName?: string;
+  vendorAddress?: string;
+  vendorPhone?: string;
+  supplierName?: string;
+  supplierId?: string;
+  supplierAddress?: string;
+  supplierPhone?: string;
+  paymentDueDate?: Date | null;
+  salePerson?: string;
+  paymentTerm?: string;
+  deliveryDate?: Date | null;
+  shipmentMethod?: string;
+  shipmentTerm?: string;
+  description?: string;
+  totalDiscount?: number;
+  grandAmount?: number;
+  taxAmount?: number;
+  netAmount?: number;
 };
 
 export const useCreateSupplierInvoice = () => {
@@ -27,13 +40,20 @@ export const useCreateSupplierInvoice = () => {
           (oldSupplierInvoices) => {
             const optimisticUpdateObject = {
               id: Date.now().toString(),
-              costCode: values.supplierInvoiceCostCode,
-              invoiceNo: values.supplierInvoiceNo,
-              invoiceDate: values.supplierInvoiceDate,
+              costCode: values.costCode,
+              invoiceNo: values.invoiceNo,
+              invoiceDate: values.invoiceDate,
               description: values.description,
               vendorName: values.vendorName,
+              vendorAddress: values.vendorAddress,
+              vendorPhone: values.vendorPhone,
               supplierName: values.supplierName,
-              totalCost: values.totalCost,
+              supplierAddress: values.supplierAddress,
+              supplierPhone: values.supplierPhone,
+              grandAmount: values.grandAmount,
+              taxAmount: values.taxAmount,
+              netAmount: values.netAmount,
+              projectId: values.projectId,
               createdBy: { name: session.data?.user?.name || "You" },
             };
             if (oldSupplierInvoices) {
@@ -74,9 +94,9 @@ export const useGetSupplierInvoices = ({ projectId }: { projectId: string }) => 
   };
 };
 
-export const useGetSupplierInvoice = ({ supplierInvoiceId }: { supplierInvoiceId: string }) => {
+export const useGetSupplierInvoice = ({ invoiceId }: { invoiceId: string }) => {
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoice.useQuery({
-    supplierInvoiceId: supplierInvoiceId,
+    invoiceId: invoiceId,
   });
   return {
     supplierInvoice: data,
@@ -88,7 +108,7 @@ export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) =
   const utils = api.useContext();
   const { mutate: updateSupplierInvoice } = api.supplierInvoice.updateSupplierInvoice.useMutation(
     {
-      async onMutate({ supplierInvoiceId, supplierInvoiceNo, supplierInvoiceDate }) {
+      async onMutate(values) {
         await utils.supplierInvoice.getSupplierInvoices.cancel();
         const previousData = utils.supplierInvoice.getSupplierInvoices.getData();
         utils.supplierInvoice.getSupplierInvoices.setData(
@@ -99,12 +119,21 @@ export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) =
                 return { ...oldSupplierInvoice };
               });
               const supplierInvoiceToUpdateIndex = newSupplierInvoices?.findIndex(
-                (supplierInvoice) => supplierInvoice.id === supplierInvoiceId
+                (supplierInvoice) => supplierInvoice.id === values.invoiceId
               );
               const updatedSupplierInvoice = newSupplierInvoices[supplierInvoiceToUpdateIndex];
               if (updatedSupplierInvoice) {
-                updatedSupplierInvoice.invoiceNo = supplierInvoiceNo;
-                updatedSupplierInvoice.invoiceDate = supplierInvoiceDate;
+                updatedSupplierInvoice.invoiceNo = values.invoiceNo;
+                updatedSupplierInvoice.invoiceDate = values.invoiceDate;
+                updatedSupplierInvoice.vendorName = values.vendorName;
+                updatedSupplierInvoice.vendorAddress = values.vendorAddress;
+                updatedSupplierInvoice.vendorPhone = values.vendorPhone;
+                updatedSupplierInvoice.supplierName = values.supplierName;
+                updatedSupplierInvoice.supplierAddress = values.supplierAddress;
+                updatedSupplierInvoice.supplierPhone = values.supplierPhone;
+                updatedSupplierInvoice.grandAmount = values.grandAmount;
+                updatedSupplierInvoice.taxAmount = values.taxAmount;
+                updatedSupplierInvoice.netAmount = values.netAmount;
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] = updatedSupplierInvoice;
               }
               return newSupplierInvoices;
@@ -124,7 +153,7 @@ export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) =
           rollback();
         }
       },
-      onSuccess(data, { supplierInvoiceId, supplierInvoiceNo, supplierInvoiceDate }) {
+      onSuccess(data, { invoiceId, invoiceNo, invoiceDate }) {
         utils.supplierInvoice.getSupplierInvoices.setData(
           { projectId: projectId },
           (oldSupplierInvoices) => {
@@ -133,12 +162,12 @@ export const useUpdateSupplierInvoice = ({ projectId }: { projectId: string }) =
                 return { ...oldSupplierInvoice };
               });
               const supplierInvoiceToUpdateIndex = newSupplierInvoices?.findIndex(
-                (supplierInvoice) => supplierInvoice.id === supplierInvoiceId
+                (supplierInvoice) => supplierInvoice.id === invoiceId
               );
               const updatedSupplierInvoice = newSupplierInvoices[supplierInvoiceToUpdateIndex];
               if (updatedSupplierInvoice) {
-                updatedSupplierInvoice.invoiceNo = supplierInvoiceNo;
-                updatedSupplierInvoice.invoiceDate = supplierInvoiceDate;
+                updatedSupplierInvoice.invoiceNo = invoiceNo;
+                updatedSupplierInvoice.invoiceDate = invoiceDate;
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] = updatedSupplierInvoice;
               }
               return newSupplierInvoices;

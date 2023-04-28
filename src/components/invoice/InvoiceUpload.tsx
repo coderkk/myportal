@@ -11,7 +11,7 @@ import { api } from "../../utils/api";
 import { loadFileObject, getPDFText, parseData } from "../../utils/pdfparser";
 
 import dynamic from "next/dynamic";
-import type { Invoice } from "../../utils/pdfparser";
+import type { supplierInvoice } from "../../hooks/supplierInvoice";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
@@ -20,7 +20,7 @@ const Document = dynamic(() =>
 );
 
 interface Props {
-  onData: (dataFromChild: Invoice) => void;
+  onData: (dataFromChild: supplierInvoice) => void;
 }
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
@@ -38,14 +38,6 @@ const InvoiceUpload = ({onData} : Props) => {
     const [uploadFile, setUploadFile] = useState<File | undefined | null>(
         undefined
     );
-    const [invoiceData, ] = useState<Invoice | null>({
-        vendorName: "",
-        supplierName: "",
-        invoiceNo: "",
-        invoiceDate: "",
-        invoiceCosts: 0,
-        description: "",
-    });
 
     const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
 
