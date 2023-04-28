@@ -71,7 +71,6 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
         nanoid() +
         file.name.slice(file.name.lastIndexOf("."));
       const fileId = folderPrefix === "/" ? fileName : folderPrefix + fileName;
-      console.log(fileId);
       try {
         const { preSignedURLForUpload } = await getPreSignedURLForUpload({
           fileId: fileId,
