@@ -148,7 +148,6 @@ const SiteDiary = () => {
                       {siteDiary.name}
                     </span>
                     <DeleteButton
-                      description="Delete"
                       navigateBack={true}
                       onDelete={() => {
                         deleteSiteDiary({
