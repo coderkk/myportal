@@ -16,6 +16,7 @@ const InvoiceUploadPage = () => {
   const projectId = router.query.projectId as string;
 
   const [invoiceData, setInvoiceData] = useState<supplierInvoice>({
+    supplierInvoiceId: "",
     projectId: projectId,
     invoiceNo: "",
     invoiceDate: null,
@@ -37,7 +38,8 @@ const InvoiceUploadPage = () => {
     description: "",
     grandAmount: 0,
     taxAmount: 0,
-    netAmount: 0
+    netAmount: 0,
+    fileId: ""
   });
 
   const { createSupplierInvoice } = useCreateSupplierInvoice();
@@ -54,27 +56,60 @@ const InvoiceUploadPage = () => {
   ) => {
     e?.preventDefault();
     // reset();
-    data.projectId = projectId;
-    createSupplierInvoice({
-      projectId: projectId,
-      description: "",
-      costCode: "",
-      invoiceNo: data.invoiceNo as string,
-      invoiceDate: data.invoiceDate as Date,
-      vendorName: data.vendorName as string,
-      vendorAddress: data.vendorAddress as string,
-      vendorPhone: data.vendorPhone as string,
-      supplierName: data.supplierName as string,
-      supplierAddress: data.supplierAddress as string,
-      supplierPhone: data.supplierPhone as string,
-      grandAmount: data.grandAmount as number,
-      taxAmount: data.taxAmount as number,
-      netAmount: data.netAmount as number,
-    });
+    saveRecord(data);
+    // data.projectId = projectId;
+    // createSupplierInvoice({
+    //   supplierInvoiceId: "",
+    //   projectId: projectId,
+    //   description: "",
+    //   costCode: "",
+    //   invoiceNo: data.invoiceNo as string,
+    //   invoiceDate: data.invoiceDate as Date,
+    //   vendorName: data.vendorName as string,
+    //   vendorAddress: data.vendorAddress as string,
+    //   vendorPhone: data.vendorPhone as string,
+    //   supplierName: data.supplierName as string,
+    //   supplierAddress: data.supplierAddress as string,
+    //   supplierPhone: data.supplierPhone as string,
+    //   grandAmount: data.grandAmount as number,
+    //   taxAmount: data.taxAmount as number,
+    //   netAmount: data.netAmount as number,
+    //   fileId: data.fileId as string,
+    // });
   };
 
-  const handleData = (data: supplierInvoice) => {
+  const handleData = (data: supplierInvoice, fileId: string) => {
     setInvoiceData(data)
+    data.fileId = fileId;
+    saveRecord(data);
+  }
+
+  const saveRecord = (data: supplierInvoice) => {
+    data.projectId = projectId;
+    try {
+      createSupplierInvoice({
+        projectId: projectId,
+        description: "",
+        costCode: "",
+        invoiceNo: data.invoiceNo as string,
+        invoiceDate: data.invoiceDate as Date,
+        vendorName: data.vendorName as string,
+        vendorAddress: data.vendorAddress as string,
+        vendorPhone: data.vendorPhone as string,
+        supplierName: data.supplierName as string,
+        supplierAddress: data.supplierAddress as string,
+        supplierPhone: data.supplierPhone as string,
+        grandAmount: data.grandAmount as number,
+        taxAmount: data.taxAmount as number,
+        netAmount: data.netAmount as number,
+        fileId: data.fileId as string,
+      });
+      void router.push(
+        "/projects/" + projectId + "/invoice/"
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   return (
@@ -153,7 +188,7 @@ const InvoiceUploadPage = () => {
 
                     <div className="flex flex-wrap justify-between mb-8">
                       <div className="w-full md:w-1/3 mb-2 md:mb-0">
-                        <label className="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Bill/Ship To:</label>
+                        <label className="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Ship to</label>
                           <Controller
                             name="vendorName"
                             control={control}
@@ -193,7 +228,7 @@ const InvoiceUploadPage = () => {
                                 <input 
                                   className="mb-1 border-2 border-gray-200 rounded w-full py-2 px-1 leading-tight focus:outline-none focus:border-blue-500"
                                   type="text" 
-                                  placeholder="Invoice No"
+                                  placeholder="Vendor Phone"
                                   defaultValue={invoiceData.vendorPhone}
                                   {...register('vendorPhone')}
                                 />
@@ -202,7 +237,7 @@ const InvoiceUploadPage = () => {
                           />
                       </div>
                       <div className="w-full md:w-1/3">
-                        <label className="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">From:</label>
+                        <label className="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Bill to (Supplier)</label>
                         <Controller
                           name="supplierName"
                           control={control}

@@ -19,7 +19,7 @@ const Document = dynamic(() =>
 );
 
 interface InvoiceUploadProps {
-  onData: (dataFromChild: supplierInvoice) => void;
+  onData: (data: supplierInvoice, fileId: string) => void;
 }
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
@@ -30,6 +30,7 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
   const projectId = router.query.projectId as string;
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const [fileId, setFileId] = useState<string>("");
   const [file, setFile] = useState<File | string | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber] = useState<number>(1);
@@ -48,7 +49,12 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
   const parseInvoice = async (pdf: PDFDocumentProxy) => {
     const pdfText = await getPDFText(pdf);
     const data = parseData(pdfText);
-    if (data != null) onData(data);
+    if (data != null) {
+      onData(
+        data,
+        fileId
+      );
+    }
   };
 
   const handleUploadClick = () => {
@@ -57,17 +63,20 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
   };
   const handleUploadFile = useCallback(
     async (file: File) => {
+
+      const id = nanoid()
       const fileName =
         file.name.slice(0, file.name.lastIndexOf(".")) +
         "-" +
-        nanoid() +
+        id +
         file.name.slice(file.name.lastIndexOf("."));
       const fileId = folderPrefix === "/" ? fileName : folderPrefix + fileName;
+      setFileId(fileId);
       try {
         const { preSignedURLForUpload } = await getPreSignedURLForUpload({
           fileId: fileId,
           projectId: projectId,
-          aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME as string,
+          aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
         });
 
         const uploadFile = fetch(preSignedURLForUpload, {
@@ -84,7 +93,7 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
             setFile(file);
             setUploadFile(undefined);
             void utils.s3.fetchS3BucketContents.invalidate({
-              aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME as string,
+              aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
               projectId: projectId,
               prefix: folderPrefix,
             });

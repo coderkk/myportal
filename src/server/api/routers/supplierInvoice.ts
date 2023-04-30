@@ -17,6 +17,7 @@ export const createSupplierInvoiceSchema = z.object({
   taxAmount: z.number(),
   netAmount: z.number(),
   projectId: z.string(),
+  fileId: z.string()
 });
 
 export const getSupplierInvoicesSchema = z.object({
@@ -24,11 +25,11 @@ export const getSupplierInvoicesSchema = z.object({
 });
 
 export const getSupplierInvoiceInfoSchema = z.object({
-  invoiceId: z.string(),
+  supplierInvoiceId: z.string(),
 });
 
 export const updateSupplierInvoiceSchema = z.object({
-  invoiceId: z.string(),
+  supplierInvoiceId: z.string(),
   invoiceNo: z.string(),
   invoiceDate: z.date(),
   costCode: z.string(),
@@ -74,7 +75,8 @@ export const supplierInvoiceRouter = createTRPCRouter({
               description: "",
               salePerson: "",
               deliveryMethod: "",
-              deliveryTerm: ""
+              deliveryTerm: "",
+              fileId: input.fileId
             },
           });
         },
@@ -131,7 +133,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
         fn: () => {
           return ctx.prisma.supplierInvoice.findUniqueOrThrow({
             where: {
-              id: input.invoiceId,
+              id: input.supplierInvoiceId,
             },
             include: {
               createdBy: {
@@ -152,7 +154,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
         fn: () => {
           return ctx.prisma.supplierInvoice.update({
             where: {
-              id: input.invoiceId,
+              id: input.supplierInvoiceId,
             },
             data: {
               invoiceNo: input.invoiceNo,

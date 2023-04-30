@@ -3,6 +3,7 @@ import type { MutableRefObject } from "react";
 import { api } from "../utils/api";
 
 export type supplierInvoice = {
+  supplierInvoiceId?: string,
   projectId?: string;
   invoiceNo?: string;
   invoiceDate?: Date | null;
@@ -25,6 +26,7 @@ export type supplierInvoice = {
   grandAmount?: number;
   taxAmount?: number;
   netAmount?: number;
+  fileId?: string;
 };
 
 export const useCreateSupplierInvoice = () => {
@@ -99,12 +101,12 @@ export const useGetSupplierInvoices = ({
 };
 
 export const useGetSupplierInvoice = ({ 
-  invoiceId, 
+  supplierInvoiceId, 
 }: { 
-  invoiceId: string 
+  supplierInvoiceId: string 
 }) => {
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoice.useQuery({
-    invoiceId: invoiceId,
+    supplierInvoiceId: supplierInvoiceId,
   });
   return {
     supplierInvoice: data,
@@ -133,7 +135,7 @@ export const useUpdateSupplierInvoice = ({
               });
               const supplierInvoiceToUpdateIndex =
                 newSupplierInvoices?.findIndex(
-                  (supplierInvoice) => supplierInvoice.id === values.invoiceId
+                  (supplierInvoice) => supplierInvoice.id === values.supplierInvoiceId
                 );
               const updatedSupplierInvoice =
                 newSupplierInvoices[supplierInvoiceToUpdateIndex];
@@ -168,7 +170,7 @@ export const useUpdateSupplierInvoice = ({
           rollback();
         }
       },
-      onSuccess(data, { invoiceId, invoiceNo, invoiceDate }) {
+      onSuccess(data, { supplierInvoiceId, invoiceNo, invoiceDate }) {
         utils.supplierInvoice.getSupplierInvoices.setData(
           { projectId: projectId },
           (oldSupplierInvoices) => {
@@ -178,7 +180,7 @@ export const useUpdateSupplierInvoice = ({
               });
               const supplierInvoiceToUpdateIndex = 
                 newSupplierInvoices?.findIndex(
-                  (supplierInvoice) => supplierInvoice.id === invoiceId
+                  (supplierInvoice) => supplierInvoice.id === supplierInvoiceId
                 );
               const updatedSupplierInvoice =
                 newSupplierInvoices[supplierInvoiceToUpdateIndex];
