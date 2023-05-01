@@ -37,19 +37,16 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+        <Dialog.Content
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+          aria-describedby="Create a new request for information"
+        >
           <Dialog.Title className="mt-3 text-left text-lg font-bold capitalize leading-6 text-gray-900 sm:mt-5">
             new RFI
           </Dialog.Title>
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
             <fieldset className=" my-4 gap-3 sm:flex ">
               <div className="flex flex-1 flex-col">
-                {/* <label
-                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:flex sm:items-end"
-                  htmlFor="topic"
-                >
-                  topic
-                </label> */}
                 <input
                   className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
                     errors.topic ? "border-red-400  focus:border-red-400 " : ""
@@ -60,12 +57,6 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                 />
               </div>
               <div className="flex flex-col sm:w-1/3">
-                {/* <label
-                  className="mb-1 w-24 text-left text-base capitalize text-gray-900 sm:flex sm:items-end"
-                  htmlFor="status"
-                >
-                  Status
-                </label> */}
                 <Controller
                   name="status"
                   control={control}
