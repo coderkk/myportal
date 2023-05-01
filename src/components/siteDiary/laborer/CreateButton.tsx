@@ -34,7 +34,10 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+        <Dialog.Content
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+          aria-describedby="Create a new laborer"
+        >
           <Dialog.Title className="mt-3 text-left text-lg font-bold capitalize leading-6 text-gray-900 sm:mt-5">
             new laborer
           </Dialog.Title>
@@ -48,7 +51,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                   Type
                 </label>
                 <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none  sm:mb-0 sm:text-left ${
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none  sm:mb-0 sm:text-left ${
                     errors.type ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="type"
@@ -65,7 +68,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                   Quantity
                 </label>
                 <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 py-0 px-4 text-center focus:border-blue-300 focus:outline-none  sm:mb-0 sm:text-left ${
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none  sm:mb-0 sm:text-left ${
                     errors.amount ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="amount"
