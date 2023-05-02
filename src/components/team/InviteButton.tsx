@@ -25,26 +25,19 @@ const InviteButton = ({
         </button>
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
-        <AlertDialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-content-show rounded-md bg-white p-6 shadow-md focus:outline-none">
-          <AlertDialog.Title className="m-0 font-medium text-gray-800">
-            Are you sure?
+        <AlertDialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
+        <AlertDialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+          <AlertDialog.Title className="mt-3 text-left text-lg font-bold leading-6 text-gray-900 sm:mt-5">
+            Add User{usersToBeAdded.length > 1 ? "s" : ""}
           </AlertDialog.Title>
-          <AlertDialog.Description className="mx-0 mt-3 mb-5 text-sm text-gray-400">
-            This will add the following users to this team.
+          <AlertDialog.Description className="mx-0 mb-5 mt-3 flex flex-col gap-2 text-sm text-gray-400 sm:gap-1">
             {usersToBeAdded.map((user) => (
-              <li key={user.value}>{user.userName}</li>
+              <li key={user.value}>
+                {user.userName} ({user.userEmail})
+              </li>
             ))}
           </AlertDialog.Description>
-          <div className="flex justify-end gap-6">
-            <AlertDialog.Cancel asChild>
-              <button
-                type="button"
-                className="inline-flex h-9 items-center justify-center rounded-md bg-gray-100 py-0 px-4 text-sm font-medium text-gray-700 hover:bg-gray-200"
-              >
-                Cancel
-              </button>
-            </AlertDialog.Cancel>
+          <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
             <AlertDialog.Action asChild>
               <button
                 type="button"
@@ -59,11 +52,20 @@ const InviteButton = ({
                   }
                   setSelectedOptions([]);
                 }}
-                className="inline-flex h-9 items-center justify-center rounded-md bg-green-100 py-0 px-4 text-sm font-medium text-green-700 hover:bg-green-200"
+                className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-blue-50 disabled:text-blue-200 sm:col-start-2"
               >
-                Yes, add user to team
+                Add
               </button>
             </AlertDialog.Action>
+            <AlertDialog.Cancel asChild>
+              <button
+                type="button"
+                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                aria-label="Close"
+              >
+                Cancel
+              </button>
+            </AlertDialog.Cancel>
           </div>
         </AlertDialog.Content>
       </AlertDialog.Portal>
