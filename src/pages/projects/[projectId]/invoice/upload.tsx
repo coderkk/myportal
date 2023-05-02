@@ -8,6 +8,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Controller, useForm } from 'react-hook-form';
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import parse from 'date-fns/parse'
+import InvoiceForm from '../../../../components/invoice/InvoiceForm'
 
 import InvoiceUpload from "../../../../components/invoice/InvoiceUpload";
 
@@ -57,25 +58,6 @@ const InvoiceUploadPage = () => {
     e?.preventDefault();
     // reset();
     saveRecord(data);
-    // data.projectId = projectId;
-    // createSupplierInvoice({
-    //   supplierInvoiceId: "",
-    //   projectId: projectId,
-    //   description: "",
-    //   costCode: "",
-    //   invoiceNo: data.invoiceNo as string,
-    //   invoiceDate: data.invoiceDate as Date,
-    //   vendorName: data.vendorName as string,
-    //   vendorAddress: data.vendorAddress as string,
-    //   vendorPhone: data.vendorPhone as string,
-    //   supplierName: data.supplierName as string,
-    //   supplierAddress: data.supplierAddress as string,
-    //   supplierPhone: data.supplierPhone as string,
-    //   grandAmount: data.grandAmount as number,
-    //   taxAmount: data.taxAmount as number,
-    //   netAmount: data.netAmount as number,
-    //   fileId: data.fileId as string,
-    // });
   };
 
   const handleData = (data: supplierInvoice, fileId: string) => {
@@ -395,7 +377,7 @@ const InvoiceUploadPage = () => {
                   </form>
                 </div>
                 <div>
-                  <InvoiceUpload onData={handleData}></InvoiceUpload>
+                  <InvoiceForm />
                 </div>
               </div>
             </div>
