@@ -10,9 +10,7 @@ import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import parse from 'date-fns/parse'
 import InvoiceForm from '../../../../components/invoice/InvoiceForm'
 
-import InvoiceUpload from "../../../../components/invoice/InvoiceUpload";
-
-const InvoiceUploadPage = () => {
+const InvoiceUploadPage = ({}) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -59,12 +57,6 @@ const InvoiceUploadPage = () => {
     // reset();
     saveRecord(data);
   };
-
-  const handleData = (data: supplierInvoice, fileId: string) => {
-    setInvoiceData(data)
-    data.fileId = fileId;
-    saveRecord(data);
-  }
 
   const saveRecord = (data: supplierInvoice) => {
     data.projectId = projectId;
