@@ -156,9 +156,11 @@ const InvoiceFormPage = () => {
     <>
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger asChild>
-          <div>
-            <PlusSquareFill className="h-6 w-6  text-blue-500" /> Upload Invoice
-          </div>
+          <button 
+            className="block rounded-md bg-indigo-600 px-3 py-2 mx-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Upload Invoice
+          </button>
         </Dialog.Trigger>
         <Dialog.Portal className="px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
           <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
@@ -198,15 +200,15 @@ const InvoiceFormPage = () => {
                   <div className="flex flex-wrap justify-between mb-8">
                     <div className="w-full md:w-1/3 mb-2 md:mb-0">
                       <label className="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Ship to</label>
-                        {invoiceData.vendorName}
-                        {invoiceData.vendorAddress}
-                        {invoiceData.vendorPhone}
+                        <div>{invoiceData.vendorName}</div>
+                        <div>{invoiceData.vendorAddress}</div>
+                        <div>{invoiceData.vendorPhone}</div>
                     </div>
                     <div className="w-full md:w-1/3">
                       <label className="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Bill to (Supplier)</label>
-                      {invoiceData.supplierName}
-                      {invoiceData.supplierAddress}
-                      {invoiceData.supplierPhone}
+                      <div>{invoiceData.supplierName}</div>
+                      <div>{invoiceData.supplierAddress}</div>
+                      <div>{invoiceData.supplierPhone}</div>
                     </div>
                   </div>
 
