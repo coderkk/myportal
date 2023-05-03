@@ -30,7 +30,7 @@ const InviteButton = ({
           <AlertDialog.Title className="mt-3 text-left text-lg font-bold leading-6 text-gray-900 sm:mt-5">
             Add User{usersToBeAdded.length > 1 ? "s" : ""}
           </AlertDialog.Title>
-          <AlertDialog.Description className="mx-0 mb-5 mt-3 flex flex-col gap-2 text-sm text-gray-400 sm:gap-1">
+          <AlertDialog.Description className="mx-0 mb-5 mt-3 flex flex-col gap-2 text-sm text-gray-900 sm:gap-1">
             {usersToBeAdded.map((user) => (
               <li key={user.value}>
                 {user.userName} ({user.userEmail})
