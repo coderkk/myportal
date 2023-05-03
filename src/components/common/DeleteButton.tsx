@@ -22,7 +22,10 @@ const DeleteButton = ({
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+        <AlertDialog.Content
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+          aria-describedby="Are you certain that you want to delete this item?"
+        >
           <AlertDialog.Title
             className="mb-5 mt-3  flex flex-col gap-3 text-center text-lg font-bold leading-6 text-gray-900 sm:mt-5 sm:flex-row sm:items-start sm:text-left"
             aria-describedby="This action cannot be undone."
