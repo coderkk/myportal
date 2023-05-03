@@ -10,7 +10,7 @@ import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import parse from 'date-fns/parse'
 import InvoiceForm from '../../../../components/invoice/InvoiceForm'
 
-const InvoiceUploadPage = ({}) => {
+const AddInvoicePage = ({}) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -93,7 +93,7 @@ const InvoiceUploadPage = ({}) => {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="max-w-screen-xl px-4 py-8 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
               <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-3 lg:gap-x-16">
-                <div className="mx-auto text-left lg:mx-0 lg:text-left col-span-2">
+                <div className="mx-auto text-left lg:mx-0 lg:text-left col-span-3">
                   <form
                     className="m-8"
                     onSubmit={(e) => void handleSubmit(onSubmit)(e)}
@@ -368,9 +368,6 @@ const InvoiceUploadPage = ({}) => {
                     </button>
                   </form>
                 </div>
-                <div>
-                  <InvoiceForm />
-                </div>
               </div>
             </div>
           </div>
@@ -380,4 +377,4 @@ const InvoiceUploadPage = ({}) => {
   );
 };
 
-export default InvoiceUploadPage;
+export default AddInvoicePage;
