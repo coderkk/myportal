@@ -185,6 +185,7 @@ const Table = () => {
     reducer,
     initialState
   );
+  const { deleteBudget } = useDeleteBudget();
   const { budgets, count, isLoading, isFetching } = useGetBudgets({
     projectId: projectId,
     pageSize: queryPageSize,
@@ -237,7 +238,6 @@ const Table = () => {
           const { id, description, expectedBudget, costsIncurred } =
             info.getValue();
 
-          const { deleteBudget } = useDeleteBudget();
           return (
             <div className=" inline-flex gap-3">
               <EditButton
@@ -263,7 +263,14 @@ const Table = () => {
         header: () => <span>Actions</span>,
       }),
     ],
-    [columnHelper, projectId, queryPageIndex, queryPageSize, search_key]
+    [
+      columnHelper,
+      deleteBudget,
+      projectId,
+      queryPageIndex,
+      queryPageSize,
+      search_key,
+    ]
   );
   const table = useReactTable({
     data: budgets,

@@ -1,6 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
-import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm, type FieldValues } from "react-hook-form";
 import { useCreateProject } from "../../hooks/project";
@@ -33,7 +32,7 @@ const CreateButton = () => {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
           <Dialog.Title className="mt-3 text-left text-lg font-bold capitalize leading-6 text-gray-900 sm:mt-5">
             new project
           </Dialog.Title>
@@ -41,7 +40,7 @@ const CreateButton = () => {
             <fieldset className="mb-4 flex items-center gap-5">
               <div className="sm:flex sm:flex-1 sm:flex-row sm:gap-2">
                 <input
-                  className={`mt-5 mb-3 h-10 w-full rounded-lg border border-gray-300 py-2 px-4 text-center focus:border-blue-300 focus:outline-none sm:col-start-1 sm:text-left ${
+                  className={`mb-3 mt-5 h-10 w-full rounded-lg border border-gray-300 px-4 py-2 text-center focus:border-blue-300 focus:outline-none sm:col-start-1 sm:text-left ${
                     errors.name ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="name"

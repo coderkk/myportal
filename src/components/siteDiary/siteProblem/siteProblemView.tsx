@@ -76,6 +76,7 @@ export const SiteProblemView = ({
                   siteDiaryId={siteDiaryId}
                 />
                 <DeleteButton
+                  flex={false}
                   onDelete={() =>
                     deleteSiteProblem({
                       siteProblemId: siteProblem.id,

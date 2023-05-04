@@ -13,7 +13,10 @@ const S3Browser = () => {
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
-        <div className="flex h-screen max-h-[80vh] justify-center">
+        <div
+          className="flex h-screen max-h-[100vh] justify-center bg-gradient-to-br from-cyan-200  via-sky-300 to-blue-400
+"
+        >
           <div className="my-16 w-11/12 lg:w-9/12">
             <FileBrowser projectId={projectId} />
           </div>

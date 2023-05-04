@@ -76,6 +76,7 @@ export const WorkProgressView = ({
                   siteDiaryId={siteDiaryId}
                 />
                 <DeleteButton
+                  flex={false}
                   onDelete={() =>
                     deleteWorkProgress({
                       workProgressId: workProgress.id,

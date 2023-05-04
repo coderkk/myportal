@@ -499,7 +499,7 @@ const SiteDiary = () => {
             ) : (
               <ul
                 role="list"
-                className="grid grid-cols-1 gap-6  sm:grid-cols-2 lg:grid-cols-3"
+                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
               >
                 {siteDiaries?.map((siteDiary) => (
                   <li
@@ -508,7 +508,7 @@ const SiteDiary = () => {
                   >
                     <span className="flex items-center justify-between">
                       <Link
-                        className="flex w-full items-center justify-between space-x-6  p-6"
+                        className="flex w-full max-w-[80%] items-center justify-between space-x-6 p-6"
                         href={`/projects/${projectId}/site-diary/${siteDiary.id}`}
                         onMouseEnter={() => {
                           void utils.siteDiary.getSiteDiary.prefetch(

@@ -66,6 +66,7 @@ export const LaborerView = ({ laborers }: { laborers: Laborer[] }) => {
               <div className="flex-shrink-0 items-center pr-2">
                 <EditButton laborer={laborer} siteDiaryId={siteDiaryId} />
                 <DeleteButton
+                  flex={false}
                   onDelete={() =>
                     deleteLaborer({
                       laborerId: laborer.id,
