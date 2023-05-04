@@ -12,6 +12,7 @@ import {
   useUpdateMyProfessionalRole,
 } from "../../hooks/me";
 import { useGetProjectCreator, useUpdateProject } from "../../hooks/project";
+import Spinner from "../common/Spinner";
 
 const professionalRoles = [
   { label: "Accountant", value: "ACCOUNTANT" },
@@ -210,7 +211,9 @@ const GeneralInformation = ({
             </div>
 
             <div className="mt-8 flex w-full">
-              {!isCreator ? (
+              {isLoading ? (
+                <Spinner />
+              ) : !isCreator ? (
                 <div
                   className="flex w-full items-center border-l-4 border-orange-500 bg-orange-100 p-4 text-sm text-amber-700 sm:max-w-xl"
                   role="alert"
@@ -371,7 +374,9 @@ const GeneralInformation = ({
             </div>
 
             <div className="mt-8 flex">
-              {!isCreator ? (
+              {isLoading ? (
+                <Spinner />
+              ) : !isCreator ? (
                 <div
                   className="flex w-full items-center border-l-4 border-orange-500 bg-orange-100 p-4 text-sm text-amber-700 sm:max-w-xl"
                   role="alert"
@@ -393,22 +398,20 @@ const GeneralInformation = ({
                   <p>Contact the project owner to update your role.</p>
                 </div>
               ) : (
-                !isLoading && (
-                  <button
-                    type="button"
-                    className="rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                    onClick={() => {
-                      updateMyProfessionalRole({
-                        projectId: project.id,
-                        userProfessionalRole: mapProfessionalRoleToValue(
-                          selectedProfessionalRole
-                        ),
-                      });
-                    }}
-                  >
-                    Save
-                  </button>
-                )
+                <button
+                  type="button"
+                  className="rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+                  onClick={() => {
+                    updateMyProfessionalRole({
+                      projectId: project.id,
+                      userProfessionalRole: mapProfessionalRoleToValue(
+                        selectedProfessionalRole
+                      ),
+                    });
+                  }}
+                >
+                  Save
+                </button>
               )}
             </div>
           </div>
