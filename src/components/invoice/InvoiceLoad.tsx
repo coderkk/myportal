@@ -5,6 +5,7 @@ import { pdfjs } from "react-pdf";
 import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
 import dynamic from "next/dynamic";
 import type { supplierInvoice } from "../../hooks/supplierInvoice";
+import { supplierInvoiceDetail } from '../../hooks/supplierInvoiceDetail';
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
@@ -12,8 +13,22 @@ const Document = dynamic(() =>
   import("react-pdf").then((module) => module.Document)
 );
 
+type SupplierInvoiceDetail = {
+  item: string;
+  description: string;
+  quantity: number;
+  uom: string;
+  unitPrice: number;
+  discount: number;
+  amount: number;
+}
+
+interface SupplierInvoiceWithDetail extends supplierInvoice {
+  supplierInvoiceDetail: SupplierInvoiceDetail[];
+}
+
 interface InvoiceUploadProps {
-  onData: (data: supplierInvoice, file: File | null) => void;
+  onData: (data: SupplierInvoiceWithDetail, file: File | null) => void;
 }
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));

@@ -15,6 +15,7 @@ import { userRouter } from "./routers/user";
 import { weatherRouter } from "./routers/weather";
 import { workProgressRouter } from "./routers/workProgress";
 import { supplierInvoiceRouter } from "./routers/supplierInvoice";
+import { supplierInvoiceDetailRouter } from "./routers/supplierInvoiceDetail";
 import { createTRPCRouter } from "./trpc";
 
 /**
@@ -40,6 +41,7 @@ export const appRouter = createTRPCRouter({
   s3: s3Router,
   budget: budgetRouter,
   supplierInvoice: supplierInvoiceRouter,
+  supplierInvoiceDetail: supplierInvoiceDetailRouter,
 });
 
 // export type definition of API

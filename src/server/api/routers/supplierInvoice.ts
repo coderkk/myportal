@@ -76,7 +76,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
               salePerson: "",
               deliveryMethod: "",
               deliveryTerm: "",
-              fileId: input.fileId
+              fileId: input.fileId,
             },
           });
         },
@@ -139,6 +139,15 @@ export const supplierInvoiceRouter = createTRPCRouter({
               createdBy: {
                 select: {
                   name: true,
+                },
+              },
+              supplierInvoiceDetails: {
+                include: {
+                  createdBy: {
+                    select: {
+                      name: true,
+                    },
+                  },
                 },
               },
             },

@@ -13,6 +13,20 @@ import type { supplierInvoice } from "../hooks/supplierInvoice";
 
 GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
+type SupplierInvoiceDetail = {
+  item: string;
+  description: string;
+  quantity: number;
+  uom: string;
+  unitPrice: number;
+  discount: number;
+  amount: number;
+}
+
+interface SupplierInvoiceWithDetail extends supplierInvoice {
+  supplierInvoiceDetail: SupplierInvoiceDetail[];
+}
+
 const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
   const page = await pdf.getPage(pageNumber);
   const pageText = await page.getTextContent();
@@ -79,7 +93,7 @@ export const loadFileObject = async (
 };
 
 export const parseData = (pdfContent: string) => {
-  const emptyData: supplierInvoice = {
+  const emptyData = {
     projectId: "",
     invoiceNo: "",
     invoiceDate: null,
@@ -101,14 +115,15 @@ export const parseData = (pdfContent: string) => {
     description: "",
     grandAmount: 0,
     taxAmount: 0,
-    netAmount: 0
+    netAmount: 0,
+    supplierInvoiceDetail: []
   };
   
   let supplier = false;
   let vendor = false;
-  // let start_line = false;
+  let start_line = false;
 
-  const data: supplierInvoice = Object.assign({}, emptyData);
+  const data: SupplierInvoiceWithDetail = Object.assign({}, emptyData);
   const pageTexts: string[] = pdfContent.split("\n");
   for (const pageText of pageTexts) {
     const pageTextLines = pageText.split(/\r?\n/);
@@ -175,6 +190,30 @@ export const parseData = (pdfContent: string) => {
         const result = (/Shipping Terms (.*)/g).exec(pageTextLine);
         const shipmentTerm = (result == null) ? "" : result[1];
         if (shipmentTerm != "" && shipmentTerm != undefined) data.shipmentTerm = shipmentTerm;
+      }
+
+      if (pageTextLine == "(RM)") {
+        start_line = true;
+      }
+
+      if (pageTextLine == "Total") {
+        start_line = false;
+      }
+
+      if (start_line) {
+        const result = (/^(\d+)\s+(\d+)\s+(\w+)\s+(.*)\s+(\d+.\d+)\s+(\d+.\d+)/).exec(pageTextLine);
+        console.log(result);
+        if (result) {
+          data.supplierInvoiceDetail.push({
+            item: result[1] || "",
+            quantity: parseFloat(result[2] || ""),
+            uom: result[3] || "",
+            description: result[4] || "",
+            unitPrice: parseFloat(result[5] || ""),
+            discount: 0,
+            amount: parseFloat(result[6] || "")
+          })
+        }
       }
       
       if (pageTextLine.includes("Invoice Date")) {
