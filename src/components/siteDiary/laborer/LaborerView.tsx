@@ -3,6 +3,7 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { useDeleteLaborer } from "../../../hooks/laborer";
 
 export type Laborer = _Laborer & {
   createdBy: {
@@ -12,7 +13,7 @@ export type Laborer = _Laborer & {
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../../common/DeleteButton"));
 
 const bgColors = [
   "bg-green-500",
@@ -25,6 +26,10 @@ export const LaborerView = ({ laborers }: { laborers: Laborer[] }) => {
   const router = useRouter();
   const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
+  const { deleteLaborer } = useDeleteLaborer({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    siteDiaryId: siteDiaryId,
+  });
   return (
     <div className="mx-8">
       <ul
@@ -61,9 +66,11 @@ export const LaborerView = ({ laborers }: { laborers: Laborer[] }) => {
               <div className="flex-shrink-0 items-center pr-2">
                 <EditButton laborer={laborer} siteDiaryId={siteDiaryId} />
                 <DeleteButton
-                  laborerId={laborer.id}
-                  siteDiaryId={siteDiaryId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
+                  onDelete={() =>
+                    deleteLaborer({
+                      laborerId: laborer.id,
+                    })
+                  }
                 />
               </div>
             </div>

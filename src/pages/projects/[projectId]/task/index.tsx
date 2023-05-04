@@ -3,14 +3,14 @@ import { useRouter } from "next/router";
 import { useRef } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetTasks } from "../../../../hooks/task";
+import { useDeleteTask, useGetTasks } from "../../../../hooks/task";
 
 const CreateButton = dynamic(
   () => import("../../../../components/task/CreateButton")
 );
 
 const DeleteButton = dynamic(
-  () => import("../../../../components/task/DeleteButton")
+  () => import("../../../../components/common/DeleteButton")
 );
 
 const EditButton = dynamic(
@@ -25,6 +25,10 @@ const Task = () => {
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
+  const { deleteTask } = useDeleteTask({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    projectId: projectId,
+  });
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -49,9 +53,11 @@ const Task = () => {
                   </span>
                   <EditButton task={task} projectId={projectId} />
                   <DeleteButton
-                    taskId={task.id}
-                    projectId={projectId}
-                    pendingDeleteCountRef={pendingDeleteCountRef}
+                    onDelete={() => {
+                      deleteTask({
+                        taskId: task.id,
+                      });
+                    }}
                   />
                 </div>
               ))}

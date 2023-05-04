@@ -2,10 +2,10 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetProject } from "../../../../hooks/project";
+import { useDeleteProject, useGetProject } from "../../../../hooks/project";
 
 const DeleteButton = dynamic(
-  () => import("../../../../components/project/DeleteButton")
+  () => import("../../../../components/common/DeleteButton")
 );
 
 const TenderInformation = dynamic(
@@ -25,6 +25,7 @@ const Index = () => {
   const projectId = query.projectId as string;
   const { project } = useGetProject({ projectId: projectId });
 
+  const { deleteProject } = useDeleteProject({});
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -35,7 +36,14 @@ const Index = () => {
                 <h1 className="flex gap-x-3 text-base leading-7">
                   <span className="text-xl text-black">{project?.name}</span>
                 </h1>
-                <DeleteButton projectId={projectId} navigateBack={true} />
+                <DeleteButton
+                  onDelete={() => {
+                    deleteProject({
+                      projectId: projectId,
+                    });
+                  }}
+                  navigateBack={true}
+                />
               </div>
             </span>
           </h1>

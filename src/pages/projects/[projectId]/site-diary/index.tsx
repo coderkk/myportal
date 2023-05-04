@@ -11,7 +11,10 @@ import toast from "react-hot-toast";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import DebouncedInput from "../../../../components/common/DebounceInput";
-import { useGetSiteDiaries } from "../../../../hooks/siteDiary";
+import {
+  useDeleteSiteDiary,
+  useGetSiteDiaries,
+} from "../../../../hooks/siteDiary";
 import { api } from "../../../../utils/api";
 
 const CreateButton = dynamic(
@@ -19,7 +22,7 @@ const CreateButton = dynamic(
 );
 
 const DeleteButton = dynamic(
-  () => import("../../../../components/siteDiary/DeleteButton")
+  () => import("../../../../components/common/DeleteButton")
 );
 
 const EditButton = dynamic(
@@ -105,6 +108,11 @@ const SiteDiary = () => {
     startDate,
     unsavedChangesToastId,
   ]);
+
+  const { deleteSiteDiary } = useDeleteSiteDiary({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    projectId: projectId,
+  });
 
   return (
     <SessionAuth>
@@ -565,9 +573,19 @@ const SiteDiary = () => {
                         <div className="-ml-px flex w-0 flex-1">
                           <span className="inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-red-500">
                             <DeleteButton
-                              siteDiaryId={siteDiary.id}
-                              projectId={projectId}
-                              pendingDeleteCountRef={pendingDeleteCountRef}
+                              description="Delete"
+                              onDelete={() => {
+                                deleteSiteDiary({
+                                  siteDiaryId: siteDiary.id,
+                                  siteDiaryName: "",
+                                  startDate: new Date(
+                                    Date.parse("0001-01-01T18:00:00Z")
+                                  ),
+                                  endDate: new Date(
+                                    Date.parse("9999-12-31T18:00:00Z")
+                                  ),
+                                });
+                              }}
                             />
                           </span>
                         </div>

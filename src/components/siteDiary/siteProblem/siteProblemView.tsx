@@ -3,6 +3,7 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { useDeleteSiteProblem } from "../../../hooks/siteProblem";
 
 export type SiteProblem = _SiteProblem & {
   createdBy: {
@@ -12,7 +13,7 @@ export type SiteProblem = _SiteProblem & {
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../../common/DeleteButton"));
 
 const bgColors = [
   "bg-green-500",
@@ -29,6 +30,10 @@ export const SiteProblemView = ({
   const router = useRouter();
   const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
+  const { deleteSiteProblem } = useDeleteSiteProblem({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    siteDiaryId: siteDiaryId,
+  });
   return (
     <div className="mx-8">
       <ul
@@ -71,9 +76,11 @@ export const SiteProblemView = ({
                   siteDiaryId={siteDiaryId}
                 />
                 <DeleteButton
-                  siteProblemId={siteProblem.id}
-                  siteDiaryId={siteDiaryId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
+                  onDelete={() =>
+                    deleteSiteProblem({
+                      siteProblemId: siteProblem.id,
+                    })
+                  }
                 />
               </div>
             </div>

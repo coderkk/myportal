@@ -22,7 +22,7 @@ import {
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useGetBudgets } from "../../hooks/budget";
+import { useDeleteBudget, useGetBudgets } from "../../hooks/budget";
 import { api } from "../../utils/api";
 import DebouncedInput from "../common/DebounceInput";
 import Spinner from "../common/Spinner";
@@ -31,7 +31,7 @@ const CreateButton = dynamic(() => import("./CreateButton"));
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../common/DeleteButton"));
 
 type Budget = {
   id: string;
@@ -236,8 +236,10 @@ const Table = () => {
         cell: (info) => {
           const { id, description, expectedBudget, costsIncurred } =
             info.getValue();
+
+          const { deleteBudget } = useDeleteBudget();
           return (
-            <>
+            <div className=" inline-flex gap-3">
               <EditButton
                 budgetId={id}
                 projectId={projectId}
@@ -248,8 +250,14 @@ const Table = () => {
                 pageSize={queryPageSize}
                 searchKey={search_key}
               />
-              <DeleteButton budgetId={id} />
-            </>
+              <DeleteButton
+                onDelete={() => {
+                  deleteBudget({
+                    budgetId: id,
+                  });
+                }}
+              />
+            </div>
           );
         },
         header: () => <span>Actions</span>,

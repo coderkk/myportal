@@ -3,6 +3,7 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { useDeleteWorkProgress } from "../../../hooks/workProgress";
 
 export type WorkProgress = _WorkProgress & {
   createdBy: {
@@ -12,7 +13,7 @@ export type WorkProgress = _WorkProgress & {
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../../common/DeleteButton"));
 
 const bgColors = [
   "bg-green-500",
@@ -29,6 +30,10 @@ export const WorkProgressView = ({
   const router = useRouter();
   const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
+  const { deleteWorkProgress } = useDeleteWorkProgress({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    siteDiaryId: siteDiaryId,
+  });
   return (
     <div className="mx-8">
       <ul
@@ -71,9 +76,11 @@ export const WorkProgressView = ({
                   siteDiaryId={siteDiaryId}
                 />
                 <DeleteButton
-                  workProgressId={workProgress.id}
-                  siteDiaryId={siteDiaryId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
+                  onDelete={() =>
+                    deleteWorkProgress({
+                      workProgressId: workProgress.id,
+                    })
+                  }
                 />
               </div>
             </div>

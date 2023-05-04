@@ -3,6 +3,7 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { useDeletePlant } from "../../../hooks/plant";
 
 export type Plant = _Plant & {
   createdBy: {
@@ -12,7 +13,7 @@ export type Plant = _Plant & {
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../../common/DeleteButton"));
 
 const bgColors = [
   "bg-green-500",
@@ -25,6 +26,10 @@ export const PlantView = ({ plants }: { plants: Plant[] }) => {
   const router = useRouter();
   const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
+  const { deletePlant } = useDeletePlant({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    siteDiaryId: siteDiaryId,
+  });
   return (
     <div className="mx-8">
       <ul
@@ -61,9 +66,11 @@ export const PlantView = ({ plants }: { plants: Plant[] }) => {
               <div className="flex-shrink-0 items-center pr-2">
                 <EditButton plant={plant} siteDiaryId={siteDiaryId} />
                 <DeleteButton
-                  plantId={plant.id}
-                  siteDiaryId={siteDiaryId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
+                  onDelete={() =>
+                    deletePlant({
+                      plantId: plant.id,
+                    })
+                  }
                 />
               </div>
             </div>
