@@ -2,24 +2,27 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
 import classNames from "classnames";
 import { useRouter } from "next/router";
+import type { ReactNode } from "react";
 
 const DeleteButton = ({
   onDelete,
   navigateBack = false,
   description,
   flex = true,
+  hideButton = false,
 }: {
   onDelete: () => void;
   navigateBack?: boolean;
-  description?: string;
+  description?: string | ReactNode;
   flex?: boolean;
+  hideButton?: boolean;
 }) => {
   const router = useRouter();
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>
         <span className={classNames(flex ? "flex" : "", "items-center")}>
-          <Delete className="mr-2 h-6 w-6 text-red-500" />
+          {!hideButton && <Delete className="mr-2 h-6 w-6 text-red-500" />}
           {description}
         </span>
       </AlertDialog.Trigger>

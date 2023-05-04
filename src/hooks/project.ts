@@ -1,5 +1,6 @@
 import { useSession } from "next-auth/react";
 import type { MutableRefObject } from "react";
+import toast from "react-hot-toast";
 import { api } from "../utils/api";
 
 export const useCreateProject = () => {
@@ -115,6 +116,7 @@ export const useUpdateProject = () => {
           return oldProjects;
         }
       });
+      toast.success("Project updated!");
     },
     async onSettled() {
       // Actually sync data with server
@@ -157,6 +159,7 @@ export const useDeleteProject = ({
         );
         return newProjects;
       });
+      toast.success("Project deleted");
     },
     async onSettled() {
       if (pendingDeleteCountRef) {
@@ -271,5 +274,15 @@ export const useRemoveFromProject = ({
     });
   return {
     removeFromProject,
+  };
+};
+
+export const useGetProjectCreator = ({ projectId }: { projectId: string }) => {
+  const { data, isLoading } = api.project.getProjectCreator.useQuery({
+    projectId: projectId,
+  });
+  return {
+    creator: data,
+    isLoading: isLoading,
   };
 };

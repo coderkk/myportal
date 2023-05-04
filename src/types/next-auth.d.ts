@@ -9,7 +9,6 @@ declare module "next-auth" {
       id: string;
       phoneNumber?: string | null;
       company?: string | null;
-      professionalRole?: string | null;
     } & DefaultSession["user"];
   }
 
@@ -21,6 +20,5 @@ declare module "next-auth" {
     id: string;
     phoneNumber?: string | null;
     company?: string | null;
-    professionalRole?: string | null;
   }
 }

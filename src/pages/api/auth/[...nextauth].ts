@@ -22,7 +22,6 @@ export const authOptions: NextAuthOptions = {
         session.user.name = user.name;
         session.user.phoneNumber = user.phoneNumber;
         session.user.company = user.company;
-        session.user.professionalRole = user.professionalRole;
       }
       return session;
     },
