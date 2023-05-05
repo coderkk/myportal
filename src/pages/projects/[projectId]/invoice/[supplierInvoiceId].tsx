@@ -11,6 +11,7 @@ import {
   useGetPreSignedURLForDownload,
 } from "../../../../hooks/s3";
 import { useGetSupplierInvoice, useUpdateSupplierInvoice } from "../../../../hooks/supplierInvoice";
+import { useGetSupplierInvoiceDetails } from '../../../../hooks/supplierInvoiceDetail';
 import parse from 'date-fns/parse'
 import toast from "react-hot-toast";
 
@@ -22,6 +23,10 @@ const SupplierInvoiceView = () => {
     supplierInvoiceId: supplierInvoiceId,
   });
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({ projectId: projectId });
+
+  const { supplierInvoiceDetails: supplierInvoiceDetailsData } = useGetSupplierInvoiceDetails({
+    supplierInvoiceId: supplierInvoiceId,
+  });
 
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
 
@@ -299,7 +304,31 @@ const SupplierInvoiceView = () => {
 
                           <div className="px-1 w-20 text-center"></div>
                         </div>
+                        {supplierInvoiceDetailsData && supplierInvoiceDetailsData.map((row, i) => {
+                          return (<div key={i} className="flex -mx-1 border-b py-2 items-start">
+                                    <div className="flex-1 px-1">
+                                      <p className="text-gray-800 tracking-wide text-sm">{row?.description}</p>
+                                    </div>
 
+                                    <div className="px-1 w-20 text-right">
+                                      <p className="text-gray-800 tracking-wide text-sm">{row?.uom}</p>
+                                    </div>
+
+                                    <div className="px-1 w-32 text-right">
+                                      <p className="leading-none">
+                                        <span className="block tracking-wide text-sm text-gray-800">{row?.unitPrice}</span>
+                                      </p>
+                                    </div>
+
+                                    <div className="px-1 w-32 text-right">
+                                      <p className="leading-none">
+                                        <span className="block tracking-wide text-sm text-gray-800">{row?.amount}</span>
+                                      </p>
+                                    </div>
+                                    <div className="px-1 w-20 text-center"></div>
+                                  </div>
+                          );
+                        })}
                         <button
                           className="mt-6 bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 text-sm border border-gray-300 rounded shadow-sm"
                           type="button"

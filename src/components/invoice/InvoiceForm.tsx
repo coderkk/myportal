@@ -4,8 +4,8 @@ import type { supplierInvoice } from "../../hooks/supplierInvoice";
 import { format } from 'date-fns'
 import * as Dialog from "@radix-ui/react-dialog";
 import { Close } from "@styled-icons/ionicons-outline";
-import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useCreateSupplierInvoice } from "../../hooks/supplierInvoice";
+import { useCreateSupplierInvoiceDetail } from "../../hooks/supplierInvoiceDetail";
 
 import toast from "react-hot-toast";
 import { useGetPreSignedURLForUpload } from "../../hooks/s3";
@@ -14,6 +14,20 @@ import { nanoid } from "nanoid";
 import { env } from "../../env/client.mjs";
 
 import InvoiceLoad from "../../components/invoice/InvoiceLoad";
+
+type SupplierInvoiceDetail = {
+  item: string;
+  description: string;
+  quantity: number;
+  uom: string;
+  unitPrice: number;
+  discount: number;
+  amount: number;
+}
+
+interface SupplierInvoiceWithDetail extends supplierInvoice {
+  supplierInvoiceDetail: SupplierInvoiceDetail[];
+}
 
 const InvoiceFormPage = () => {
   const router = useRouter();
@@ -26,8 +40,9 @@ const InvoiceFormPage = () => {
   const [folderPrefix] = useState("/");
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
   const { createSupplierInvoice } = useCreateSupplierInvoice();
+  const { createSupplierInvoiceDetail } = useCreateSupplierInvoiceDetail();
 
-  const [invoiceData, setInvoiceData] = useState<supplierInvoice>({
+  const emptyData = {
     supplierInvoiceId: "",
     projectId: projectId,
     invoiceNo: "",
@@ -51,10 +66,13 @@ const InvoiceFormPage = () => {
     grandAmount: 0,
     taxAmount: 0,
     netAmount: 0,
-    fileId: ""
-  });
+    fileId: "",
+    supplierInvoiceDetail: []
+  }
 
-  const handleData = (data: supplierInvoice, file: File | null) => {
+  const [invoiceData, setInvoiceData] = useState<SupplierInvoiceWithDetail>(emptyData);
+
+  const handleData = (data: SupplierInvoiceWithDetail, file: File | null) => {
     setInvoiceData(data)
     setFile(file)
   }
@@ -62,18 +80,23 @@ const InvoiceFormPage = () => {
   const handleConfirmUpload = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
-    setFileId("");
-    await uploadDocument();
-    if (fileId != "") {
-      invoiceData.fileId = fileId;
-      saveRecord(invoiceData);
+    try {
+      setFileId("");
+      await uploadDocument();
+      if (fileId != "") {
+        invoiceData.fileId = fileId;
+        await saveRecord(invoiceData);
+
+        router.reload();
+      }
+    } catch(e) {
+      toast.error("Error occur")
     }
+
   }
 
   const uploadDocument = async () => {
-    console.log('file', file)
     if ( file == null) {
-      console.log("file empty")
       toast.error("Error! You not yet select the documents");
     } else {
       const id = nanoid();
@@ -124,10 +147,10 @@ const InvoiceFormPage = () => {
     }
   } 
 
-  const saveRecord = (data: supplierInvoice) => {
+  const saveRecord = async (data: SupplierInvoiceWithDetail) => {
     data.projectId = projectId;
     try {
-      createSupplierInvoice({
+      const supplierInvoiceId = await createSupplierInvoice({
         projectId: projectId,
         description: "",
         costCode: "",
@@ -143,10 +166,24 @@ const InvoiceFormPage = () => {
         taxAmount: data.taxAmount as number,
         netAmount: data.netAmount as number,
         fileId: data.fileId as string,
-      });
-      void router.push(
-        "/projects/" + projectId + "/invoice/"
-      );
+      }).then((res) => res.id);
+
+      for (let i = 0; i < data.supplierInvoiceDetail.length; i++) {
+        const detail = data.supplierInvoiceDetail[i];
+        if (detail != undefined) {
+          createSupplierInvoiceDetail({
+            supplierInvoiceId: supplierInvoiceId,
+            description: detail.description,
+            uom: detail.uom,
+            quantity: detail.quantity,
+            unitPrice: detail.unitPrice,
+            amount: detail.amount,
+            discount: 0
+          })
+        }
+      }
+      toast.success("Record has saved");
+
     } catch (error) {
       throw error;
     }
@@ -235,6 +272,31 @@ const InvoiceFormPage = () => {
 
                     <div className="px-1 w-20 text-center"></div>
                   </div>
+                  {invoiceData?.supplierInvoiceDetail.map((row, i) => {
+                    return (<div key={i} className="flex -mx-1 border-b py-2 items-start">
+                              <div className="flex-1 px-1">
+                                <p className="text-gray-800 tracking-wide text-sm">{row?.description}</p>
+                              </div>
+
+                              <div className="px-1 w-20 text-right">
+                                <p className="text-gray-800 tracking-wide text-sm">{row?.uom}</p>
+                              </div>
+
+                              <div className="px-1 w-32 text-right">
+                                <p className="leading-none">
+                                  <span className="block tracking-wide text-sm text-gray-800">{row?.unitPrice}</span>
+                                </p>
+                              </div>
+
+                              <div className="px-1 w-32 text-right">
+                                <p className="leading-none">
+                                  <span className="block tracking-wide text-sm text-gray-800">{row?.amount}</span>
+                                </p>
+                              </div>
+                              <div className="px-1 w-20 text-center"></div>
+                            </div>
+                    );
+                  })}
 
                   <div className="py-2 ml-auto mt-5 w-full sm:w-2/4 lg:w-1/2">
                     <div className="flex justify-between mb-3">

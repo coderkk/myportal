@@ -7,14 +7,13 @@ import ReactDatePicker from "react-datepicker";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Controller, useForm } from 'react-hook-form';
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
-import parse from 'date-fns/parse'
-import InvoiceForm from '../../../../components/invoice/InvoiceForm'
+import { parse } from 'date-fns';
 
 const AddInvoicePage = ({}) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
-  const [invoiceData, setInvoiceData] = useState<supplierInvoice>({
+  const [invoiceData] = useState<supplierInvoice>({
     supplierInvoiceId: "",
     projectId: projectId,
     invoiceNo: "",
