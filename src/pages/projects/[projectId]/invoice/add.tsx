@@ -60,7 +60,7 @@ const AddInvoicePage = ({}) => {
   const saveRecord = (data: supplierInvoice) => {
     data.projectId = projectId;
     try {
-      createSupplierInvoice({
+      void createSupplierInvoice({
         projectId: projectId,
         description: "",
         costCode: "",
