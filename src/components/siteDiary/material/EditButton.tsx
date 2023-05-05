@@ -2,8 +2,9 @@ import type { MaterialUnit } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm, type FieldValues } from "react-hook-form";
 import { useUpdateMaterial } from "../../../hooks/material";
+import SelectList from "../../common/SelectList";
 import type { Material } from "./MaterialView";
 
 const EditButton = ({
@@ -17,6 +18,7 @@ const EditButton = ({
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     values: {
@@ -81,19 +83,22 @@ const EditButton = ({
                 >
                   Units
                 </label>
-                <select
-                  id="units"
+                <Controller
+                  name="units"
+                  control={control}
                   defaultValue="M2"
-                  {...register("units", { required: true })}
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
-                    errors.units ? "border-red-400  focus:border-red-400 " : ""
-                  }`}
-                >
-                  <option value="M">M</option>
-                  <option value="M2">M2</option>
-                  <option value="M3">M3</option>
-                  <option value="NR">NR</option>
-                </select>
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <SelectList
+                        value={value as string}
+                        onChange={onChange}
+                        stringList={["M", "M2", "M3", "NR"]}
+                        buttonClassName="mb-3 h-10 w-full rounded-lg border border-gray-300 bg-white px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left"
+                      />
+                    );
+                  }}
+                />
               </div>
 
               <div className="flex flex-1 flex-col">
