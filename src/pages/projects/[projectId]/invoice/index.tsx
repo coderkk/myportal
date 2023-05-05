@@ -28,7 +28,7 @@ const Invoices = () => {
                     User will upload and enter the supplier invoice
                   </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none inline">
+                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex inline">
                   <button
                     type="button"
                     onClick={() => {

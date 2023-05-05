@@ -40,6 +40,7 @@ const InvoiceFormPage = () => {
   const [folderPrefix] = useState("/");
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
   const { createSupplierInvoice } = useCreateSupplierInvoice();
+  const { createSupplierInvoiceDetail } = useCreateSupplierInvoiceDetail();
 
   const emptyData = {
     supplierInvoiceId: "",
@@ -79,12 +80,19 @@ const InvoiceFormPage = () => {
   const handleConfirmUpload = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
-    setFileId("");
-    await uploadDocument();
-    if (fileId != "") {
-      invoiceData.fileId = fileId;
-      saveRecord(invoiceData);
+    try {
+      setFileId("");
+      await uploadDocument();
+      if (fileId != "") {
+        invoiceData.fileId = fileId;
+        await saveRecord(invoiceData);
+
+        router.reload();
+      }
+    } catch(e) {
+      toast.error("Error occur")
     }
+
   }
 
   const uploadDocument = async () => {
@@ -140,10 +148,10 @@ const InvoiceFormPage = () => {
     }
   } 
 
-  const saveRecord = (data: SupplierInvoiceWithDetail) => {
+  const saveRecord = async (data: SupplierInvoiceWithDetail) => {
     data.projectId = projectId;
     try {
-      createSupplierInvoice({
+      const supplierInvoiceId = await createSupplierInvoice({
         projectId: projectId,
         description: "",
         costCode: "",
@@ -159,12 +167,24 @@ const InvoiceFormPage = () => {
         taxAmount: data.taxAmount as number,
         netAmount: data.netAmount as number,
         fileId: data.fileId as string,
-      });
-      
+      }).then((res) => res.id);
 
-      void router.push(
-        "/projects/" + projectId + "/invoice/"
-      );
+      for (let i = 0; i < data.supplierInvoiceDetail.length; i++) {
+        const detail = data.supplierInvoiceDetail[i];
+        if (detail != undefined) {
+          createSupplierInvoiceDetail({
+            supplierInvoiceId: supplierInvoiceId,
+            description: detail.description,
+            uom: detail.uom,
+            quantity: detail.quantity,
+            unitPrice: detail.unitPrice,
+            amount: detail.amount,
+            discount: 0
+          })
+        }
+      }
+      toast.success("Record has saved");
+
     } catch (error) {
       throw error;
     }

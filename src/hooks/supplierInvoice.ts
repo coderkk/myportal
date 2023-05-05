@@ -32,7 +32,7 @@ export type supplierInvoice = {
 export const useCreateSupplierInvoice = () => {
   const utils = api.useContext();
   const session = useSession();
-  const { mutate: createSupplierInvoice } =
+  const { mutateAsync: createSupplierInvoice } =
     api.supplierInvoice.createSupplierInvoice.useMutation({
       async onMutate(values) {
         await utils.supplierInvoice.getSupplierInvoices.cancel();
