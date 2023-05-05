@@ -202,7 +202,6 @@ export const parseData = (pdfContent: string) => {
 
       if (start_line) {
         const result = (/^(\d+)\s+(\d+)\s+(\w+)\s+(.*)\s+(\d+.\d+)\s+(\d+.\d+)/).exec(pageTextLine);
-        console.log(result);
         if (result) {
           data.supplierInvoiceDetail.push({
             item: result[1] || "",

@@ -56,7 +56,6 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
     if (parentDiv != null) {
       const viewport = page.getViewport();
       const originWidth = viewport.width;
-      console.log('originWidth', originWidth)
       let pageScale = 0.7;
       if (!isNaN(originWidth) && originWidth != 0) {
         pageScale = parentDiv.clientWidth / originWidth;

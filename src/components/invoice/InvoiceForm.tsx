@@ -96,7 +96,6 @@ const InvoiceFormPage = () => {
   }
 
   const uploadDocument = async () => {
-    console.log('file', file)
     if ( file == null) {
       toast.error("Error! You not yet select the documents");
     } else {
