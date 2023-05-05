@@ -72,7 +72,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                   id="units"
                   defaultValue="M2"
                   {...register("units", { required: true })}
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 bg-white px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
                     errors.units ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                 >
