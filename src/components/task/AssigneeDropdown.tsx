@@ -48,9 +48,18 @@ const AssigneeDropdown = ({
   taskAssignee,
   onTaskAssigneeChange,
 }: DropdownProps) => {
+  // assignee might've quit the team, so we need to check if they're still in the team and display accordingly
+  const assigneeInTeam = assignees
+    ?.map((assignee) => assignee.id)
+    .find((id) => id === taskAssignee?.id);
+  const placeholder = !taskAssignee
+    ? "Select a task assignee"
+    : assigneeInTeam
+    ? ""
+    : taskAssignee?.email;
   return (
     <Select.Root
-      defaultValue={taskAssignee?.id || undefined}
+      defaultValue={assigneeInTeam ? taskAssignee?.id : undefined}
       onValueChange={(value: string) => {
         onTaskAssigneeChange(value);
       }}
@@ -59,7 +68,7 @@ const AssigneeDropdown = ({
         className="inline-flex h-10 items-center justify-center gap-1 rounded-lg border border-gray-300 bg-white px-4 py-0 text-base hover:bg-gray-100 focus:border-blue-300 focus:outline-none"
         aria-label="Task Assignee"
       >
-        <Select.Value placeholder="Select a task assignee" />
+        <Select.Value placeholder={placeholder} />
         <Select.Icon className="text-gray-600">
           <ChevronDownIcon />
         </Select.Icon>

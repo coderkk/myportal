@@ -146,24 +146,8 @@ export const projectRouter = createTRPCRouter({
               createdById: ctx.session.user.id,
             },
           });
-          // // if isCreator, we delete the project and the relation
-          // if (isCreator)
-          //   return await ctx.prisma.project.delete({
-          //     where: {
-          //       id: input.projectId,
-          //     },
-          //   });
-          // // if not isCreator, we delete the relation only
-          // return await ctx.prisma.usersOnProjects.delete({
-          //   where: {
-          //     userId_projectId: {
-          //       userId: ctx.session.user.id,
-          //       projectId: input.projectId,
-          //     },
-          //   },
-          // });
 
-          // if not isCreator, we delete the project and the relation
+          // if not isCreator, we throw an error
           if (!isCreator) {
             throw new TRPCError({
               code: "UNAUTHORIZED",
@@ -267,25 +251,6 @@ export const projectRouter = createTRPCRouter({
           }
 
           return await ctx.prisma.$transaction(async (tx) => {
-            // remove related task of user
-            await tx.project.update({
-              where: {
-                id: input.projectId,
-              },
-              data: {
-                tasks: {
-                  updateMany: {
-                    where: {
-                      projectId: input.projectId,
-                      assignedToId: input.userToBeRemovedId,
-                    },
-                    data: {
-                      assignedToId: null,
-                    },
-                  },
-                },
-              },
-            });
             // remove user from project
             return tx.usersOnProjects.delete({
               where: {
