@@ -1,6 +1,7 @@
 import type { TaskStatus } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
-import { PlusSquareFill } from "@styled-icons/bootstrap";
+import { PlusIcon } from "@radix-ui/react-icons";
+import classNames from "classnames";
 import { useState, type BaseSyntheticEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useCreateTask } from "../../hooks/task";
@@ -15,7 +16,13 @@ type FormValues = {
   status: TaskStatus;
 };
 
-const CreateButton = ({ projectId }: { projectId: string }) => {
+const CreateButton = ({
+  projectId,
+  description,
+}: {
+  projectId: string;
+  description?: string;
+}) => {
   const {
     register,
     handleSubmit,
@@ -23,7 +30,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     control,
     formState: { errors },
   } = useForm<FormValues>();
-  const { createTask } = useCreateTask();
+  const { createTask } = useCreateTask({ projectId: projectId });
   const { usersForProject } = useGetUsersForProject({ projectId: projectId });
 
   const onSubmit = (
@@ -44,7 +51,21 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <PlusSquareFill className="h-6 w-6  text-blue-500" />
+        <span className="flex justify-between">
+          <button
+            type="button"
+            className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          >
+            <PlusIcon
+              className={classNames(
+                description ? " -ml-0.5 mr-1.5" : "",
+                "h-5 w-5"
+              )}
+              aria-hidden="true"
+            />
+            {description}
+          </button>
+        </span>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />

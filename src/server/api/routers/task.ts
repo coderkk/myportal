@@ -20,8 +20,8 @@ export const createTaskSchema = z.object({
 
 export const getTasksSchema = z.object({
   projectId: z.string(),
-  cursor: z.string().nullish(),
-  limit: z.number().min(1).max(100).default(5),
+  cursor: z.string().optional(),
+  limit: z.number().min(1).max(10).default(5),
 });
 
 export const getTaskInfoSchema = z.object({
@@ -42,6 +42,7 @@ export const updateTaskSchema = z.object({
       image: z.string().nullable(),
     })
     .nullable(),
+  limit: z.number().min(1).max(10).default(5),
 });
 
 export const deleteTaskSchema = z.object({
@@ -93,6 +94,7 @@ export const taskRouter = createTRPCRouter({
                 },
               },
             },
+            orderBy: { createdAt: "desc" },
             take: input.limit,
             skip: input.cursor ? 1 : 0,
             cursor: input.cursor ? { id: input.cursor } : undefined,

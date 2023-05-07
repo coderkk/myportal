@@ -7,7 +7,12 @@ import { useEffect, useRef } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import Spinner from "../../../../components/common/Spinner";
-import { useDeleteTask, useGetTasks } from "../../../../hooks/task";
+import EmptyState from "../../../../components/task/EmptyState";
+import {
+  INFINITE_QUERY_LIMIT,
+  useDeleteTask,
+  useGetTasks,
+} from "../../../../hooks/task";
 
 const CreateButton = dynamic(
   () => import("../../../../components/task/CreateButton")
@@ -40,6 +45,7 @@ const Task = () => {
   const { tasks, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useGetTasks({
       projectId: projectId,
+      limit: INFINITE_QUERY_LIMIT,
     });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
   const observerTarget = useRef(null);
@@ -76,13 +82,15 @@ const Task = () => {
       <PermissionToProject projectId={projectId}>
         {isLoading ? (
           <div>Loading...</div>
+        ) : tasks.length === 0 ? (
+          <EmptyState projectId={projectId} />
         ) : (
           <div className="px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex w-full items-center justify-between">
               <h1 className="text-base font-semibold leading-6 text-gray-900">
                 Tasks
               </h1>
-              <CreateButton projectId={projectId} />
+              <CreateButton projectId={projectId} description="New Task" />
             </div>
             <div className="mt-8 flow-root">
               <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -141,9 +149,9 @@ const Task = () => {
                               </div>
                               <div className="ml-4">
                                 <div className="font-medium text-gray-900">
-                                  {task.assignedTo
-                                    ? task.assignedTo.name
-                                    : "Unassigned"}
+                                  {!task.assignedTo
+                                    ? "Unassigned"
+                                    : task.assignedTo.name}
                                 </div>
                                 <div className="mt-1 text-gray-500">
                                   {task.assignedTo?.email}
@@ -218,6 +226,11 @@ const Task = () => {
               </div>
             </div>
             {isFetchingNextPage && <Spinner />}
+            {!hasNextPage && (
+              <span className="flex justify-center">
+                <p className="max-auto p-4 text-slate-500">End of tasks</p>
+              </span>
+            )}
           </div>
         )}
       </PermissionToProject>
