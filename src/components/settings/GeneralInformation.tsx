@@ -147,10 +147,10 @@ const GeneralInformation = ({
                 </label>
                 <div className="mt-2">
                   <SelectList
-                    value={selectedPlan || "first element"} // prevents null warning
+                    value={selectedPlan}
                     onChange={setSelectedPlan}
                     disabled={!isCreator}
-                    stringList={plans}
+                    options={plans}
                   />
                 </div>
               </div>
@@ -252,7 +252,7 @@ const GeneralInformation = ({
                         value={selectedProfessionalRole}
                         onChange={setSelectedProfessionalRole}
                         disabled={!isCreator}
-                        stringList={professionalRoles.map((role) => role.label)}
+                        options={professionalRoles.map((role) => role.label)}
                       />
                     </div>
                   </>

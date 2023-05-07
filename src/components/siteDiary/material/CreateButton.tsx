@@ -80,7 +80,7 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                       <SelectList
                         value={value as string}
                         onChange={onChange}
-                        stringList={["M", "M2", "M3", "NR"]}
+                        options={["M", "M2", "M3", "NR"]}
                         buttonClassName="mb-3 h-10 w-full rounded-lg border border-gray-300 bg-white px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left"
                       />
                     );
