@@ -1,5 +1,6 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import classNames from "classnames";
 import { Fragment } from "react";
 
 export default function SelectList({
@@ -39,12 +40,12 @@ export default function SelectList({
                 key={personIdx}
                 className={({ active }) =>
                   `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                    active ? "bg-blue-10 text-blue-900" : "text-gray-900"
+                    active ? "bg-blue-600 text-white" : "text-gray-900"
                   }`
                 }
                 value={element}
               >
-                {({ selected }) => (
+                {({ selected, active }) => (
                   <>
                     <span
                       className={`block truncate ${
@@ -54,7 +55,12 @@ export default function SelectList({
                       {element}
                     </span>
                     {selected ? (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600">
+                      <span
+                        className={classNames(
+                          active ? "text-white" : "text-blue-600",
+                          "absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"
+                        )}
+                      >
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
                       </span>
                     ) : null}
