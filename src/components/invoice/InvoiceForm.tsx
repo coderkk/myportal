@@ -13,6 +13,9 @@ import { api } from "../../utils/api";
 import { nanoid } from "nanoid";
 import { env } from "../../env/client.mjs";
 
+import CostCenterDropdown from '../../components/costCenter/CostCenterDropdown';
+import { useGetCostCenters } from "../../hooks/costCenter";
+
 import InvoiceLoad from "../../components/invoice/InvoiceLoad";
 
 type SupplierInvoiceDetail = {
@@ -71,22 +74,33 @@ const InvoiceFormPage = () => {
   }
 
   const [invoiceData, setInvoiceData] = useState<SupplierInvoiceWithDetail>(emptyData);
+  const { costCenters } = useGetCostCenters({ projectId: projectId });
 
   const handleData = (data: SupplierInvoiceWithDetail, file: File | null) => {
-    setInvoiceData(data)
-    setFile(file)
+    setInvoiceData(data);
+    setFile(file);
+
+    let fid = ""
+    if (file != null) {
+      const id = nanoid();
+      const fileName =
+        file.name.slice(0, file.name.lastIndexOf(".")) +
+        "-" +
+        id +
+        file.name.slice(file.name.lastIndexOf("."));
+      fid = folderPrefix === "/" ? fileName : folderPrefix + fileName;
+    }
+    setFileId(fid);
   }
 
   const handleConfirmUpload = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
     try {
       setFileId("");
       await uploadDocument();
       if (fileId != "") {
         invoiceData.fileId = fileId;
         await saveRecord(invoiceData);
-
         router.reload();
       }
     } catch(e) {
@@ -99,14 +113,7 @@ const InvoiceFormPage = () => {
     if ( file == null) {
       toast.error("Error! You not yet select the documents");
     } else {
-      const id = nanoid();
-      const fileName =
-        file.name.slice(0, file.name.lastIndexOf(".")) +
-        "-" +
-        id +
-        file.name.slice(file.name.lastIndexOf("."));
-      const fid = folderPrefix === "/" ? fileName : folderPrefix + fileName;
-      setFileId(fid);
+      const fid = fileId;
       try {
         const { preSignedURLForUpload } = await getPreSignedURLForUpload({
           fileId: fid,
@@ -153,7 +160,7 @@ const InvoiceFormPage = () => {
       const supplierInvoiceId = await createSupplierInvoice({
         projectId: projectId,
         description: "",
-        costCenterId: "",
+        costCenterId: data.costCenterId as string,
         invoiceNo: data.invoiceNo as string,
         invoiceDate: data.invoiceDate as Date,
         vendorName: data.vendorName as string,
@@ -229,6 +236,19 @@ const InvoiceFormPage = () => {
                         <span className="mr-4 inline-block hidden md:block">:</span>
                         <div className="flex-1">
                           {(invoiceData.invoiceDate == undefined || invoiceData.invoiceDate == null) ? "" : format(invoiceData.invoiceDate, 'dd/MM/yyyy')}
+                        </div>
+                      </div>
+                      <div className="mb-2 md:mb-1 md:flex items-center">
+                        <label className="w-32 text-gray-800 block font-bold text-sm uppercase tracking-wide">Cost center</label>
+                        <span className="mr-4 inline-block hidden md:block">:</span>
+                        <div className="flex-1">
+                            <CostCenterDropdown
+                              costCenters={costCenters || []}
+                              defaultValue={null}
+                              onCostCenterChange={(value) => {
+                                setInvoiceData({...invoiceData, costCenterId: value});
+                              }}
+                            />
                         </div>
                       </div>
                     </div>

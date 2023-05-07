@@ -60,6 +60,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
             data: {
               invoiceNo: input.invoiceNo,
               invoiceDate: input.invoiceDate,
+              costCenterId: input.costCenterId,
               vendorName: input.vendorName,
               vendorAddress: input.vendorAddress,
               vendorPhone: input.vendorPhone,
@@ -168,6 +169,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
             data: {
               invoiceNo: input.invoiceNo,
               invoiceDate: input.invoiceDate,
+              costCenterId: input.costCenterId,
               vendorName: input.vendorName,
               vendorAddress: input.vendorAddress,
               vendorPhone: input.vendorPhone,
