@@ -79,6 +79,7 @@ model User {
     supplierInvoiceDetail         SupplierInvoiceDetail[]
     createdAt                     DateTime                @default(now())
     updatedAt                     DateTime                @default(now()) @updatedAt
+    CostCenter                    CostCenter[]
 }
 
 model VerificationToken {
@@ -105,6 +106,7 @@ model Project {
     supplierInvoices       SupplierInvoice[]
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @updatedAt
+    CostCenter             CostCenter[]
 
     @@index([createdById])
 }
@@ -308,9 +310,28 @@ model Budget {
     @@index([createdById])
 }
 
+model CostCenter {
+    id               String            @id @default(cuid())
+    code             String
+    name             String
+    budget           Float
+    cost             Float
+    supplierInvoices SupplierInvoice[]
+    project          Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId        String
+    createdBy        User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById      String
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @default(now()) @updatedAt
+
+    @@index([projectId])
+    @@index([createdById])
+}
+
 model SupplierInvoice {
     id                     String                  @id @default(cuid())
-    costCode               String                  @default("")
+    costCenter             CostCenter?             @relation(fields: [costCenterId], references: [id], onDelete: Cascade)
+    costCenterId           String?
     description            String
     invoiceNo              String
     invoiceDate            DateTime
@@ -336,6 +357,7 @@ model SupplierInvoice {
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @default(now()) @updatedAt
 
+    @@index([costCenterId])
     @@index([projectId])
     @@index([createdById])
 }

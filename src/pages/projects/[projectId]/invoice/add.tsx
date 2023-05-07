@@ -18,7 +18,7 @@ const AddInvoicePage = ({}) => {
     projectId: projectId,
     invoiceNo: "",
     invoiceDate: null,
-    costCode: "",
+    costCenterId: "",
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
@@ -63,7 +63,7 @@ const AddInvoicePage = ({}) => {
       void createSupplierInvoice({
         projectId: projectId,
         description: "",
-        costCode: "",
+        costCenterId: "",
         invoiceNo: data.invoiceNo as string,
         invoiceDate: data.invoiceDate as Date,
         vendorName: data.vendorName as string,

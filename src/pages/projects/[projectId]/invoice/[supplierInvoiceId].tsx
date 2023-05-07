@@ -47,7 +47,7 @@ const SupplierInvoiceView = () => {
       supplierInvoiceId: supplierInvoiceId,
       projectId: projectId,
       description: "",
-      costCode: "",
+      costCenterId: "",
       invoiceNo: data.invoiceNo as string,
       invoiceDate: data.invoiceDate as Date,
       vendorName: data.vendorName as string,
