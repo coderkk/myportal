@@ -4,8 +4,9 @@ import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useUpdateMaterial } from "../../../hooks/material";
-import SelectList from "../../common/SelectList";
 import type { Material } from "./MaterialView";
+
+import UnitsDropDown from "./UnitsDropDown";
 
 type FormValues = {
   type: string;
@@ -96,11 +97,9 @@ const EditButton = ({
                   rules={{ required: true }}
                   render={({ field: { onChange, value } }) => {
                     return (
-                      <SelectList
-                        value={value as string}
-                        onChange={onChange}
-                        options={["M", "M2", "M3", "NR"]}
-                        buttonClassName="mb-3 h-10 w-full rounded-lg border border-gray-300 bg-white px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left"
+                      <UnitsDropDown
+                        value={value}
+                        onChange={(value) => onChange(value)}
                       />
                     );
                   }}
