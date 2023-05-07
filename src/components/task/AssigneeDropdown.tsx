@@ -1,18 +1,7 @@
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "@radix-ui/react-icons";
+import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
-import classnames from "classnames";
-import React, { type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import type { assignee } from "./EditButton";
-
-type SelectItemProps = {
-  children: ReactNode;
-  className?: string;
-  value: string;
-};
 
 type DropdownProps = {
   assignees: assignee[];
@@ -20,28 +9,7 @@ type DropdownProps = {
   onTaskAssigneeChange: (value: assignee | undefined) => void;
 };
 
-const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
-  ({ children, className, value, ...props }, forwardedRef) => {
-    return (
-      <Select.Item
-        className={classnames(
-          "relative flex h-6 items-center justify-center rounded px-7 py-0 text-base data-[highlighted]:bg-blue-600 data-[highlighted]:text-white data-[highlighted]:outline-none",
-          className
-        )}
-        ref={forwardedRef}
-        value={value}
-        {...props}
-      >
-        <Select.ItemText>{children}</Select.ItemText>
-        <Select.ItemIndicator className="absolute left-0 inline-flex w-6 items-center justify-center">
-          <CheckIcon />
-        </Select.ItemIndicator>
-      </Select.Item>
-    );
-  }
-);
-
-SelectItem.displayName = "SelectItem";
+const SelectItem = dynamic(() => import("../common/SelectItem"));
 
 const AssigneeDropdown = ({
   assignees,
