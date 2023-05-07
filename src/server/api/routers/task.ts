@@ -11,13 +11,17 @@ export const createTaskSchema = z.object({
   taskAssignedTo: z
     .object({
       id: z.string(),
+      name: z.string().nullable(),
       email: z.string().nullable(),
+      image: z.string().nullable(),
     })
     .nullable(),
 });
 
 export const getTasksSchema = z.object({
   projectId: z.string(),
+  cursor: z.string().nullish(),
+  limit: z.number().min(1).max(100).default(5),
 });
 
 export const getTaskInfoSchema = z.object({
@@ -33,7 +37,9 @@ export const updateTaskSchema = z.object({
   taskAssignedTo: z
     .object({
       id: z.string(),
+      name: z.string().nullable(),
       email: z.string().nullable(),
+      image: z.string().nullable(),
     })
     .nullable(),
 });
@@ -66,35 +72,41 @@ export const taskRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await trycatch({
         fn: async () => {
-          const project = await ctx.prisma.project.findUniqueOrThrow({
+          const tasks = await ctx.prisma.task.findMany({
             where: {
-              id: input.projectId,
+              projectId: input.projectId,
             },
             include: {
-              tasks: {
-                include: {
-                  createdBy: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                  assignedTo: {
-                    select: {
-                      id: true,
-                      email: true,
-                    },
-                  },
+              createdBy: {
+                select: {
+                  name: true,
+                  email: true,
+                  image: true,
+                },
+              },
+              assignedTo: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  image: true,
                 },
               },
             },
+            take: input.limit,
+            skip: input.cursor ? 1 : 0,
+            cursor: input.cursor ? { id: input.cursor } : undefined,
           });
-          return project.tasks.map((task) => ({
-            id: task.id,
-            description: task.description,
-            status: task.status,
-            createdBy: task.createdBy,
-            assignedTo: task.assignedTo,
-          }));
+          return {
+            tasks: tasks.map((task) => ({
+              id: task.id,
+              description: task.description,
+              status: task.status,
+              createdBy: task.createdBy,
+              assignedTo: task.assignedTo,
+            })),
+            nextCursor: tasks[tasks.length - 1]?.id || undefined,
+          };
         },
         errorMessages: ["Failed to get tasks"],
       })();

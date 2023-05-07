@@ -6,7 +6,7 @@ import {
 import * as Select from "@radix-ui/react-select";
 import classnames from "classnames";
 import React, { type ReactNode } from "react";
-import type { assignee } from "./CreateButton";
+import type { assignee } from "./EditButton";
 
 type SelectItemProps = {
   children: ReactNode;
@@ -17,7 +17,7 @@ type SelectItemProps = {
 type DropdownProps = {
   assignees: assignee[];
   taskAssignee: assignee | null;
-  onTaskAssigneeChange: (value: string) => void;
+  onTaskAssigneeChange: (value: assignee | undefined) => void;
 };
 
 const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
@@ -61,7 +61,9 @@ const AssigneeDropdown = ({
     <Select.Root
       defaultValue={assigneeInTeam ? taskAssignee?.id : undefined}
       onValueChange={(value: string) => {
-        onTaskAssigneeChange(value);
+        onTaskAssigneeChange(
+          assignees.find((assignee) => assignee.id === value)
+        );
       }}
     >
       <Select.Trigger

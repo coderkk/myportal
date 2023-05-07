@@ -190,6 +190,7 @@ export const useAddToProject = () => {
             id: values.userId,
             name: values.userName,
             email: values.userEmail,
+            image: values.userImage,
           };
           if (oldUsers) {
             return [...oldUsers, optimisticUpdateObject];

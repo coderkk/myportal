@@ -42,6 +42,7 @@ const Team = () => {
         value: user.id,
         userName: user.name || "", // ' || "" ' only here for TS, the actual filtering is done by "filter"
         userEmail: user.email || "",
+        userImage: user.image || "",
         label: `${user.name || ""} (${user.email || ""}) ${
           userAlreadyInTeam ? "ADDED" : ""
         }`,

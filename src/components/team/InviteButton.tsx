@@ -48,6 +48,7 @@ const InviteButton = ({
                       userId: user.value,
                       userName: user.userName,
                       userEmail: user.userEmail,
+                      userImage: user.userImage,
                     });
                   }
                   setSelectedOptions([]);

@@ -2,16 +2,17 @@ import type { TaskStatus } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import type { ControllerRenderProps } from "react-hook-form";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useCreateTask } from "../../hooks/task";
 import { useGetUsersForProject } from "../../hooks/user";
 import AssigneeDropdown from "./AssigneeDropdown";
+import type { assignee } from "./EditButton";
 import StatusDropdown from "./StatusDropDown";
 
-export type assignee = {
-  id: string;
-  email: string | null;
+type FormValues = {
+  description: string;
+  assignee: assignee;
+  status: TaskStatus;
 };
 
 const CreateButton = ({ projectId }: { projectId: string }) => {
@@ -21,25 +22,22 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createTask } = useCreateTask();
   const { usersForProject } = useGetUsersForProject({ projectId: projectId });
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
-    const assignee = usersForProject?.find(
-      (userForProject) => userForProject.id === data.assignee
-    ) as assignee;
     e?.preventDefault();
     setOpen(false);
     reset();
     createTask({
       projectId: projectId,
-      taskDescription: data.description as string,
-      taskAssignedTo: assignee ? assignee : null,
-      taskStatus: data.status as TaskStatus,
+      taskDescription: data.description,
+      taskAssignedTo: data.assignee || null,
+      taskStatus: data.status,
     });
   };
   const [open, setOpen] = useState(false);
@@ -78,7 +76,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                     return (
                       <AssigneeDropdown
                         assignees={usersForProject || []}
-                        taskAssignee={null}
+                        taskAssignee={field.value}
                         onTaskAssigneeChange={(value) => onChange(value)}
                       />
                     );
@@ -90,12 +88,8 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   control={control}
                   defaultValue={"NOT_STARTED"}
                   rules={{ required: true }}
-                  render={({
-                    field,
-                  }: {
-                    field: ControllerRenderProps<FieldValues, "status">;
-                  }) => {
-                    const value = field.value as TaskStatus;
+                  render={({ field }) => {
+                    const value = field.value;
                     const { onChange } = field;
                     return (
                       <StatusDropdown

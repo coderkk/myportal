@@ -25,6 +25,7 @@ export const addToProjectSchema = z.object({
   userId: z.string(),
   userName: z.string(),
   userEmail: z.string(),
+  userImage: z.string(),
 });
 
 export const removeFromProjectSchema = z.object({
