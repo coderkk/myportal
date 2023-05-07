@@ -5,14 +5,17 @@ import { useRef } from "react";
 import { CommentDots } from "styled-icons/boxicons-regular";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetRequestForInformations } from "../../../../hooks/requestForInformation";
+import {
+  useDeleteRequestForInformation,
+  useGetRequestForInformations,
+} from "../../../../hooks/requestForInformation";
 
 const CreateButton = dynamic(
   () => import("../../../../components/requestForInformation/CreateButton")
 );
 
 const DeleteButton = dynamic(
-  () => import("../../../../components/requestForInformation/DeleteButton")
+  () => import("../../../../components/common/DeleteButton")
 );
 
 const EditButton = dynamic(
@@ -27,6 +30,10 @@ const RequestForInformation = () => {
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
+  const { deleteRequestForInformation } = useDeleteRequestForInformation({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    projectId: projectId,
+  });
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -61,9 +68,11 @@ const RequestForInformation = () => {
                     projectId={projectId}
                   />
                   <DeleteButton
-                    requestForInformationId={requestForInformation.id}
-                    projectId={projectId}
-                    pendingDeleteCountRef={pendingDeleteCountRef}
+                    onDelete={() => {
+                      deleteRequestForInformation({
+                        requestForInformationId: requestForInformation.id,
+                      });
+                    }}
                   />
                   <Link
                     target="_blank"

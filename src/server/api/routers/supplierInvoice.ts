@@ -5,7 +5,7 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 export const createSupplierInvoiceSchema = z.object({
   invoiceNo: z.string(),
   invoiceDate: z.date(),
-  costCode: z.string(),
+  costCenterId: z.string(),
   description: z.string(),
   vendorName: z.string(),
   vendorAddress: z.string(),
@@ -32,7 +32,7 @@ export const updateSupplierInvoiceSchema = z.object({
   supplierInvoiceId: z.string(),
   invoiceNo: z.string(),
   invoiceDate: z.date(),
-  costCode: z.string(),
+  costCenterId: z.string(),
   description: z.string(),
   vendorName: z.string(),
   vendorAddress: z.string(),
@@ -60,6 +60,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
             data: {
               invoiceNo: input.invoiceNo,
               invoiceDate: input.invoiceDate,
+              costCenterId: input.costCenterId,
               vendorName: input.vendorName,
               vendorAddress: input.vendorAddress,
               vendorPhone: input.vendorPhone,
@@ -108,7 +109,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
             id: supplierInvoice.id,
             invoiceNo: supplierInvoice.invoiceNo,
             invoiceDate: supplierInvoice.invoiceDate,
-            costCode: supplierInvoice.costCode,
+            costCenterId: supplierInvoice.costCenterId,
             description: supplierInvoice.description,
             vendorName: supplierInvoice.vendorName,
             vendorAddress: supplierInvoice.vendorAddress,
@@ -168,6 +169,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
             data: {
               invoiceNo: input.invoiceNo,
               invoiceDate: input.invoiceDate,
+              costCenterId: input.costCenterId,
               vendorName: input.vendorName,
               vendorAddress: input.vendorAddress,
               vendorPhone: input.vendorPhone,

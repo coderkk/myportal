@@ -7,7 +7,9 @@ import ReactDatePicker from "react-datepicker";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Controller, useForm } from 'react-hook-form';
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
+import { useGetCostCenters } from "../../../../hooks/costCenter";
 import { parse } from 'date-fns';
+import CostCenterDropdown from '../../../../components/costCenter/CostCenterDropdown';
 
 const AddInvoicePage = ({}) => {
   const router = useRouter();
@@ -18,7 +20,7 @@ const AddInvoicePage = ({}) => {
     projectId: projectId,
     invoiceNo: "",
     invoiceDate: null,
-    costCode: "",
+    costCenterId: "",
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
@@ -41,6 +43,7 @@ const AddInvoicePage = ({}) => {
   });
 
   const { createSupplierInvoice } = useCreateSupplierInvoice();
+  const { costCenters } = useGetCostCenters({ projectId: projectId });
 
   const { handleSubmit, control, register } = useForm<supplierInvoice>({
     values: invoiceData,
@@ -63,7 +66,7 @@ const AddInvoicePage = ({}) => {
       void createSupplierInvoice({
         projectId: projectId,
         description: "",
-        costCode: "",
+        costCenterId: "",
         invoiceNo: data.invoiceNo as string,
         invoiceDate: data.invoiceDate as Date,
         vendorName: data.vendorName as string,
@@ -156,6 +159,27 @@ const AddInvoicePage = ({}) => {
                           />
                           </div>
                         </div>
+                        <div className="mb-2 md:mb-1 md:flex items-center">
+                          <label className="w-32 text-gray-800 block font-bold text-sm uppercase tracking-wide">Cost center</label>
+                          <span className="mr-4 inline-block hidden md:block">:</span>
+                          <div className="flex-1">
+                          <Controller
+                            name="costCenterId"
+                            control={control}
+                            render={({ field }) => {
+                              const { onChange } = field;
+                              return (
+                                <CostCenterDropdown
+                                  costCenters={costCenters || []}
+                                  defaultValue={null}
+                                  onCostCenterChange={(value) => onChange(value)}
+                                />
+                              );
+                            }}
+                          />
+                          </div>
+                        </div>
+
                       </div>
                     </div>
 

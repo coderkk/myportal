@@ -41,6 +41,16 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
           }
         );
         break;
+      case "/cost-center":
+          void utils.costCenter.getCostCenters.prefetch(
+            {
+              projectId: projectId
+            },
+            {
+              staleTime: Infinity,
+            }
+          );
+          break;
       case "/invoice":
         void utils.s3.fetchS3BucketContents.prefetch(
           {
@@ -101,6 +111,32 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         break;
       case "/order":
         void utils.order.getOrders.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        break;
+      case "/settings":
+        void utils.me.getMyProfessionalRole.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        void utils.project.getProject.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        void utils.me.isCreatorOfProject.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        void utils.project.getProjectCreator.prefetch(
           { projectId: projectId },
           {
             staleTime: Infinity,

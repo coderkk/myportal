@@ -6,10 +6,11 @@ import PermissionToProject from "../../../../components/auth/PermissionToProject
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import SearchAndAdd from "../../../../components/team/SearchAndAdd";
 import { useIsCreatorOfProject } from "../../../../hooks/me";
+import { useRemoveFromProject } from "../../../../hooks/project";
 import { useGetUsers, useGetUsersForProject } from "../../../../hooks/user";
 
-const UninviteButton = dynamic(
-  () => import("../../../../components/team/UninviteButton")
+const DeleteButton = dynamic(
+  () => import("../../../../components/common/DeleteButton")
 );
 
 const Team = () => {
@@ -41,6 +42,7 @@ const Team = () => {
         value: user.id,
         userName: user.name || "", // ' || "" ' only here for TS, the actual filtering is done by "filter"
         userEmail: user.email || "",
+        userImage: user.image || "",
         label: `${user.name || ""} (${user.email || ""}) ${
           userAlreadyInTeam ? "ADDED" : ""
         }`,
@@ -48,6 +50,9 @@ const Team = () => {
       };
     });
 
+  const { removeFromProject } = useRemoveFromProject({
+    pendingRemoveCountRef: pendingRemoveCountRef,
+  });
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -69,10 +74,13 @@ const Team = () => {
                   </span>
                   {isCreator &&
                     session.data?.user?.id !== userForProject.id && (
-                      <UninviteButton
-                        userId={userForProject.id}
-                        projectId={projectId}
-                        pendingRemoveCountRef={pendingRemoveCountRef}
+                      <DeleteButton
+                        onDelete={() =>
+                          removeFromProject({
+                            projectId: projectId,
+                            userToBeRemovedId: userForProject.id,
+                          })
+                        }
                       />
                     )}
                 </div>

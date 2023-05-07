@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useGetProjects } from "../../hooks/project";
+import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import { useRef } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
@@ -12,7 +12,7 @@ const CreateButton = dynamic(
 );
 
 const DeleteButton = dynamic(
-  () => import("../../components/project/DeleteButton")
+  () => import("../../components/common/DeleteButton")
 );
 const EditButton = dynamic(() => import("../../components/project/EditButton"));
 
@@ -21,6 +21,8 @@ const Projects = () => {
   const utils = api.useContext();
   const { projects, isLoading } = useGetProjects();
   const pendingDeleteCountRef = useRef(0);
+
+  const { deleteProject } = useDeleteProject({ pendingDeleteCountRef });
   return (
     <SessionAuth>
       <Header />
@@ -62,8 +64,11 @@ const Projects = () => {
                 </span>
                 <EditButton project={project} />
                 <DeleteButton
-                  projectId={project.id}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
+                  onDelete={() => {
+                    deleteProject({
+                      projectId: project.id,
+                    });
+                  }}
                 />
               </div>
             ))}

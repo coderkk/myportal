@@ -25,7 +25,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     return (
       <Select.Item
         className={classnames(
-          "relative flex h-6 items-center rounded py-0 pl-9 pr-6 text-sm text-blue-600 data-[highlighted]:bg-blue-400 data-[highlighted]:text-white data-[highlighted]:outline-none",
+          "relative flex h-6 items-center justify-center rounded px-7 py-0 text-base data-[highlighted]:bg-blue-600 data-[highlighted]:text-white data-[highlighted]:outline-none",
           className
         )}
         ref={forwardedRef}
@@ -84,9 +84,12 @@ const Dropdown = ({ weatherCondition, onWeatherChange }: DropdownProps) => {
           </Select.ScrollUpButton>
           <Select.Viewport className="p-2">
             <Select.Group>
-              <Select.Label className="px-8 py-0 text-xs text-blue-400">
+              <Select.Label className="px-8 py-0 text-xs text-blue-600">
                 Weather
               </Select.Label>
+            </Select.Group>
+            <Select.Separator className=" h-px bg-gray-300" />
+            <Select.Group>
               <SelectItem value="SUNNY">
                 <span title="sunny">
                   <svg

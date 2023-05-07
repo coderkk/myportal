@@ -8,6 +8,7 @@ export type userOption = {
   label: string;
   userName: string;
   userEmail: string;
+  userImage: string;
   disabled: boolean;
 };
 

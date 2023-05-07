@@ -5,7 +5,6 @@ import { pdfjs } from "react-pdf";
 import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
 import dynamic from "next/dynamic";
 import type { supplierInvoice } from "../../hooks/supplierInvoice";
-import { supplierInvoiceDetail } from '../../hooks/supplierInvoiceDetail';
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 

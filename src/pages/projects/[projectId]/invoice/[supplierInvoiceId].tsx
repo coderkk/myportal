@@ -14,6 +14,8 @@ import { useGetSupplierInvoice, useUpdateSupplierInvoice } from "../../../../hoo
 import { useGetSupplierInvoiceDetails } from '../../../../hooks/supplierInvoiceDetail';
 import parse from 'date-fns/parse'
 import toast from "react-hot-toast";
+import CostCenterDropdown from '../../../../components/costCenter/CostCenterDropdown';
+import { useGetCostCenters } from "../../../../hooks/costCenter";
 
 const SupplierInvoiceView = () => {
   const router = useRouter();
@@ -23,6 +25,7 @@ const SupplierInvoiceView = () => {
     supplierInvoiceId: supplierInvoiceId,
   });
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({ projectId: projectId });
+  const { costCenters } = useGetCostCenters({ projectId: projectId });
 
   const { supplierInvoiceDetails: supplierInvoiceDetailsData } = useGetSupplierInvoiceDetails({
     supplierInvoiceId: supplierInvoiceId,
@@ -47,7 +50,7 @@ const SupplierInvoiceView = () => {
       supplierInvoiceId: supplierInvoiceId,
       projectId: projectId,
       description: "",
-      costCode: "",
+      costCenterId: data.costCenterId as string,
       invoiceNo: data.invoiceNo as string,
       invoiceDate: data.invoiceDate as Date,
       vendorName: data.vendorName as string,
@@ -60,6 +63,9 @@ const SupplierInvoiceView = () => {
       taxAmount: data.taxAmount as number,
       netAmount: data.netAmount as number,
     });
+    void router.push(
+      "/projects/" + projectId + "/invoice/"
+    );
   };
 
   const handleDownloadFile = async () => {
@@ -171,6 +177,26 @@ const SupplierInvoiceView = () => {
                                       popperClassName="react-datepicker-bottom"
                                       placeholderText="From (dd/mm/yyyy)"
                                       dateFormat="dd/MM/yyyy"
+                                    />
+                                  );
+                                }}
+                              />
+                              </div>
+                            </div>
+                            <div className="mb-2 md:mb-1 md:flex items-center">
+                              <label className="w-32 text-gray-800 block font-bold text-sm uppercase tracking-wide">Cost center</label>
+                              <span className="mr-4 inline-block hidden md:block">:</span>
+                              <div className="flex-1">
+                              <Controller
+                                name="costCenterId"
+                                control={control}
+                                render={({ field }) => {
+                                  const { onChange, value } = field;
+                                  return (
+                                    <CostCenterDropdown
+                                      costCenters={costCenters || []}
+                                      defaultValue={value || null}
+                                      onCostCenterChange={(v) => onChange(v)}
                                     />
                                   );
                                 }}

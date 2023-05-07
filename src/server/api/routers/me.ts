@@ -12,6 +12,31 @@ export const isCreatorOfProjectSchema = z.object({
   projectId: z.string(),
 });
 
+export const getMyProfessionalRoleSchema = z.object({
+  projectId: z.string(),
+});
+
+export const deleteMyAccountSchema = z.object({
+  projectId: z.string(),
+});
+
+export const updateMyProfessionalRoleSchema = z.object({
+  projectId: z.string(),
+  userProfessionalRole: z.enum([
+    "ACCOUNTANT",
+    "DOCUMENT_CONTROLLER",
+    "FOREMAN",
+    "PROJECT_ENGINEER",
+    "PROJECT_MEMBER",
+    "PROJECT_MANAGER",
+    "PROJECT_DIRECTOR",
+    "QUANTITY_SURVEYOR",
+    "SITE_SUPERVISOR",
+    "SITE_ENGINEER",
+    "SITE_ADMIN",
+  ]),
+});
+
 export const userHasPermissionToProject = async ({
   ctx,
   projectId,
@@ -81,6 +106,43 @@ export const meRouter = createTRPCRouter({
           return true;
         },
         errorMessages: ["Failed to check if user is creator of project"],
+      })();
+    }),
+  getMyProfessionalRole: protectedProcedure
+    .input(getMyProfessionalRoleSchema)
+    .query(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: async () => {
+          const userOnProjectRecord =
+            await ctx.prisma.usersOnProjects.findFirst({
+              where: {
+                userId: ctx.session.user.id,
+                projectId: input.projectId,
+              },
+            });
+          return userOnProjectRecord?.userProfessionalRole;
+        },
+        errorMessages: ["Failed to get my professional role"],
+      })();
+    }),
+  updateMyProfessionalRole: protectedProcedure
+    .input(updateMyProfessionalRoleSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.usersOnProjects.update({
+            where: {
+              userId_projectId: {
+                userId: ctx.session.user.id,
+                projectId: input.projectId,
+              },
+            },
+            data: {
+              userProfessionalRole: input.userProfessionalRole,
+            },
+          });
+        },
+        errorMessages: ["Failed to update project"],
       })();
     }),
 });

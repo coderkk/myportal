@@ -1,5 +1,4 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import { Edit } from "styled-icons/boxicons-solid";
@@ -71,51 +70,49 @@ const EditButton = ({
         <Edit className="h-6 w-6  text-green-500" />
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-content-show rounded-md bg-white p-6 shadow-md focus:outline-none">
-          <Dialog.Title className="m-0 font-medium text-gray-800">
-            Edit budget
+        <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
+        <Dialog.Content
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+          aria-describedby="Edit existing budget"
+        >
+          <Dialog.Title className="mt-3 text-left text-lg font-bold capitalize leading-6 text-gray-900 sm:mt-5">
+            edit budget
           </Dialog.Title>
-          <Dialog.Description className="mx-0 mt-3 mb-5 text-sm text-gray-400">
-            Click update when you are done.
-          </Dialog.Description>
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
-            <fieldset className="mb-4 flex items-center gap-5">
-              <label
-                className="w-24 text-right text-sm text-blue-300"
-                htmlFor="description"
-              >
-                Description
-              </label>
-              <div>
+            <fieldset className="mb-4 gap-3 sm:mb-7 sm:flex ">
+              <div className="flex flex-1 flex-grow flex-col">
+                <label
+                  className="mb-1 w-full text-left text-base capitalize text-gray-900 sm:flex sm:items-end"
+                  htmlFor="description"
+                >
+                  Description
+                </label>
                 <input
-                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
-                focus:border-blue-300 focus:outline-none ${
-                  errors.description
-                    ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
-                    : ""
-                }`}
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
+                    errors.description
+                      ? "border-red-400  focus:border-red-400 "
+                      : ""
+                  }`}
                   id="description"
-                  defaultValue="Labor"
+                  placeholder="e.g. Labor"
                   {...register("description", {
                     required: true,
                   })}
                 />
               </div>
-              <label
-                className="w-24 text-right text-sm text-blue-300"
-                htmlFor="expectedBudget"
-              >
-                Budget
-              </label>
-              <div>
+              <div className="flex flex-grow-0 flex-col">
+                <label
+                  className="mb-1 w-full text-left text-base capitalize text-gray-900 sm:flex sm:w-32 sm:items-end"
+                  htmlFor="expectedBudget"
+                >
+                  Budget
+                </label>
                 <input
-                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
-                focus:border-blue-300 focus:outline-none ${
-                  errors.expectedBudget
-                    ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
-                    : ""
-                }`}
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:w-32 sm:text-left ${
+                    errors.expectedBudget
+                      ? "border-red-400 focus:border-red-400"
+                      : ""
+                  }`}
                   id="expectedBudget"
                   defaultValue={Math.floor(Math.random() * 100000).toString()}
                   {...register("expectedBudget", {
@@ -125,20 +122,20 @@ const EditButton = ({
                   type="number"
                 />
               </div>
-              <label
-                className="w-24 text-right text-sm text-blue-300"
-                htmlFor="costsIncurred"
-              >
-                Costs Incurred
-              </label>
-              <div>
+
+              <div className="flex flex-1 flex-grow-0 flex-col">
+                <label
+                  className="mb-1 w-full text-left text-base capitalize text-gray-900 sm:flex sm:w-32 sm:items-end"
+                  htmlFor="costsIncurred"
+                >
+                  Costs Incurred
+                </label>
                 <input
-                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
-                focus:border-blue-300 focus:outline-none ${
-                  errors.costsIncurred
-                    ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
-                    : ""
-                }`}
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:w-32 sm:text-left ${
+                    errors.costsIncurred
+                      ? "border-red-400  focus:border-red-400 "
+                      : ""
+                  }`}
                   id="costsIncurred"
                   defaultValue={Math.floor(Math.random() * 100000).toString()}
                   {...register("costsIncurred", {
@@ -156,17 +153,17 @@ const EditButton = ({
             )}
             {errors.expectedBudget && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Budget is required and must be a number
+                Budget is required
               </span>
             )}
             {errors.costsIncurred && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Costs incurred is required and must be a number
+                Costs incurred is required
               </span>
             )}
-            <div className="mt-6 flex justify-end">
+            <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
               <button
-                className="inline-flex h-9 items-center justify-center rounded-md bg-blue-100 py-0 px-4 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
+                className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-blue-50 disabled:text-blue-200 sm:col-start-2"
                 type="submit"
                 disabled={
                   !!(
@@ -176,18 +173,18 @@ const EditButton = ({
                   )
                 }
               >
-                Save
+                Update
               </button>
+              <Dialog.Close asChild>
+                <button
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                  aria-label="Close"
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </Dialog.Close>
             </div>
-            <Dialog.Close asChild>
-              <button
-                className="absolute top-4 right-4 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-blue-200 focus:border-2 focus:border-blue-500 focus:outline-none"
-                aria-label="Close"
-                type="button"
-              >
-                <Close className="h-4 w-4" />
-              </button>
-            </Dialog.Close>
           </form>
         </Dialog.Content>
       </Dialog.Portal>

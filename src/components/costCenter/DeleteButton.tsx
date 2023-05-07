@@ -2,20 +2,20 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Delete } from "@styled-icons/fluentui-system-filled";
 import { useRouter } from "next/router";
 import type { MutableRefObject } from "react";
-import { useDeleteRequestForInformation } from "../../hooks/requestForInformation";
+import { useDeleteCostCenter } from "../../hooks/costCenter";
 
 const DeleteButton = ({
-  requestForInformationId,
+  costCenterId,
   projectId,
   pendingDeleteCountRef,
   navigateBack = false,
 }: {
-  requestForInformationId: string;
+  costCenterId: string;
   projectId: string;
   pendingDeleteCountRef?: MutableRefObject<number>;
   navigateBack?: boolean;
 }) => {
-  const { deleteRequestForInformation } = useDeleteRequestForInformation({
+  const { deleteCostCenter } = useDeleteCostCenter({
     pendingDeleteCountRef: pendingDeleteCountRef,
     projectId: projectId,
   });
@@ -32,8 +32,8 @@ const DeleteButton = ({
             Are you absolutely sure?
           </AlertDialog.Title>
           <AlertDialog.Description className="mx-0 mt-3 mb-5 text-sm text-gray-400">
-            This action cannot be undone. This will permanently delete this RFI
-            and remove it from our servers.
+            This action cannot be undone. This will permanently delete this
+            cost center and remove it from our servers.
           </AlertDialog.Description>
           <div className="flex justify-end gap-6">
             <AlertDialog.Cancel asChild>
@@ -48,8 +48,8 @@ const DeleteButton = ({
               <button
                 type="button"
                 onClick={() => {
-                  deleteRequestForInformation({
-                    requestForInformationId: requestForInformationId,
+                  deleteCostCenter({
+                    costCenterId: costCenterId,
                   });
                   if (navigateBack) {
                     router.back();
@@ -57,7 +57,7 @@ const DeleteButton = ({
                 }}
                 className="inline-flex h-9 items-center justify-center rounded-md bg-red-100 py-0 px-4 text-sm font-medium text-red-700 hover:bg-red-200"
               >
-                Yes, delete RFI
+                Yes, delete cost center
               </button>
             </AlertDialog.Action>
           </div>
