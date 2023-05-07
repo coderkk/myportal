@@ -2,7 +2,7 @@ import type { TaskStatus } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useUpdateTask } from "../../hooks/task";
 import { useGetUsersForProject } from "../../hooks/user";
 import AssigneeDropdown from "./AssigneeDropdown";
@@ -11,6 +11,8 @@ import StatusDropdown from "./StatusDropDown";
 export type assignee = {
   id: string;
   email: string | null;
+  name: string | null;
+  image: string | null;
 };
 
 type task = {
@@ -23,6 +25,12 @@ type task = {
   assignedTo: assignee | null;
 };
 
+type FormValues = {
+  description: string;
+  assignee: assignee | null;
+  status: TaskStatus;
+};
+
 const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
   const {
     register,
@@ -30,7 +38,7 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       description: task.description,
       status: task.status,
@@ -41,27 +49,17 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
   const { usersForProject } = useGetUsersForProject({ projectId: projectId });
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     reset();
-    // weird react hook controlled input structure...
-    const assignee =
-      data.assignee && (data.assignee as assignee).id
-        ? (usersForProject?.find(
-            (userForProject) =>
-              userForProject.id === (data.assignee as assignee).id
-          ) as assignee)
-        : (usersForProject?.find(
-            (userForProject) => userForProject.id === data.assignee
-          ) as assignee);
     updateTask({
       taskId: task.id,
-      taskDescription: data.description as string,
-      taskAssignedTo: assignee ? assignee : null,
-      taskStatus: data.status as TaskStatus,
+      taskDescription: data.description,
+      taskAssignedTo: data.assignee,
+      taskStatus: data.status,
     });
   };
   const [open, setOpen] = useState(false);

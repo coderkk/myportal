@@ -1,52 +1,71 @@
 import type { TaskStatus } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
-import { PlusSquareFill } from "@styled-icons/bootstrap";
+import { PlusIcon } from "@radix-ui/react-icons";
+import classNames from "classnames";
 import { useState, type BaseSyntheticEvent } from "react";
-import type { ControllerRenderProps } from "react-hook-form";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useCreateTask } from "../../hooks/task";
 import { useGetUsersForProject } from "../../hooks/user";
 import AssigneeDropdown from "./AssigneeDropdown";
+import type { assignee } from "./EditButton";
 import StatusDropdown from "./StatusDropDown";
 
-export type assignee = {
-  id: string;
-  email: string | null;
+type FormValues = {
+  description: string;
+  assignee: assignee;
+  status: TaskStatus;
 };
 
-const CreateButton = ({ projectId }: { projectId: string }) => {
+const CreateButton = ({
+  projectId,
+  description,
+}: {
+  projectId: string;
+  description?: string;
+}) => {
   const {
     register,
     handleSubmit,
     reset,
     control,
     formState: { errors },
-  } = useForm();
-  const { createTask } = useCreateTask();
+  } = useForm<FormValues>();
+  const { createTask } = useCreateTask({ projectId: projectId });
   const { usersForProject } = useGetUsersForProject({ projectId: projectId });
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
-    const assignee = usersForProject?.find(
-      (userForProject) => userForProject.id === data.assignee
-    ) as assignee;
     e?.preventDefault();
     setOpen(false);
     reset();
     createTask({
       projectId: projectId,
-      taskDescription: data.description as string,
-      taskAssignedTo: assignee ? assignee : null,
-      taskStatus: data.status as TaskStatus,
+      taskDescription: data.description,
+      taskAssignedTo: data.assignee || null,
+      taskStatus: data.status,
     });
   };
   const [open, setOpen] = useState(false);
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <PlusSquareFill className="h-6 w-6  text-blue-500" />
+        <span className="flex justify-between">
+          <button
+            type="button"
+            className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          >
+            <PlusIcon
+              className={classNames(
+                description ? " -ml-0.5 mr-1.5" : "",
+                "h-5 w-5"
+              )}
+              aria-hidden="true"
+            />
+            {description}
+          </button>
+        </span>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -78,7 +97,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                     return (
                       <AssigneeDropdown
                         assignees={usersForProject || []}
-                        taskAssignee={null}
+                        taskAssignee={field.value}
                         onTaskAssigneeChange={(value) => onChange(value)}
                       />
                     );
@@ -90,12 +109,8 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   control={control}
                   defaultValue={"NOT_STARTED"}
                   rules={{ required: true }}
-                  render={({
-                    field,
-                  }: {
-                    field: ControllerRenderProps<FieldValues, "status">;
-                  }) => {
-                    const value = field.value as TaskStatus;
+                  render={({ field }) => {
+                    const value = field.value;
                     const { onChange } = field;
                     return (
                       <StatusDropdown
