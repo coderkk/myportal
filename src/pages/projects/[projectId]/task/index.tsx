@@ -78,19 +78,15 @@ const Task = () => {
           <div>Loading...</div>
         ) : (
           <div className="px-4 py-4 sm:px-6 lg:px-8">
-            <div className="sm:flex sm:items-center">
-              <div className="sm:flex-auto">
-                <h1 className="text-base font-semibold leading-6 text-gray-900">
-                  Tasks
-                </h1>
-              </div>
-              <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                <CreateButton projectId={projectId} />
-              </div>
+            <div className="flex w-full items-center justify-between">
+              <h1 className="text-base font-semibold leading-6 text-gray-900">
+                Tasks
+              </h1>
+              <CreateButton projectId={projectId} />
             </div>
             <div className="mt-8 flow-root">
-              <div className="-mx-4 -my-2 h-full overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block  min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                   <table className="min-w-full divide-y divide-gray-300">
                     <thead>
                       <tr>
@@ -200,8 +196,8 @@ const Task = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="">
-                            <span className="flex justify-center">
+                          <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                            <span className="flex items-center justify-center">
                               <EditButton task={task} projectId={projectId} />
                               <DeleteButton
                                 onDelete={() => {
@@ -210,10 +206,8 @@ const Task = () => {
                                   });
                                 }}
                               />
-                              <span className="sr-only">
-                                {task.description}
-                              </span>
                             </span>
+                            <span className="sr-only">{task.description}</span>
                           </td>
                         </tr>
                       ))}

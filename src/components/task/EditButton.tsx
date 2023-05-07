@@ -55,16 +55,6 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
     e?.preventDefault();
     setOpen(false);
     reset();
-    // weird react hook controlled input structure...
-    // const assignee =
-    //   data.assignee && (data.assignee as assignee).id
-    //     ? (usersForProject?.find(
-    //         (userForProject) =>
-    //           userForProject.id === (data.assignee as assignee).id
-    //       ) as assignee)
-    //     : (usersForProject?.find(
-    //         (userForProject) => userForProject.id === data.assignee
-    //       ) as assignee);
     updateTask({
       taskId: task.id,
       taskDescription: data.description,
