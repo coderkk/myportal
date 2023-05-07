@@ -25,11 +25,16 @@ export const addToProjectSchema = z.object({
   userId: z.string(),
   userName: z.string(),
   userEmail: z.string(),
+  userImage: z.string(),
 });
 
 export const removeFromProjectSchema = z.object({
   projectId: z.string(),
   userToBeRemovedId: z.string(),
+});
+
+export const getProjectCreatorSchema = z.object({
+  projectId: z.string(),
 });
 
 export const projectRouter = createTRPCRouter({
@@ -142,24 +147,24 @@ export const projectRouter = createTRPCRouter({
               createdById: ctx.session.user.id,
             },
           });
-          // if isCreator, we delete the project and the relation
-          if (isCreator)
-            return await ctx.prisma.project.delete({
-              where: {
-                id: input.projectId,
-              },
+
+          // if not isCreator, we throw an error
+          if (!isCreator) {
+            throw new TRPCError({
+              code: "UNAUTHORIZED",
             });
-          // if not isCreator, we delete the relation only
-          return await ctx.prisma.usersOnProjects.delete({
+          }
+          // delete project
+          return await ctx.prisma.project.delete({
             where: {
-              userId_projectId: {
-                userId: ctx.session.user.id,
-                projectId: input.projectId,
-              },
+              id: input.projectId,
             },
           });
         },
-        errorMessages: ["Failed to delete project"],
+        errorMessages: [
+          "Failed to delete project",
+          "You do not have permission since you did not create the project",
+        ],
       })();
     }),
   addToProject: protectedProcedure
@@ -247,25 +252,6 @@ export const projectRouter = createTRPCRouter({
           }
 
           return await ctx.prisma.$transaction(async (tx) => {
-            // remove related task of user
-            await tx.project.update({
-              where: {
-                id: input.projectId,
-              },
-              data: {
-                tasks: {
-                  updateMany: {
-                    where: {
-                      projectId: input.projectId,
-                      assignedToId: input.userToBeRemovedId,
-                    },
-                    data: {
-                      assignedToId: null,
-                    },
-                  },
-                },
-              },
-            });
             // remove user from project
             return tx.usersOnProjects.delete({
               where: {
@@ -282,6 +268,24 @@ export const projectRouter = createTRPCRouter({
           "You do not have permission since you did not create the project",
           "The user is not part of the team.",
         ],
+      })();
+    }),
+  getProjectCreator: protectedProcedure
+    .input(getProjectCreatorSchema)
+    .query(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: async () => {
+          const project = await ctx.prisma.project.findUniqueOrThrow({
+            where: {
+              id: input.projectId,
+            },
+            select: {
+              createdBy: true,
+            },
+          });
+          return project.createdBy;
+        },
+        errorMessages: ["Failed to get project"],
       })();
     }),
 });

@@ -24,7 +24,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     return (
       <Select.Item
         className={classnames(
-          "relative flex h-6 items-center rounded py-0 pl-9 pr-6 text-sm text-blue-600 data-[highlighted]:bg-blue-400 data-[highlighted]:text-white data-[highlighted]:outline-none",
+          "relative flex h-6 items-center justify-center rounded px-7 py-0 text-base data-[highlighted]:bg-blue-600 data-[highlighted]:text-white data-[highlighted]:outline-none",
           className
         )}
         ref={forwardedRef}
@@ -51,24 +51,27 @@ const StatusDropdown = ({ taskStatus, onTaskStatusChange }: DropdownProps) => {
       }}
     >
       <Select.Trigger
-        className="inline-flex h-9 items-center justify-center gap-1 rounded bg-white py-0 px-4  text-sm text-blue-600 shadow hover:bg-gray-100"
+        className="inline-flex h-10 items-center justify-center gap-1 rounded-lg border border-gray-300 bg-white px-4 py-0 text-base hover:bg-gray-100 focus:border-blue-300 focus:outline-none"
         aria-label="Task Status"
       >
         <Select.Value placeholder="Select a task status" />
-        <Select.Icon className="text-blue-500">
+        <Select.Icon className="text-gray-600">
           <ChevronDownIcon />
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
-        <Select.Content className="overflow-hidden rounded-md bg-white shadow-md">
+        <Select.Content className="overflow-hidden rounded-md border border-blue-300 bg-white">
           <Select.ScrollUpButton className="flex h-6 items-center justify-center bg-white text-blue-600">
             <ChevronUpIcon />
           </Select.ScrollUpButton>
           <Select.Viewport className="p-2">
             <Select.Group>
-              <Select.Label className="py-0 px-8 text-xs text-blue-400">
+              <Select.Label className="px-8 py-0 text-center text-base text-blue-600">
                 Task Status
               </Select.Label>
+            </Select.Group>
+            <Select.Separator className=" h-px bg-gray-300" />
+            <Select.Group>
               <SelectItem value="NOT_STARTED">Not Started</SelectItem>
               <SelectItem value="IN_PROGRESS">In progress</SelectItem>
               <SelectItem value="COMPLETED">Completed</SelectItem>

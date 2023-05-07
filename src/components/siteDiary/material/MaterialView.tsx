@@ -3,6 +3,7 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { useDeleteMaterial } from "../../../hooks/material";
 
 export type Material = _Material & {
   createdBy: {
@@ -12,7 +13,7 @@ export type Material = _Material & {
 
 const EditButton = dynamic(() => import("./EditButton"));
 
-const DeleteButton = dynamic(() => import("./DeleteButton"));
+const DeleteButton = dynamic(() => import("../../common/DeleteButton"));
 
 const bgColors = [
   "bg-green-500",
@@ -25,6 +26,10 @@ export const MaterialView = ({ materials }: { materials: Material[] }) => {
   const router = useRouter();
   const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
+  const { deleteMaterial } = useDeleteMaterial({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    siteDiaryId: siteDiaryId,
+  });
   return (
     <div className="mx-8">
       <ul
@@ -64,9 +69,12 @@ export const MaterialView = ({ materials }: { materials: Material[] }) => {
               <div className="flex-shrink-0 items-center pr-2">
                 <EditButton material={material} siteDiaryId={siteDiaryId} />
                 <DeleteButton
-                  materialId={material.id}
-                  siteDiaryId={siteDiaryId}
-                  pendingDeleteCountRef={pendingDeleteCountRef}
+                  flex={false}
+                  onDelete={() =>
+                    deleteMaterial({
+                      materialId: material.id,
+                    })
+                  }
                 />
               </div>
             </div>

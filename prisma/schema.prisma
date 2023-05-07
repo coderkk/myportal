@@ -58,7 +58,6 @@ model User {
     image                         String?                 @db.Text
     phoneNumber                   String?                 @default("") // Must have a default value: https://create.t3.gg/en/usage/next-auth#adding-new-fields-to-your-models
     company                       String?                 @default("")
-    professionalRole              ProfessionalRole        @default(PROJECT_MEMBER)
     accounts                      Account[]
     sessions                      Session[]
     createdProjects               Project[]
@@ -283,10 +282,11 @@ model Reply {
 }
 
 model UsersOnProjects {
-    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId    String
-    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId String
+    user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId               String
+    project              Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId            String
+    userProfessionalRole ProfessionalRole @default(PROJECT_MEMBER)
 
     @@id([userId, projectId])
     @@index([userId])
@@ -390,7 +390,7 @@ enum ProfessionalRole {
     PROJECT_MANAGER
     PROJECT_DIRECTOR
     QUANTITY_SURVEYOR
-    SITE_SUPERVISORS
+    SITE_SUPERVISOR
     SITE_ENGINEER
     SITE_ADMIN
 }

@@ -107,6 +107,32 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
           }
         );
         break;
+      case "/settings":
+        void utils.me.getMyProfessionalRole.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        void utils.project.getProject.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        void utils.me.isCreatorOfProject.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        void utils.project.getProjectCreator.prefetch(
+          { projectId: projectId },
+          {
+            staleTime: Infinity,
+          }
+        );
+        break;
       default:
       // do nothing
     }
