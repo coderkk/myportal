@@ -1,26 +1,29 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useCreateProject } from "../../hooks/project";
 
+type FormValues = {
+  name: string;
+};
 const CreateButton = () => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createProject } = useCreateProject();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     reset();
     createProject({
-      projectName: data.name as string,
+      projectName: data.name,
     });
   };
   const [open, setOpen] = useState(false);

@@ -2,9 +2,15 @@ import type { MaterialUnit } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useCreateMaterial } from "../../../hooks/material";
 import SelectList from "../../common/SelectList";
+
+type FormValues = {
+  type: string;
+  units: MaterialUnit;
+  amount: number;
+};
 
 const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
   const {
@@ -13,19 +19,19 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createMaterial } = useCreateMaterial();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     reset();
     createMaterial({
-      materialType: data.type as string,
-      materialUnits: data.units as MaterialUnit,
-      materialAmount: data.amount as number,
+      materialType: data.type,
+      materialUnits: data.units,
+      materialAmount: data.amount,
       siteDiaryId: siteDiaryId,
     });
   };

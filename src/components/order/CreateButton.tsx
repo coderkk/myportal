@@ -2,10 +2,16 @@ import type { OrderArrivalOnSite } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useCreateOrder } from "../../hooks/order";
 import ArrivalOnSiteDropdown from "./ArrivalOnSiteDropDown";
 
+type FormValues = {
+  orderNumber: string;
+  note: string;
+  arrivalOnSite: OrderArrivalOnSite;
+  supplierEmailAddress: string;
+};
 const CreateButton = ({ projectId }: { projectId: string }) => {
   const {
     register,
@@ -13,11 +19,11 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
 
   const { createOrder } = useCreateOrder();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -25,10 +31,10 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset();
     createOrder({
       projectId: projectId,
-      orderNumber: data.orderNumber as string,
-      orderNote: data.note as string,
-      orderArrivalOnSite: data.arrivalOnSite as OrderArrivalOnSite,
-      orderSupplierEmailAddress: data.supplierEmailAddress as string,
+      orderNumber: data.orderNumber,
+      orderNote: data.note,
+      orderArrivalOnSite: data.arrivalOnSite,
+      orderSupplierEmailAddress: data.supplierEmailAddress,
     });
   };
   const [open, setOpen] = useState(false);

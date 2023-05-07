@@ -2,10 +2,16 @@ import type { MaterialUnit } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useUpdateMaterial } from "../../../hooks/material";
 import SelectList from "../../common/SelectList";
 import type { Material } from "./MaterialView";
+
+type FormValues = {
+  type: string;
+  units: MaterialUnit;
+  amount: number;
+};
 
 const EditButton = ({
   material,
@@ -20,7 +26,7 @@ const EditButton = ({
     reset,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       type: material.type,
       units: material.units,
@@ -29,7 +35,7 @@ const EditButton = ({
   });
   const { updateMaterial } = useUpdateMaterial({ siteDiaryId: siteDiaryId });
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -37,9 +43,9 @@ const EditButton = ({
     reset();
     updateMaterial({
       materialId: material.id,
-      materialType: data.type as string,
-      materialUnits: data.units as MaterialUnit,
-      materialAmount: data.amount as number,
+      materialType: data.type,
+      materialUnits: data.units,
+      materialAmount: data.amount,
     });
   };
   const [open, setOpen] = useState(false);

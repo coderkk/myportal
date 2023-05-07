@@ -1,7 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { type BaseSyntheticEvent } from "react";
-import type { FieldValues } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { Send } from "styled-icons/bootstrap";
 import PermissionToProject from "../../../../../../components/auth/PermissionToProject";
@@ -9,6 +8,9 @@ import SessionAuth from "../../../../../../components/auth/SessionAuth";
 import { useCreateReply, useGetReplies } from "../../../../../../hooks/reply";
 import { useGetRequestForInformation } from "../../../../../../hooks/requestForInformation";
 
+type FormValues = {
+  description: string;
+};
 const Replies = () => {
   const router = useRouter();
   const session = useSession();
@@ -27,18 +29,18 @@ const Replies = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createReply } = useCreateReply();
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     reset();
     createReply({
       requestForInformationId: requestForInformationId,
-      description: data.description as string,
+      description: data.description,
     });
   };
 
@@ -66,7 +68,7 @@ const Replies = () => {
                       }  items-center justify-start`}
                     >
                       <div className="">
-                        <div className="relative  min-w-fit rounded-xl bg-indigo-100 py-2 px-4 text-sm shadow">
+                        <div className="relative  min-w-fit rounded-xl bg-indigo-100 px-4 py-2 text-sm shadow">
                           <div>{reply.description}</div>
                         </div>
                         <div className="mt-2 flex flex-row-reverse text-xs text-gray-500">
@@ -88,7 +90,7 @@ const Replies = () => {
                     </label>
                     <div>
                       <input
-                        className={`inline-flex h-8 w-full flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                        className={`inline-flex h-8 w-full flex-1 items-center justify-center rounded-md px-3 py-0 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
                 focus:border-blue-300 focus:outline-none ${
                   errors.description
                     ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
@@ -103,7 +105,7 @@ const Replies = () => {
                     </div>
                   </fieldset>
                   <button
-                    className="ml-4 inline-flex h-9 items-center justify-center rounded-md bg-blue-100 py-0 px-4 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
+                    className="ml-4 inline-flex h-9 items-center justify-center rounded-md bg-blue-100 px-4 py-0 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
                     type="submit"
                     aria-label="send"
                     disabled={

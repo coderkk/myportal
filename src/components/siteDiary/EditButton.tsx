@@ -3,9 +3,13 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
 import ReactDatePicker from "react-datepicker";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useUpdateSiteDiary } from "../../hooks/siteDiary";
 
+type FormValues = {
+  date: Date;
+  name: string;
+};
 type siteDiary = {
   id: string;
   name: string;
@@ -26,7 +30,7 @@ const EditButton = ({
     reset,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       name: siteDiary.name,
       date: siteDiary.date,
@@ -34,7 +38,7 @@ const EditButton = ({
   });
   const { updateSiteDiary } = useUpdateSiteDiary({ projectId: projectId });
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -42,8 +46,8 @@ const EditButton = ({
     reset();
     updateSiteDiary({
       siteDiaryId: siteDiary.id,
-      siteDiaryName: data.name as string,
-      siteDiaryDate: data.date as Date,
+      siteDiaryDate: data.date,
+      siteDiaryName: data.name,
       startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
       endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
     });

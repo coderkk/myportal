@@ -3,9 +3,13 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { useState, type BaseSyntheticEvent } from "react";
 import ReactDatePicker from "react-datepicker";
 import type { ControllerRenderProps } from "react-hook-form";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useCreateSiteDiary } from "../../hooks/siteDiary";
 
+type FormValues = {
+  date: Date;
+  name: string;
+};
 const CreateButton = ({ projectId }: { projectId: string }) => {
   const {
     register,
@@ -13,10 +17,10 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createSiteDiary } = useCreateSiteDiary();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -24,8 +28,8 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset();
     createSiteDiary({
       projectId: projectId,
-      siteDiaryDate: data.date as Date,
-      siteDiaryName: data.name as string,
+      siteDiaryDate: data.date,
+      siteDiaryName: data.name,
       startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
       endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
     });
@@ -66,9 +70,9 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   render={({
                     field,
                   }: {
-                    field: ControllerRenderProps<FieldValues, "date">;
+                    field: ControllerRenderProps<FormValues, "date">;
                   }) => {
-                    const value = field.value as Date;
+                    const value = field.value;
                     const { onChange, name } = field;
                     return (
                       <ReactDatePicker
