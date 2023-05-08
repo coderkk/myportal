@@ -108,14 +108,7 @@ const Replies = () => {
                     className="ml-4 inline-flex h-9 items-center justify-center rounded-md bg-blue-100 px-4 py-0 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
                     type="submit"
                     aria-label="send"
-                    disabled={
-                      !!(
-                        errors.supplierEmailAddress ||
-                        errors.orderNumber ||
-                        errors.note ||
-                        errors.arrivalOnSite
-                      )
-                    }
+                    disabled={!!errors.description}
                   >
                     <Send className="h-6 w-6 " />
                   </button>
