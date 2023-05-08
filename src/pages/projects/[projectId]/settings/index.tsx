@@ -23,7 +23,9 @@ const Settings = () => {
               isCreator={isCreator || false}
             />
           )}
-          {isCreator && <DangerZone projectId={projectId} />}
+          {isCreator && (
+            <DangerZone projectId={projectId} projectName={project?.name} />
+          )}
         </div>
       </PermissionToProject>
     </SessionAuth>

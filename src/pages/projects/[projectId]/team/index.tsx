@@ -75,6 +75,9 @@ const Team = () => {
                   {isCreator &&
                     session.data?.user?.id !== userForProject.id && (
                       <DeleteButton
+                        title={`Remove ${userForProject.name || ""} from Team`}
+                        subtitle="Are you sure you want to remove this team member from the project?"
+                        deleteLabel="Remove"
                         onDelete={() =>
                           removeFromProject({
                             projectId: projectId,

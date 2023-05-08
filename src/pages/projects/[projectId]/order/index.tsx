@@ -53,6 +53,8 @@ const Order = () => {
                   </span>
                   <EditButton order={order} projectId={projectId} />
                   <DeleteButton
+                    title={`Delete Order ${order.orderNumber}`}
+                    subtitle="Are you sure you want to permanently delete this order?"
                     onDelete={() => {
                       deleteOrder({
                         orderId: order.id,

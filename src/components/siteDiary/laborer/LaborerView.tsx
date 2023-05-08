@@ -66,6 +66,8 @@ export const LaborerView = ({ laborers }: { laborers: Laborer[] }) => {
               <div className="flex-shrink-0 items-center pr-2">
                 <EditButton laborer={laborer} siteDiaryId={siteDiaryId} />
                 <DeleteButton
+                  title={`Delete Laborer ${laborer.type}`}
+                  subtitle="Are you sure you want to permanently delete this laborer?"
                   flex={false}
                   onDelete={() =>
                     deleteLaborer({
