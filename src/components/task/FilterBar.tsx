@@ -31,7 +31,6 @@ const getStatusFromFilters = (filters: activeFilter[], filterID: filterID) => {
     }
     return accumulator;
   }, initialState);
-  console.log(categoryValues, filters, filterID);
   return categoryValues.length > 0 ? categoryValues : undefined;
 };
 

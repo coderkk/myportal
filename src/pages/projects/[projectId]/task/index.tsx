@@ -129,6 +129,9 @@ const Task = () => {
 
     if (observerTarget.current) {
       observer.observe(observerTarget.current);
+    } else {
+      // ensure first fetch even when observerTarget is not in view
+      void fetchNextPage();
     }
 
     const observerTargetCurrent = observerTarget.current;
