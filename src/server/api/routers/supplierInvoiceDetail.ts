@@ -9,7 +9,8 @@ export const createSupplierInvoiceDetailSchema = z.object({
   quantity: z.number(),
   unitPrice: z.number(),
   discount: z.number(),
-  amount: z.number()
+  amount: z.number(),
+
 });
 
 export const getSupplierInvoiceDetailsSchema = z.object({
@@ -66,8 +67,16 @@ export const supplierInvoiceDetailRouter = createTRPCRouter({
             where: {
               id: input.supplierInvoiceId,
             },
-            select: {
-              supplierInvoiceDetails: true,
+            include: {
+              supplierInvoiceDetails: {
+                include: {
+                  createdBy: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
             },
           });
           return supplierInvoice.supplierInvoiceDetails.map((supplierInvoiceDetail) => ({
@@ -78,7 +87,8 @@ export const supplierInvoiceDetailRouter = createTRPCRouter({
             quantity: supplierInvoiceDetail.quantity,
             unitPrice: supplierInvoiceDetail.unitPrice,
             discount: supplierInvoiceDetail.discount,
-            amount: supplierInvoiceDetail.amount
+            amount: supplierInvoiceDetail.amount,
+            createdBy: supplierInvoiceDetail.createdBy,
           }));
         },
         errorMessages: ["Failed to get supplier invoices"],

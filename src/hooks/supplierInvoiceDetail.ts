@@ -3,6 +3,7 @@ import type { MutableRefObject } from "react";
 import { api } from "../utils/api";
 
 export type supplierInvoiceDetail = {
+  id: string;
   supplierInvoiceDetailId: string;
   supplierInvoiceId: string;
   description: string;
@@ -11,6 +12,7 @@ export type supplierInvoiceDetail = {
   unitPrice: number;
   discount: number;
   amount: number;
+  createdBy: string | null;
 };
 
 export const useCreateSupplierInvoiceDetail = () => {
