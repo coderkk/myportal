@@ -113,7 +113,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                     defaultValue={"NO"}
                     rules={{ required: true }}
                     render={({ field }) => {
-                      const value = field.value as OrderArrivalOnSite;
+                      const value = field.value;
                       const { onChange } = field;
                       return (
                         <ArrivalOnSiteDropdown

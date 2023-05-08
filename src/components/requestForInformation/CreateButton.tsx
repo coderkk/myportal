@@ -17,7 +17,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createRequestForInformation } = useCreateRequestForInformation();
 
   const onSubmit = (
@@ -67,7 +67,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   defaultValue="PENDING"
                   rules={{ required: true }}
                   render={({ field }) => {
-                    const value = field.value as RequestForInformationStatus;
+                    const value = field.value;
                     const { onChange } = field;
                     return (
                       <StatusDropdown
