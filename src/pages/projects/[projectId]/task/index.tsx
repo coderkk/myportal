@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { statusAtom } from "../../../../atoms/taskAtoms";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
@@ -74,30 +74,11 @@ export type option = {
   label: string;
 };
 
-// type filter = {
-//   id: filterID;
-//   name: string;
-//   options: activeFilter;
-// };
-
 export type activeFilter = {
   filterID: filterID;
   value: string;
   label: string;
 };
-
-// const transformStatusToBackendValue = (status: string): TaskStatus => {
-//   switch (status) {
-//     case "Completed":
-//       return "COMPLETED";
-//     case "In Progress":
-//       return "IN_PROGRESS";
-//     case "Not Started":
-//       return "NOT_STARTED";
-//     default:
-//       throw new Error(`Unknown status ${status}`);
-//   }
-// };
 
 const Task = () => {
   const router = useRouter();
@@ -110,37 +91,29 @@ const Task = () => {
     statuses: status,
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
-  const observerTarget = useRef(null);
+
+  // https://tkdodo.eu/blog/avoiding-use-effect-with-callback-refs
+  const observerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node !== null) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (entries[0]?.isIntersecting) {
+              void fetchNextPage();
+            }
+          },
+          { threshold: 1 }
+        );
+        observer.observe(node);
+      }
+    },
+    [fetchNextPage]
+  );
 
   const { deleteTask } = useDeleteTask({
     pendingDeleteCountRef: pendingDeleteCountRef,
     projectId: projectId,
   });
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && hasNextPage) {
-          void fetchNextPage();
-        }
-      },
-      { threshold: 1 }
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    } else {
-      // ensure first fetch even when observerTarget is not in view
-      if (hasNextPage) void fetchNextPage();
-    }
-
-    const observerTargetCurrent = observerTarget.current;
-    return () => {
-      if (observerTargetCurrent) {
-        observer.unobserve(observerTargetCurrent);
-      }
-    };
-  }, [fetchNextPage, hasNextPage, observerTarget, isFetching]);
 
   return (
     <SessionAuth>
@@ -293,7 +266,6 @@ const Task = () => {
                         ))}
                       </tbody>
                     </table>
-                    <div ref={observerTarget}></div>
                   </div>
                 </div>
               </div>
@@ -303,7 +275,9 @@ const Task = () => {
                 <span className="flex justify-center">
                   <p className="max-auto p-4 text-slate-500">End of tasks</p>
                 </span>
-              ) : null}
+              ) : (
+                <div ref={observerRef} />
+              )}
             </>
           )}
         </div>

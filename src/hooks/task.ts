@@ -86,6 +86,7 @@ export const useCreateTask = ({ projectId }: { projectId: string }) => {
       }
     },
     async onSettled() {
+      console.log(status);
       await utils.task.getTasks.invalidate({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,

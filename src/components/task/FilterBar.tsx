@@ -42,7 +42,7 @@ const FilterBar = ({
   setActiveFilters: (value: activeFilter[]) => void;
 }) => {
   const [open, setOpen] = useState(false);
-  const [_, setStatus] = useAtom(statusAtom);
+  const [, setStatus] = useAtom(statusAtom);
 
   const numberOfAppliedFiltersByCategory = (category: filterID) => {
     return activeFilters.reduce((accumulator, currentValue) => {
