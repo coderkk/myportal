@@ -104,7 +104,6 @@ const Task = () => {
   const projectId = router.query.projectId as string;
   const [activeFilters, setActiveFilters] = useState<activeFilter[]>([]);
   const [status] = useAtom(statusAtom);
-  console.log(status);
   const { tasks, hasNextPage, fetchNextPage, isFetching } = useGetTasks({
     projectId: projectId,
     limit: INFINITE_QUERY_LIMIT,

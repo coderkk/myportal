@@ -54,34 +54,38 @@ const FilterBar = ({
     }, 0);
   };
 
+  const handleCheck = (sec: section, opt: option) => {
+    const newActiveFilters = [
+      ...activeFilters,
+      {
+        filterID: sec.id,
+        value: opt.value,
+        label: `Status: ${opt.label}`,
+      },
+    ];
+    setActiveFilters(newActiveFilters);
+    setStatus(getStatusFromFilters(newActiveFilters, filterIDs[0]));
+  };
+
+  const handleUncheck = (sec: section, opt: option) => {
+    const newActiveFilters = activeFilters.filter(
+      (activeFilter) =>
+        !filterEquals(activeFilter, {
+          filterID: sec.id,
+          value: opt.value,
+          label: `Status: ${opt.label}`,
+        })
+    );
+    setActiveFilters(newActiveFilters);
+    setStatus(getStatusFromFilters(newActiveFilters, filterIDs[0]));
+  };
+
   const handleStatusChange = (
     e: ChangeEvent<HTMLInputElement>,
     sec: section,
     opt: option
   ) => {
-    if (e.target.checked) {
-      const newActiveFilters = [
-        ...activeFilters,
-        {
-          filterID: sec.id,
-          value: opt.value,
-          label: `Status: ${opt.label}`,
-        },
-      ];
-      setActiveFilters(newActiveFilters);
-      setStatus(getStatusFromFilters(newActiveFilters, filterIDs[0]));
-    } else {
-      const newActiveFilters = activeFilters.filter(
-        (activeFilter) =>
-          !filterEquals(activeFilter, {
-            filterID: sec.id,
-            value: opt.value,
-            label: `Status: ${opt.label}`,
-          })
-      );
-      setActiveFilters(newActiveFilters);
-      setStatus(getStatusFromFilters(newActiveFilters, filterIDs[0]));
-    }
+    e.target.checked ? handleCheck(sec, opt) : handleUncheck(sec, opt);
   };
 
   const defaultChecked = (sec: section, opt: option) => {
@@ -222,7 +226,7 @@ const FilterBar = ({
               {/* Active filters */}
               <div className="mt-2 sm:ml-4 sm:mt-0">
                 <div className="-m-1 flex flex-wrap items-center">
-                  {activeFilters.map((activeFilter) => (
+                  {activeFilters.map((activeFilter, i) => (
                     <span
                       key={activeFilter.value}
                       className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
@@ -231,6 +235,14 @@ const FilterBar = ({
                       <button
                         type="button"
                         className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
+                        onClick={() => {
+                          const newActiveFilters = [...activeFilters];
+                          newActiveFilters.splice(i, 1);
+                          setActiveFilters(newActiveFilters);
+                          setStatus(
+                            getStatusFromFilters(newActiveFilters, filterIDs[0])
+                          );
+                        }}
                       >
                         <span className="sr-only">
                           Remove filter for {activeFilter.label}
