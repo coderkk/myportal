@@ -1,5 +1,8 @@
+import type { TaskStatus } from "@prisma/client";
+import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import type { MutableRefObject } from "react";
+import { statusAtom } from "../atoms/taskAtoms";
 import { api } from "../utils/api";
 
 export type task = {
@@ -14,15 +17,17 @@ export const INFINITE_QUERY_LIMIT = 5;
 export const useCreateTask = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
   const session = useSession();
+  const [status] = useAtom(statusAtom);
   const { mutate: createTask } = api.task.createTask.useMutation({
     async onMutate({ taskDescription, taskStatus, taskAssignedTo }) {
       await utils.task.getTasks.cancel();
       const previousData = utils.task.getTasks.getInfiniteData({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
+        statuses: status,
       });
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -67,7 +72,11 @@ export const useCreateTask = ({ projectId }: { projectId: string }) => {
       );
       return () =>
         utils.task.getTasks.setInfiniteData(
-          { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+          {
+            projectId: projectId,
+            limit: INFINITE_QUERY_LIMIT,
+            statuses: status,
+          },
           previousData
         );
     },
@@ -80,6 +89,7 @@ export const useCreateTask = ({ projectId }: { projectId: string }) => {
       await utils.task.getTasks.invalidate({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
+        statuses: status,
       });
     },
   });
@@ -91,47 +101,46 @@ export const useCreateTask = ({ projectId }: { projectId: string }) => {
 export const useGetTasks = ({
   projectId,
   limit,
+  statuses,
 }: {
   projectId: string;
   limit: number;
+  statuses?: TaskStatus[];
 }) => {
-  const {
-    data,
-    isLoading,
-    isSuccess,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = api.task.getTasks.useInfiniteQuery(
-    {
-      projectId: projectId,
-      limit: limit,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  );
+  const { data, isLoading, isSuccess, hasNextPage, fetchNextPage, isFetching } =
+    api.task.getTasks.useInfiniteQuery(
+      {
+        projectId: projectId,
+        limit: limit,
+        statuses: statuses && statuses.length > 0 ? statuses : undefined,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+      }
+    );
   return {
     tasks: data?.pages.flatMap((page) => page.tasks) || [],
     isLoading: isLoading,
     isSuccess: isSuccess,
     hasNextPage: hasNextPage,
-    isFetchingNextPage: isFetchingNextPage,
     fetchNextPage: fetchNextPage,
+    isFetching: isFetching,
   };
 };
 
 export const useUpdateTask = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
+  const [status] = useAtom(statusAtom);
   const { mutate: updateTask } = api.task.updateTask.useMutation({
     async onMutate({ taskId, taskDescription, taskStatus, taskAssignedTo }) {
       await utils.task.getTasks.cancel();
       const previousData = utils.task.getTasks.getInfiniteData({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
+        statuses: status,
       });
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -168,7 +177,11 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
       );
       return () =>
         utils.task.getTasks.setInfiniteData(
-          { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+          {
+            projectId: projectId,
+            limit: INFINITE_QUERY_LIMIT,
+            statuses: status,
+          },
           previousData
         );
     },
@@ -179,7 +192,7 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
     },
     onSuccess(data, { taskId, taskDescription, taskStatus, taskAssignedTo }) {
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -219,6 +232,7 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
       await utils.task.getTasks.invalidate({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
+        statuses: status,
       });
     },
   });
@@ -235,7 +249,7 @@ export const useDeleteTask = ({
   projectId: string;
 }) => {
   const utils = api.useContext();
-
+  const [status] = useAtom(statusAtom);
   const { mutate: deleteTask } = api.task.deleteTask.useMutation({
     async onMutate({ taskId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
@@ -243,9 +257,10 @@ export const useDeleteTask = ({
       const previousData = utils.task.getTasks.getInfiniteData({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
+        statuses: status,
       });
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -264,7 +279,11 @@ export const useDeleteTask = ({
       );
       return () =>
         utils.task.getTasks.setInfiniteData(
-          { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+          {
+            projectId: projectId,
+            limit: INFINITE_QUERY_LIMIT,
+            statuses: status,
+          },
           previousData
         );
     },
@@ -275,7 +294,7 @@ export const useDeleteTask = ({
     },
     onSuccess(data, { taskId }) {
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT },
+        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -300,12 +319,14 @@ export const useDeleteTask = ({
           await utils.task.getTasks.invalidate({
             projectId: projectId,
             limit: INFINITE_QUERY_LIMIT,
+            statuses: status,
           });
         }
       } else {
         await utils.task.getTasks.invalidate({
           projectId: projectId,
           limit: INFINITE_QUERY_LIMIT,
+          statuses: status,
         });
       }
     },

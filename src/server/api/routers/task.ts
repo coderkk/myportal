@@ -22,6 +22,9 @@ export const getTasksSchema = z.object({
   projectId: z.string(),
   cursor: z.string().optional(),
   limit: z.number().min(1).max(10).default(5),
+  statuses: z
+    .array(z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED"]))
+    .optional(),
 });
 
 export const getTaskInfoSchema = z.object({
@@ -76,6 +79,9 @@ export const taskRouter = createTRPCRouter({
           const tasks = await ctx.prisma.task.findMany({
             where: {
               projectId: input.projectId,
+              status: {
+                in: input.statuses ? input.statuses : undefined,
+              },
             },
             include: {
               createdBy: {
