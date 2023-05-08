@@ -129,10 +129,11 @@ const Task = () => {
 
     if (observerTarget.current) {
       observer.observe(observerTarget.current);
-    } else {
-      // ensure first fetch even when observerTarget is not in view
-      void fetchNextPage();
     }
+    // else {
+    //   // ensure first fetch even when observerTarget is not in view
+    //   void fetchNextPage();
+    // }
 
     const observerTargetCurrent = observerTarget.current;
     return () => {
@@ -293,9 +294,9 @@ const Task = () => {
                         ))}
                       </tbody>
                     </table>
-                    <div ref={observerTarget}></div>
                   </div>
                 </div>
+                <div ref={observerTarget}></div>
               </div>
               {isFetching ? (
                 <Spinner />
