@@ -1,27 +1,31 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useCreatePlant } from "../../../hooks/plant";
 
+type FormValues = {
+  type: string;
+  amount: number;
+};
 const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createPlant } = useCreatePlant();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     reset();
     createPlant({
-      plantType: data.type as string,
-      plantAmount: data.amount as number,
+      plantType: data.type,
+      plantAmount: data.amount,
       siteDiaryId: siteDiaryId,
     });
   };

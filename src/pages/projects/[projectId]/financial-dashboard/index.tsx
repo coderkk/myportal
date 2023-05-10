@@ -37,6 +37,8 @@ const Index = () => {
                   <span className="text-xl text-black">{project?.name}</span>
                 </h1>
                 <DeleteButton
+                  title={`Delete Project ${project?.name || ""}`}
+                  subtitle="Are you sure you want to permanently delete this project?"
                   onDelete={() => {
                     deleteProject({
                       projectId: projectId,

@@ -573,7 +573,9 @@ const SiteDiary = () => {
                         <div className="-ml-px flex w-0 flex-1">
                           <span className="inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-red-500">
                             <DeleteButton
-                              description="Delete"
+                              title={`Delete Site Diary ${siteDiary.name}`}
+                              subtitle="Are you sure you want to permanently delete this site diary?"
+                              triggerLabel="Delete"
                               onDelete={() => {
                                 deleteSiteDiary({
                                   siteDiaryId: siteDiary.id,

@@ -34,6 +34,15 @@ export const WorkProgressView = ({
     pendingDeleteCountRef: pendingDeleteCountRef,
     siteDiaryId: siteDiaryId,
   });
+  const initials = (workProgress: WorkProgress): string => {
+    return workProgress.comments
+      .split(/\s/)
+      .reduce(
+        (response, word) => (response += word.slice(0, 1).toLocaleUpperCase()),
+        ""
+      )
+      .slice(0, 3);
+  };
   return (
     <div className="mx-8">
       <ul
@@ -51,14 +60,7 @@ export const WorkProgressView = ({
                 "flex w-16 flex-shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white"
               )}
             >
-              {workProgress.comments
-                .split(/\s/)
-                .reduce(
-                  (response, word) =>
-                    (response += word.slice(0, 1).toLocaleUpperCase()),
-                  ""
-                )
-                .slice(0, 3)}
+              {initials(workProgress)}
             </div>
             <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
               <div className="flex-1 truncate px-4 py-2 text-sm hover:overflow-visible hover:whitespace-normal hover:break-all">
@@ -76,6 +78,8 @@ export const WorkProgressView = ({
                   siteDiaryId={siteDiaryId}
                 />
                 <DeleteButton
+                  title={`Delete Work Progress ${initials(workProgress)}`}
+                  subtitle="Are you sure you want to permanently delete this work progress?"
                   flex={false}
                   onDelete={() =>
                     deleteWorkProgress({

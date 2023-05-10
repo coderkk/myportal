@@ -1,11 +1,17 @@
 import type { OrderArrivalOnSite } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type BaseSyntheticEvent } from "react";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Edit } from "styled-icons/boxicons-solid";
 import { useUpdateOrder } from "../../hooks/order";
 import ArrivalOnSiteDropdown from "./ArrivalOnSiteDropDown";
 
+type FormValues = {
+  orderNumber: string;
+  note: string;
+  arrivalOnSite: OrderArrivalOnSite;
+  supplierEmailAddress: string;
+};
 type order = {
   id: string;
   orderNote: string;
@@ -30,7 +36,7 @@ const EditButton = ({
     reset,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       note: order.orderNote,
       orderNumber: order.orderNumber,
@@ -42,7 +48,7 @@ const EditButton = ({
   const { updateOrder } = useUpdateOrder({ projectId: projectId });
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -50,10 +56,10 @@ const EditButton = ({
     reset();
     updateOrder({
       orderId: order.id,
-      orderNumber: data.orderNumber as string,
-      orderNote: data.note as string,
-      orderArrivalOnSite: data.arrivalOnSite as OrderArrivalOnSite,
-      orderSupplierEmailAddress: data.supplierEmailAddress as string,
+      orderNumber: data.orderNumber,
+      orderNote: data.note,
+      orderArrivalOnSite: data.arrivalOnSite,
+      orderSupplierEmailAddress: data.supplierEmailAddress,
     });
   };
   const [open, setOpen] = useState(false);

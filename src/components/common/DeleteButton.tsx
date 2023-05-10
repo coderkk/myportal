@@ -5,15 +5,21 @@ import { useRouter } from "next/router";
 import type { ReactNode } from "react";
 
 const DeleteButton = ({
+  title = "confirm delete",
+  subtitle = "This action cannot be undone.",
   onDelete,
+  triggerLabel,
+  deleteLabel = "Delete",
   navigateBack = false,
-  description,
   flex = true,
   hideButton = false,
 }: {
+  title: string;
+  subtitle: string;
   onDelete: () => void;
+  triggerLabel?: string | ReactNode;
+  deleteLabel?: string;
   navigateBack?: boolean;
-  description?: string | ReactNode;
   flex?: boolean;
   hideButton?: boolean;
 }) => {
@@ -23,7 +29,7 @@ const DeleteButton = ({
       <AlertDialog.Trigger asChild>
         <span className={classNames(flex ? "flex" : "", "items-center")}>
           {!hideButton && <Delete className="mr-2 h-6 w-6 text-red-500" />}
-          {description}
+          {triggerLabel}
         </span>
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
@@ -53,9 +59,9 @@ const DeleteButton = ({
               </svg>
             </div>
             <div className="flex flex-col gap-1">
-              <p className="capitalize">confirm delete</p>
+              <p className="">{title}</p>
               <p className="mx-0 text-sm font-medium text-gray-500">
-                This action cannot be undone.
+                {subtitle}
               </p>
             </div>
           </AlertDialog.Title>
@@ -80,7 +86,7 @@ const DeleteButton = ({
                 }}
                 className="inline-flex w-full justify-center rounded-md  bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm  hover:bg-red-500  sm:col-start-2"
               >
-                Delete
+                {deleteLabel}
               </button>
             </AlertDialog.Action>
           </div>

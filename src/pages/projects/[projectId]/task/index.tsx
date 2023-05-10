@@ -292,6 +292,20 @@ const MotionTR = ({
         <span className="flex items-center justify-center">
           <EditButton task={task} projectId={projectId} />
           <DeleteButton
+            title={`Delete Task ${
+              task.description.split(/\s/).length > 4
+                ? task.description
+                    .split(/\s/)
+                    .reduce(
+                      (response: string, word: string) =>
+                        (response += response.length < 20 ? word + " " : ""),
+                      ""
+                    ) + "..."
+                : task.description.length > 20
+                ? task.description.slice(0, 20) + "..."
+                : task.description
+            }`}
+            subtitle="Are you sure you want to permanently delete this task?"
             onDelete={() => {
               deleteTask({
                 taskId: task.id,

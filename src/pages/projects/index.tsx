@@ -64,6 +64,8 @@ const Projects = () => {
                 </span>
                 <EditButton project={project} />
                 <DeleteButton
+                  title={`Delete Project ${project.name}`}
+                  subtitle="Are you sure you want to permanently delete this project?"
                   onDelete={() => {
                     deleteProject({
                       projectId: project.id,

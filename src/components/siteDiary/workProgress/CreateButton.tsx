@@ -1,26 +1,29 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useCreateWorkProgress } from "../../../hooks/workProgress";
 
+type FormValues = {
+  comments: string;
+};
 const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createWorkProgress } = useCreateWorkProgress();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     reset();
     createWorkProgress({
-      workProgressComments: data.comments as string,
+      workProgressComments: data.comments,
       siteDiaryId: siteDiaryId,
     });
   };

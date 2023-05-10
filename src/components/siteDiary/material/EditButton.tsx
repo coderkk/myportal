@@ -2,9 +2,17 @@ import type { MaterialUnit } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useUpdateMaterial } from "../../../hooks/material";
 import type { Material } from "./MaterialView";
+
+import UnitsDropDown from "./UnitsDropDown";
+
+type FormValues = {
+  type: string;
+  units: MaterialUnit;
+  amount: number;
+};
 
 const EditButton = ({
   material,
@@ -17,8 +25,9 @@ const EditButton = ({
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       type: material.type,
       units: material.units,
@@ -27,7 +36,7 @@ const EditButton = ({
   });
   const { updateMaterial } = useUpdateMaterial({ siteDiaryId: siteDiaryId });
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -35,9 +44,9 @@ const EditButton = ({
     reset();
     updateMaterial({
       materialId: material.id,
-      materialType: data.type as string,
-      materialUnits: data.units as MaterialUnit,
-      materialAmount: data.amount as number,
+      materialType: data.type,
+      materialUnits: data.units,
+      materialAmount: data.amount,
     });
   };
   const [open, setOpen] = useState(false);
@@ -81,19 +90,20 @@ const EditButton = ({
                 >
                   Units
                 </label>
-                <select
-                  id="units"
+                <Controller
+                  name="units"
+                  control={control}
                   defaultValue="M2"
-                  {...register("units", { required: true })}
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
-                    errors.units ? "border-red-400  focus:border-red-400 " : ""
-                  }`}
-                >
-                  <option value="M">M</option>
-                  <option value="M2">M2</option>
-                  <option value="M3">M3</option>
-                  <option value="NR">NR</option>
-                </select>
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <UnitsDropDown
+                        value={value}
+                        onChange={(value) => onChange(value)}
+                      />
+                    );
+                  }}
+                />
               </div>
 
               <div className="flex flex-1 flex-col">

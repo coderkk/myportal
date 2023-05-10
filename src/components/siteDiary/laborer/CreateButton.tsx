@@ -1,27 +1,31 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useCreateLaborer } from "../../../hooks/laborer";
 
+type FormValues = {
+  type: string;
+  amount: number;
+};
 const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createLaborer } = useCreateLaborer();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     reset();
     createLaborer({
-      laborerType: data.type as string,
-      laborerAmount: data.amount as number,
+      laborerType: data.type,
+      laborerAmount: data.amount,
       siteDiaryId: siteDiaryId,
     });
   };

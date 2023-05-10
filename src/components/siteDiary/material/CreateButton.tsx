@@ -2,28 +2,36 @@ import type { MaterialUnit } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useCreateMaterial } from "../../../hooks/material";
+import UnitsDropDown from "./UnitsDropDown";
+
+type FormValues = {
+  type: string;
+  units: MaterialUnit;
+  amount: number;
+};
 
 const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createMaterial } = useCreateMaterial();
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     reset();
     createMaterial({
-      materialType: data.type as string,
-      materialUnits: data.units as MaterialUnit,
-      materialAmount: data.amount as number,
+      materialType: data.type,
+      materialUnits: data.units,
+      materialAmount: data.amount,
       siteDiaryId: siteDiaryId,
     });
   };
@@ -68,19 +76,20 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                 >
                   Units
                 </label>
-                <select
-                  id="units"
+                <Controller
+                  name="units"
+                  control={control}
                   defaultValue="M2"
-                  {...register("units", { required: true })}
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 bg-white px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 sm:text-left ${
-                    errors.units ? "border-red-400  focus:border-red-400 " : ""
-                  }`}
-                >
-                  <option value="M">M</option>
-                  <option value="M2">M2</option>
-                  <option value="M3">M3</option>
-                  <option value="NR">NR</option>
-                </select>
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <UnitsDropDown
+                        value={value}
+                        onChange={(value) => onChange(value)}
+                      />
+                    );
+                  }}
+                />
               </div>
 
               <div className="flex flex-1 flex-col">

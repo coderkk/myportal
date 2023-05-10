@@ -1,31 +1,27 @@
-import type { OrderArrivalOnSite } from "@prisma/client";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
 import dynamic from "next/dynamic";
 
 type DropdownProps = {
-  orderArrivalOnSite: OrderArrivalOnSite | null | undefined;
-  onOrderArrivalOnSiteChange: (value: OrderArrivalOnSite) => void;
+  value: string | null | undefined;
+  onChange: (value: string) => void;
 };
 
-const SelectItem = dynamic(() => import("../common/SelectItem"));
+const SelectItem = dynamic(() => import("../../common/SelectItem"));
 
-const ArrivalOnSiteDropDown = ({
-  orderArrivalOnSite,
-  onOrderArrivalOnSiteChange,
-}: DropdownProps) => {
+const StatusDropdown = ({ value, onChange }: DropdownProps) => {
   return (
     <Select.Root
-      defaultValue={orderArrivalOnSite || undefined}
-      onValueChange={(value: OrderArrivalOnSite) => {
-        onOrderArrivalOnSiteChange(value);
+      defaultValue={value || undefined}
+      onValueChange={(value: string) => {
+        onChange(value);
       }}
     >
       <Select.Trigger
-        className="inline-flex h-10 items-center justify-center gap-1 rounded-lg border border-gray-300 bg-white px-4 py-0 text-base hover:bg-gray-100 focus:border-blue-300 focus:outline-none"
-        aria-label="Arrival on Site"
+        className="inline-flex h-10 items-center justify-center gap-1 rounded-lg border border-gray-300 bg-white px-4 py-0 text-base hover:bg-gray-100 focus:border-blue-300 focus:outline-none sm:justify-between"
+        aria-label="Task Status"
       >
-        <Select.Value placeholder="Should this arrive on site?" />
+        <Select.Value placeholder="Select a task status" />
         <Select.Icon className="text-gray-600">
           <ChevronDownIcon />
         </Select.Icon>
@@ -38,13 +34,15 @@ const ArrivalOnSiteDropDown = ({
           <Select.Viewport className="p-2">
             <Select.Group>
               <Select.Label className="px-8 py-0 text-center text-base text-blue-600">
-                Arrival on Site
+                Units
               </Select.Label>
             </Select.Group>
             <Select.Separator className=" h-px bg-gray-300" />
             <Select.Group>
-              <SelectItem value="YES">Yes</SelectItem>
-              <SelectItem value="NO">No</SelectItem>
+              <SelectItem value="M">M</SelectItem>
+              <SelectItem value="M2">M2</SelectItem>
+              <SelectItem value="M3">M3</SelectItem>
+              <SelectItem value="NR">NR</SelectItem>
             </Select.Group>
           </Select.Viewport>
           <Select.ScrollDownButton className="flex h-6 items-center justify-center bg-white text-blue-600">
@@ -56,4 +54,4 @@ const ArrivalOnSiteDropDown = ({
   );
 };
 
-export default ArrivalOnSiteDropDown;
+export default StatusDropdown;

@@ -2,7 +2,13 @@ import { useRouter } from "next/router";
 import { useDeleteProject } from "../../hooks/project";
 import DeleteButton from "../common/DeleteButton";
 
-const DangerZone = ({ projectId }: { projectId: string }) => {
+const DangerZone = ({
+  projectId,
+  projectName = "",
+}: {
+  projectId: string;
+  projectName: string | undefined;
+}) => {
   const router = useRouter();
   const { deleteProject } = useDeleteProject({});
   return (
@@ -22,16 +28,18 @@ const DangerZone = ({ projectId }: { projectId: string }) => {
             </p>
           </div>
 
-          <div className="flex items-start md:col-span-2">
+          <div className="flex items-center md:col-span-2">
             <DeleteButton
+              title={`Delete Project ${projectName}`}
+              subtitle="Are you sure you want to permanently delete this project?"
               onDelete={() => {
                 deleteProject({ projectId: projectId });
                 void router.push("/");
               }}
               hideButton={true}
-              description={
+              triggerLabel={
                 <div className="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400">
-                  Yes, delete project
+                  Delete
                 </div>
               }
             />

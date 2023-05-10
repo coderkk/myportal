@@ -251,6 +251,8 @@ const Table = () => {
                 searchKey={search_key}
               />
               <DeleteButton
+                title={`Delete Budget ${description}`}
+                subtitle="Are you sure you want to permanently delete this budget?"
                 onDelete={() => {
                   deleteBudget({
                     budgetId: id,

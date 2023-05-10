@@ -66,6 +66,8 @@ export const PlantView = ({ plants }: { plants: Plant[] }) => {
               <div className="flex-shrink-0 items-center pr-2">
                 <EditButton plant={plant} siteDiaryId={siteDiaryId} />
                 <DeleteButton
+                  title={`Delete Plant ${plant.type}`}
+                  subtitle="Are you sure you want to permanently delete this plant?"
                   flex={false}
                   onDelete={() =>
                     deletePlant({

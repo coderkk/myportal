@@ -1,10 +1,14 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useUpdatePlant } from "../../../hooks/plant";
 import type { Plant } from "./PlantView";
 
+type FormValues = {
+  type: string;
+  amount: number;
+};
 const EditButton = ({
   plant,
   siteDiaryId,
@@ -17,7 +21,7 @@ const EditButton = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       type: plant.type,
       amount: plant.amount,
@@ -25,7 +29,7 @@ const EditButton = ({
   });
   const { updatePlant } = useUpdatePlant({ siteDiaryId: siteDiaryId });
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -33,8 +37,8 @@ const EditButton = ({
     reset();
     updatePlant({
       plantId: plant.id,
-      plantType: data.type as string,
-      plantAmount: data.amount as number,
+      plantType: data.type,
+      plantAmount: data.amount,
     });
   };
   const [open, setOpen] = useState(false);
