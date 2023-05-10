@@ -5,19 +5,24 @@ import { useState, type BaseSyntheticEvent } from "react";
 import { useForm, type FieldValues } from "react-hook-form";
 import { useUpdateCostCenter } from "../../hooks/costCenter";
 
-
 type costCenter = {
   id: string;
   code: string;
   name: string;
-  budget: number,
-  cost: number,
+  budget: number;
+  cost: number;
   createdBy: {
     name: string | null;
   };
 };
 
-const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: costCenter }) => {
+const EditButton = ({
+  projectId,
+  costCenter,
+}: {
+  projectId: string;
+  costCenter: costCenter;
+}) => {
   const {
     register,
     handleSubmit,
@@ -33,14 +38,13 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
     },
   });
   const { updateCostCenter } = useUpdateCostCenter({ projectId: projectId });
-  
+
   const onSubmit = (
     data: FieldValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
-    // weird react hook controlled input structure...
     updateCostCenter({
       costCenterId: data.id as string,
       code: data.code as string,
@@ -58,11 +62,11 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-content-show rounded-md bg-white p-6 shadow-md focus:outline-none">
+        <Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-content-show rounded-md bg-white p-6 shadow-md focus:outline-none">
           <Dialog.Title className="m-0 font-medium text-gray-800">
             Edit cost center
           </Dialog.Title>
-          <Dialog.Description className="mx-0 mt-3 mb-5 text-sm text-gray-400">
+          <Dialog.Description className="mx-0 mb-5 mt-3 text-sm text-gray-400">
             Click save when you are done.
           </Dialog.Description>
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
@@ -75,7 +79,7 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
               </label>
               <div>
                 <input
-                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md px-3 py-0 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
                 focus:border-blue-300 focus:outline-none ${
                   errors.code
                     ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
@@ -94,7 +98,7 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
               </label>
               <div>
                 <input
-                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md px-3 py-0 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
                 focus:border-blue-300 focus:outline-none ${
                   errors.name
                     ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
@@ -114,14 +118,17 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
               <div>
                 <input
                   type="number"
-                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md px-3 py-0 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
                 focus:border-blue-300 focus:outline-none ${
                   errors.budget
                     ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
                     : ""
                 }`}
                   id="budget"
-                  {...register("budget", { required: true, valueAsNumber: true })}
+                  {...register("budget", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
                 />
               </div>
 
@@ -134,7 +141,7 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
               <div>
                 <input
                   type="number"
-                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md py-0 px-3 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
+                  className={`inline-flex h-8  flex-1 items-center justify-center rounded-md px-3 py-0 text-sm text-blue-500 shadow-sm shadow-blue-200 focus:border-2
                 focus:border-blue-300 focus:outline-none ${
                   errors.cost
                     ? "border-2 border-red-400 focus:border-2 focus:border-red-400"
@@ -167,7 +174,7 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
             )}
             <div className="mt-6 flex justify-end">
               <button
-                className="inline-flex h-9 items-center justify-center rounded-md bg-blue-100 py-0 px-4 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-blue-100 px-4 py-0 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
                 type="submit"
                 disabled={!!(errors.code || errors.name)}
               >
@@ -176,7 +183,7 @@ const EditButton = ({ projectId, costCenter }: { projectId: string; costCenter: 
             </div>
             <Dialog.Close asChild>
               <button
-                className="absolute top-4 right-4 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-blue-200 focus:border-2 focus:border-blue-500 focus:outline-none"
+                className="absolute right-4 top-4 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-blue-200 focus:border-2 focus:border-blue-500 focus:outline-none"
                 aria-label="Close"
                 type="button"
               >

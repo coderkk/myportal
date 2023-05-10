@@ -72,13 +72,13 @@ model User {
     createdReplies                Reply[]
     createdBudgets                Budget[]
     createdTasks                  Task[]                  @relation("createdTasks")
+    createdCostCenters            CostCenter[]
+    createdSupplierInvoiceDetails SupplierInvoiceDetail[]
     assignedTasks                 Task[]                  @relation("assignedTasks")
     projects                      UsersOnProjects[]
     createdSupplierInvoices       SupplierInvoice[]
-    supplierInvoiceDetail         SupplierInvoiceDetail[]
     createdAt                     DateTime                @default(now())
     updatedAt                     DateTime                @default(now()) @updatedAt
-    CostCenter                    CostCenter[]
 }
 
 model VerificationToken {
@@ -103,9 +103,9 @@ model Project {
     users                  UsersOnProjects[]
     budgets                Budget[]
     supplierInvoices       SupplierInvoice[]
+    costCenters            CostCenter[]
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @updatedAt
-    CostCenter             CostCenter[]
 
     @@index([createdById])
 }
@@ -329,9 +329,8 @@ model CostCenter {
 }
 
 model SupplierInvoice {
-    id                     String                  @id @default(cuid())
-    costCenter             CostCenter?             @relation(fields: [costCenterId], references: [id], onDelete: Cascade)
-    costCenterId           String?
+    id String @id @default(cuid())
+
     description            String
     invoiceNo              String
     invoiceDate            DateTime
@@ -352,6 +351,8 @@ model SupplierInvoice {
     supplierInvoiceDetails SupplierInvoiceDetail[]
     projectId              String
     project                Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    costCenter             CostCenter?             @relation(fields: [costCenterId], references: [id], onDelete: Cascade)
+    costCenterId           String?
     createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById            String
     createdAt              DateTime                @default(now())

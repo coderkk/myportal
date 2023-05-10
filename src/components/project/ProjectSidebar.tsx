@@ -46,15 +46,15 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         );
         break;
       case "/cost-center":
-          void utils.costCenter.getCostCenters.prefetch(
-            {
-              projectId: projectId
-            },
-            {
-              staleTime: Infinity,
-            }
-          );
-          break;
+        void utils.costCenter.getCostCenters.prefetch(
+          {
+            projectId: projectId,
+          },
+          {
+            staleTime: Infinity,
+          }
+        );
+        break;
       case "/invoice":
         void utils.s3.fetchS3BucketContents.prefetch(
           {
@@ -350,30 +350,30 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
               <li>
                 <ul role="list" className="-mx-2 space-y-1">
-                  {projectFeatures.map((item) => (
-                    <li key={item.name}>
+                  {projectFeatures.map((projectFeature) => (
+                    <li key={projectFeature.name}>
                       <Link
                         className={classNames(
-                          activeTab === item.href
+                          activeTab === projectFeature.href
                             ? "bg-blue-600 text-white"
                             : "text-gray-400  hover:bg-gray-100 hover:text-black",
                           "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                         )}
-                        href={`/projects/${projectId}${item.href}`}
+                        href={`/projects/${projectId}${projectFeature.href}`}
                         onMouseEnter={() =>
                           prefetch({
                             projectId: projectId,
-                            href: item.href,
+                            href: projectFeature.href,
                           })
                         }
                         onClick={() => {
-                          setActiveTab(item.href);
+                          setActiveTab(projectFeature.href);
                         }}
                       >
                         <span className="h-6 w-6 shrink-0" aria-hidden="true">
-                          {item.icon}
+                          {projectFeature.icon}
                         </span>
-                        {item.name}
+                        {projectFeature.name}
                       </Link>
                     </li>
                   ))}

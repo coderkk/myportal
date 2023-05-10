@@ -1,3 +1,4 @@
+import parse from "date-fns/parse";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import * as pdfjsLib from "pdfjs-dist";
 import { GlobalWorkerOptions } from "pdfjs-dist";
@@ -7,7 +8,6 @@ import type {
   TextMarkedContent,
   TypedArray,
 } from "pdfjs-dist/types/src/display/api";
-import parse from 'date-fns/parse';
 
 import type { supplierInvoice } from "../hooks/supplierInvoice";
 
@@ -21,11 +21,25 @@ type SupplierInvoiceDetail = {
   unitPrice: number;
   discount: number;
   amount: number;
-}
+};
 
 interface SupplierInvoiceWithDetail extends supplierInvoice {
   supplierInvoiceDetail: SupplierInvoiceDetail[];
 }
+
+export const getPDFText = async (pdf: PDFDocumentProxy) => {
+  const pageTextPromises = [];
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+    pageTextPromises.push(getPageText(pdf, pageNumber));
+  }
+  return await Promise.all(pageTextPromises)
+    .then((res) => {
+      return res.join("\n");
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
 
 const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
   const page = await pdf.getPage(pageNumber);
@@ -42,54 +56,46 @@ const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
     .join("");
 };
 
-export const getPDFText = async (pdf: PDFDocumentProxy) => {
-  const pageTextPromises = [];
-  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-    pageTextPromises.push(getPageText(pdf, pageNumber));
-  }
-  return await Promise.all(pageTextPromises).then(
-    res => {
-      return res.join("\n");
-    }
-  ).catch(error => {throw error});
-}
-
+export const loadFileObject = async (source: File) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = async () => {
+      const result = fileReader.result;
+      if (result == null || typeof result == "string") {
+        resolve("");
+      } else {
+        const typedarray = new Uint8Array(result);
+        await loadFilename(typedarray)
+          .then((text) => {
+            resolve(text);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      }
+    };
+    fileReader.onerror = reject;
+    fileReader.readAsArrayBuffer(source);
+  });
+};
 
 export const loadFilename = async (
   source: string | URL | TypedArray | ArrayBuffer | DocumentInitParameters
 ) => {
   const loadingTask = pdfjsLib.getDocument(source);
-  return await loadingTask.promise.then(async (pdf) => {
-    return await getPDFText(pdf).then(res => { 
-      return res
-    }).catch(error => {throw error});
-  }).catch((error: Error) => {
-    throw error;
-  });
-  
-};
-
-export const loadFileObject = async (
-  source: File
-) => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader();
-    fileReader.onload = async () => {
-      const result = fileReader.result;
-      if (result == null || typeof(result) == "string") {
-        resolve("");
-      } else {
-        const typedarray = new Uint8Array(result);
-        await loadFilename(typedarray).then((text) => {
-          resolve(text);
-        }).catch(error => {
-          reject(error);
+  return await loadingTask.promise
+    .then(async (pdf) => {
+      return await getPDFText(pdf)
+        .then((res) => {
+          return res;
+        })
+        .catch((error) => {
+          throw error;
         });
-      }
-    }
-    fileReader.onerror = reject;
-    fileReader.readAsArrayBuffer(source);
-  });
+    })
+    .catch((error: Error) => {
+      throw error;
+    });
 };
 
 export const parseData = (pdfContent: string) => {
@@ -116,9 +122,9 @@ export const parseData = (pdfContent: string) => {
     grandAmount: 0,
     taxAmount: 0,
     netAmount: 0,
-    supplierInvoiceDetail: []
+    supplierInvoiceDetail: [],
   };
-  
+
   let supplier = false;
   let vendor = false;
   let start_line = false;
@@ -134,18 +140,18 @@ export const parseData = (pdfContent: string) => {
       if (pageTextLine.includes("Supplier")) {
         supplier = true;
         vendor = false;
-        const result = (/Supplier (.*)/g).exec(pageTextLine);
-        data.supplierName = (result == null) ? "" : result[1];
+        const result = /Supplier (.*)/g.exec(pageTextLine);
+        data.supplierName = result == null ? "" : result[1];
       }
       if (pageTextLine.includes("Recipient")) {
         vendor = true;
         supplier = false;
-        const result = (/Recipient (.*)/g).exec(pageTextLine);
-        data.vendorName = (result == null) ? "" : result[1];
+        const result = /Recipient (.*)/g.exec(pageTextLine);
+        data.vendorName = result == null ? "" : result[1];
       }
       if (pageTextLine.includes("Address")) {
-        const result = (/Address (.*)/g).exec(pageTextLine);
-        const address = (result == null) ? "" : result[1];
+        const result = /Address (.*)/g.exec(pageTextLine);
+        const address = result == null ? "" : result[1];
         if (supplier) {
           data.supplierAddress = address;
         } else if (vendor) {
@@ -153,8 +159,8 @@ export const parseData = (pdfContent: string) => {
         }
       }
       if (pageTextLine.includes("Phone")) {
-        const result = (/Phone (.*)/g).exec(pageTextLine);
-        const phone = (result == null) ? "" : result[1];
+        const result = /Phone (.*)/g.exec(pageTextLine);
+        const phone = result == null ? "" : result[1];
         if (supplier) {
           data.supplierPhone = phone;
         } else if (vendor) {
@@ -162,34 +168,40 @@ export const parseData = (pdfContent: string) => {
         }
       }
       if (pageTextLine.includes("Payment Due")) {
-        const result = (/Payment Due (.*)/g).exec(pageTextLine);
-        const paymentDue = (result == null) ? "" : result[1];
-        if (paymentDue != "" && paymentDue != undefined) data.paymentDueDate = parse(paymentDue, "MMMM dd, yyyy", new Date());
+        const result = /Payment Due (.*)/g.exec(pageTextLine);
+        const paymentDue = result == null ? "" : result[1];
+        if (paymentDue != "" && paymentDue != undefined)
+          data.paymentDueDate = parse(paymentDue, "MMMM dd, yyyy", new Date());
       }
       if (pageTextLine.includes("Salesperson")) {
-        const result = (/Salesperson (.*)/g).exec(pageTextLine);
-        const salesperson = (result == null) ? "" : result[1];
-        if (salesperson != "" && salesperson != undefined) data.salePerson = salesperson;
+        const result = /Salesperson (.*)/g.exec(pageTextLine);
+        const salesperson = result == null ? "" : result[1];
+        if (salesperson != "" && salesperson != undefined)
+          data.salePerson = salesperson;
       }
       if (pageTextLine.includes("Payment Terms")) {
-        const result = (/Payment Terms (.*)/g).exec(pageTextLine);
-        const paymentTerms = (result == null) ? "" : result[1];
-        if (paymentTerms != "" && paymentTerms != undefined) data.paymentTerm = paymentTerms;
+        const result = /Payment Terms (.*)/g.exec(pageTextLine);
+        const paymentTerms = result == null ? "" : result[1];
+        if (paymentTerms != "" && paymentTerms != undefined)
+          data.paymentTerm = paymentTerms;
       }
       if (pageTextLine.includes("Delivery Date")) {
-        const result = (/Delivery Date (.*)/g).exec(pageTextLine);
-        const deliveryDate = (result == null) ? "" : result[1];
-        if (deliveryDate != "" && deliveryDate != undefined) data.deliveryDate = parse(deliveryDate, "MMMM dd, yyyy", new Date());
+        const result = /Delivery Date (.*)/g.exec(pageTextLine);
+        const deliveryDate = result == null ? "" : result[1];
+        if (deliveryDate != "" && deliveryDate != undefined)
+          data.deliveryDate = parse(deliveryDate, "MMMM dd, yyyy", new Date());
       }
       if (pageTextLine.includes("Shipping Method")) {
-        const result = (/Shipping Method (.*)/g).exec(pageTextLine);
-        const shippingMethod = (result == null) ? "" : result[1];
-        if (shippingMethod != "" && shippingMethod != undefined) data.shipmentMethod = shippingMethod;
+        const result = /Shipping Method (.*)/g.exec(pageTextLine);
+        const shippingMethod = result == null ? "" : result[1];
+        if (shippingMethod != "" && shippingMethod != undefined)
+          data.shipmentMethod = shippingMethod;
       }
       if (pageTextLine.includes("Shipping Terms")) {
-        const result = (/Shipping Terms (.*)/g).exec(pageTextLine);
-        const shipmentTerm = (result == null) ? "" : result[1];
-        if (shipmentTerm != "" && shipmentTerm != undefined) data.shipmentTerm = shipmentTerm;
+        const result = /Shipping Terms (.*)/g.exec(pageTextLine);
+        const shipmentTerm = result == null ? "" : result[1];
+        if (shipmentTerm != "" && shipmentTerm != undefined)
+          data.shipmentTerm = shipmentTerm;
       }
 
       if (pageTextLine == "(RM)") {
@@ -201,7 +213,10 @@ export const parseData = (pdfContent: string) => {
       }
 
       if (start_line) {
-        const result = (/^(\d+)\s+(\d+)\s+(\w+)\s+(.*)\s+(\d+.\d+)\s+(\d+.\d+)/).exec(pageTextLine);
+        const result =
+          /^(\d+)\s+(\d+)\s+(\w+)\s+(.*)\s+(\d+.\d+)\s+(\d+.\d+)/.exec(
+            pageTextLine
+          );
         if (result) {
           data.supplierInvoiceDetail.push({
             item: result[1] || "",
@@ -210,21 +225,23 @@ export const parseData = (pdfContent: string) => {
             description: result[4] || "",
             unitPrice: parseFloat(result[5] || ""),
             discount: 0,
-            amount: parseFloat(result[6] || "")
-          })
+            amount: parseFloat(result[6] || ""),
+          });
         }
       }
-      
+
       if (pageTextLine.includes("Invoice Date")) {
         if (pageTextLine.match(/\d{2}\/\d{2}\/\d{4}/)) {
           const dateString = pageTextLine
             .match(/\d{2}\/\d{2}\/\d{4}/)
             ?.join("");
-          if (dateString != undefined) data.invoiceDate = parse(dateString, "dd/MM/yyyy", new Date());
+          if (dateString != undefined)
+            data.invoiceDate = parse(dateString, "dd/MM/yyyy", new Date());
         }
         if (pageTextLine.match(/\d{2}-\d{2}-\d{4}/)) {
           const dateString = pageTextLine.match(/\d{2}-\d{2}-\d{4}/)?.join("");
-          if (dateString != undefined) data.invoiceDate = parse(dateString, "dd-MM-yyyy", new Date());
+          if (dateString != undefined)
+            data.invoiceDate = parse(dateString, "dd-MM-yyyy", new Date());
         }
       }
       if (
@@ -257,5 +274,5 @@ export const parseData = (pdfContent: string) => {
     });
   }
 
-  return ((JSON.stringify(data) === JSON.stringify(emptyData))) ? null : data;
+  return JSON.stringify(data) === JSON.stringify(emptyData) ? null : data;
 };

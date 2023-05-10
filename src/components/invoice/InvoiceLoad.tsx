@@ -1,10 +1,10 @@
+import dynamic from "next/dynamic";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
-import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
-import dynamic from "next/dynamic";
 import type { supplierInvoice } from "../../hooks/supplierInvoice";
+import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
@@ -20,7 +20,7 @@ type SupplierInvoiceDetail = {
   unitPrice: number;
   discount: number;
   amount: number;
-}
+};
 
 interface SupplierInvoiceWithDetail extends supplierInvoice {
   supplierInvoiceDetail: SupplierInvoiceDetail[];
@@ -33,7 +33,6 @@ interface InvoiceUploadProps {
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 
 const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
-
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pdfDocRef = useRef<HTMLInputElement | null>(null);
 
@@ -42,7 +41,7 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
   const [pageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
   const [uploadFile, setUploadFile] = useState<File | undefined | null>(
-      undefined
+    undefined
   );
 
   const onDocumentLoadSuccess = (pdf: PDFDocumentProxy) => {
@@ -50,9 +49,9 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
     void parseInvoice(pdf);
   };
 
-  const onPageLoad = (page: PDFPageProxy) => {
-    const parentDiv = pdfDocRef.current
-    if (parentDiv != null) {
+  const onPageLoadSucess = (page: PDFPageProxy) => {
+    const parentDiv = pdfDocRef.current;
+    if (parentDiv) {
       const viewport = page.getViewport();
       const originWidth = viewport.width;
       let pageScale = 0.7;
@@ -63,37 +62,20 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
         setScale(pageScale);
       }
     }
-  }
+  };
 
   const parseInvoice = async (pdf: PDFDocumentProxy) => {
     const pdfText = await getPDFText(pdf);
+    console.log(pdfText);
     const data = parseData(pdfText);
-    if (data != null) {
-      onData(
-        data,
-        file
-      );
+    if (data) {
+      onData(data, file);
     }
   };
 
   const handleLoadClick = () => {
     // 👇 We redirect the click event onto the hidden input element
     inputRef.current?.click();
-  };
-
-  const validatePdfFile = async (file: File) => {
-    try {
-      await loadFileObject(file).then((text) => {
-        let valid = false;
-        if (typeof text == "string") {
-          const data = parseData(text);
-          if (data != null) valid = true;
-        }
-        if (!valid) throw new Error();
-      });
-    } catch {
-      toast.error("An error occured while validating the pdf file.");
-    }
   };
 
   const handleFileChange = async (
@@ -107,12 +89,29 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
         setFile(files[0]);
       } catch {
         toast.error("An error occured while handling the pdf file.");
+      } finally {
+        event.target.value = ""; // clear the input
+        setUploadFile(null);
       }
-      event.target.value = ""; // clear the input
-      setUploadFile(null);
     }
     // 🚩 do the file upload here normally...
   };
+
+  const validatePdfFile = async (file: File) => {
+    try {
+      await loadFileObject(file).then((text) => {
+        if (typeof text == "string") {
+          const data = parseData(text);
+          if (!data) {
+            throw new Error();
+          }
+        }
+      });
+    } catch {
+      toast.error("An error occured while validating the pdf file.");
+    }
+  };
+
   return (
     <>
       <div className="mb-5 text-right">
@@ -139,7 +138,7 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
             pageNumber={pageNumber}
             renderTextLayer={false}
             renderAnnotationLayer={false}
-            onLoadSuccess={onPageLoad}
+            onLoadSuccess={onPageLoadSucess}
             scale={scale}
           />
         </Document>
