@@ -80,11 +80,13 @@ const Team = () => {
                 <h2 className="mb-1 mt-2 text-base font-semibold capitalize leading-6 text-gray-900">
                   {isCreator && "Add"} team members
                 </h2>
-                {isCreator && usersForProject.length <= 1 && (
-                  <p className="text-sm text-gray-500">
-                    You haven’t added any team members to your project yet.
-                  </p>
-                )}
+                {isCreator &&
+                  usersForProject &&
+                  usersForProject?.length <= 1 && (
+                    <p className="text-sm text-gray-500">
+                      You haven’t added any team members to your project yet.
+                    </p>
+                  )}
               </div>
               {isCreator && (
                 <SearchAndAdd
