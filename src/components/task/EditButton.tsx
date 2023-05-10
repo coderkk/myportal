@@ -15,12 +15,14 @@ export type assignee = {
   image: string | null;
 };
 
-type task = {
+export type task = {
   id: string;
   description: string;
   status: TaskStatus;
   createdBy: {
     name: string | null;
+    email: string | null;
+    image: string | null;
   };
   assignedTo: assignee | null;
 };

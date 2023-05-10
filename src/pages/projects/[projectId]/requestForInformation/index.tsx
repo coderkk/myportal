@@ -68,6 +68,8 @@ const RequestForInformation = () => {
                     projectId={projectId}
                   />
                   <DeleteButton
+                    title={`Delete RFI ${requestForInformation.topic}`}
+                    subtitle="Are you sure you want to permanently delete this RFI?"
                     onDelete={() => {
                       deleteRequestForInformation({
                         requestForInformationId: requestForInformation.id,

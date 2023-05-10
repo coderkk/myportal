@@ -66,6 +66,10 @@ export const taskRouter = createTRPCRouter({
               assignedToId: input.taskAssignedTo?.id,
               projectId: input.projectId,
             },
+            include: {
+              assignedTo: true,
+              createdBy: true,
+            },
           });
         },
         errorMessages: ["Failed to create task"],

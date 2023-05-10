@@ -1,10 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useUpdateWorkProgress } from "../../../hooks/workProgress";
 import type { WorkProgress } from "./workProgressView";
 
+type FormValues = {
+  comments: string;
+};
 const EditButton = ({
   workProgress,
   siteDiaryId,
@@ -17,7 +20,7 @@ const EditButton = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       comments: workProgress.comments,
     },
@@ -26,7 +29,7 @@ const EditButton = ({
     siteDiaryId: siteDiaryId,
   });
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -34,7 +37,7 @@ const EditButton = ({
     reset();
     updateWorkProgress({
       workProgressId: workProgress.id,
-      workProgressComments: data.comments as string,
+      workProgressComments: data.comments,
     });
   };
   const [open, setOpen] = useState(false);

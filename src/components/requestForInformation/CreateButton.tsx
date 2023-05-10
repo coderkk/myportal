@@ -2,10 +2,14 @@ import type { RequestForInformationStatus } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useCreateRequestForInformation } from "../../hooks/requestForInformation";
 import StatusDropdown from "./StatusDropDown";
 
+type FormValues = {
+  topic: string;
+  status: RequestForInformationStatus;
+};
 const CreateButton = ({ projectId }: { projectId: string }) => {
   const {
     register,
@@ -13,11 +17,11 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createRequestForInformation } = useCreateRequestForInformation();
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -25,8 +29,8 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset();
     createRequestForInformation({
       projectId: projectId,
-      requestForInformationTopic: data.topic as string,
-      requestForInformationStatus: data.status as RequestForInformationStatus,
+      requestForInformationTopic: data.topic,
+      requestForInformationStatus: data.status,
     });
   };
   const [open, setOpen] = useState(false);
@@ -63,7 +67,7 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   defaultValue="PENDING"
                   rules={{ required: true }}
                   render={({ field }) => {
-                    const value = field.value as RequestForInformationStatus;
+                    const value = field.value;
                     const { onChange } = field;
                     return (
                       <StatusDropdown

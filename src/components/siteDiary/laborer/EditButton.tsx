@@ -1,10 +1,14 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useUpdateLaborer } from "../../../hooks/laborer";
 import type { Laborer } from "./LaborerView";
 
+type FormValues = {
+  type: string;
+  amount: number;
+};
 const EditButton = ({
   laborer,
   siteDiaryId,
@@ -17,7 +21,7 @@ const EditButton = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       type: laborer.type,
       amount: laborer.amount,
@@ -25,7 +29,7 @@ const EditButton = ({
   });
   const { updateLaborer } = useUpdateLaborer({ siteDiaryId: siteDiaryId });
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -33,8 +37,8 @@ const EditButton = ({
     reset();
     updateLaborer({
       laborerId: laborer.id,
-      laborerType: data.type as string,
-      laborerAmount: data.amount as number,
+      laborerType: data.type,
+      laborerAmount: data.amount,
     });
   };
   const [open, setOpen] = useState(false);

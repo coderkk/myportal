@@ -1,11 +1,15 @@
 import type { RequestForInformationStatus } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type BaseSyntheticEvent } from "react";
-import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Edit } from "styled-icons/boxicons-solid";
 import { useUpdateRequestForInformation } from "../../hooks/requestForInformation";
 import StatusDropdown from "./StatusDropDown";
 
+type FormValues = {
+  topic: string;
+  status: RequestForInformationStatus;
+};
 type requestForInformation = {
   id: string;
   topic: string;
@@ -28,7 +32,7 @@ const EditButton = ({
     reset,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       topic: requestForInformation.topic,
       status: requestForInformation.status,
@@ -39,7 +43,7 @@ const EditButton = ({
   });
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -47,8 +51,8 @@ const EditButton = ({
     reset();
     updateRequestForInformation({
       requestForInformationId: requestForInformation.id,
-      requestForInformationTopic: data.topic as string,
-      requestForInformationStatus: data.status as RequestForInformationStatus,
+      requestForInformationTopic: data.topic,
+      requestForInformationStatus: data.status,
     });
   };
   const [open, setOpen] = useState(false);
