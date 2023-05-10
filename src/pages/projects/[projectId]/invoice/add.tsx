@@ -98,8 +98,21 @@ const AddInvoicePage = ({}) => {
                     className="m-8"
                     onSubmit={(e) => void handleSubmit(onSubmit)(e)}
                   >
-                    <div className="flex justify-between">
-                      <h2 className="mb-6 pb-2 text-2xl font-bold uppercase tracking-wider">
+                    <div className="flex items-center mb-6">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void router.push(
+                            "/projects/" + projectId + "/invoice"
+                          );
+                        }}
+                        className="block rounded-md bg-white px-3 py-2 mx-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                        </svg>
+                      </button>
+                      <h2 className="py-2 px-3 text-2xl font-bold uppercase tracking-wider">
                         Invoice
                       </h2>
                     </div>

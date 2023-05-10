@@ -1,22 +1,22 @@
-import * as Dialog from "@radix-ui/react-dialog";
-import { Close } from "@styled-icons/ionicons-outline";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import type { supplierInvoice } from "../../hooks/supplierInvoice";
-import { useCreateSupplierInvoice } from "../../hooks/supplierInvoice";
-import { useCreateSupplierInvoiceDetail } from "../../hooks/supplierInvoiceDetail";
+import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
+import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
+import { useCreateSupplierInvoiceDetail } from "../../../../hooks/supplierInvoiceDetail";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
+import SessionAuth from "../../../../components/auth/SessionAuth";
 
 import { nanoid } from "nanoid";
 import toast from "react-hot-toast";
-import { env } from "../../env/client.mjs";
-import { useGetPreSignedURLForUpload } from "../../hooks/s3";
-import { api } from "../../utils/api";
+import { env } from "../../../../env/client.mjs";
+import { useGetPreSignedURLForUpload } from "../../../../hooks/s3";
+import { api } from "../../../../utils/api";
 
-import CostCenterDropdown from "../../components/costCenter/CostCenterDropdown";
-import { useGetCostCenters } from "../../hooks/costCenter";
+import CostCenterDropdown from "../../../../components/costCenter/CostCenterDropdown";
+import { useGetCostCenters } from "../../../../hooks/costCenter";
 
-import InvoiceLoad from "../../components/invoice/InvoiceLoad";
+import InvoiceLoad from "../../../../components/invoice/InvoiceLoad";
 
 type SupplierInvoiceDetail = {
   item: string;
@@ -32,11 +32,10 @@ interface SupplierInvoiceWithDetail extends supplierInvoice {
   supplierInvoiceDetail: SupplierInvoiceDetail[];
 }
 
-const InvoiceFormPage = () => {
+const InvoiceImportPage = () => {
   const router = useRouter();
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
-  const [open, setOpen] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
   const [fileId, setFileId] = useState("");
@@ -196,30 +195,31 @@ const InvoiceFormPage = () => {
   };
 
   return (
-    <>
-      <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger asChild>
-          <button className="mx-2 block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            Upload Invoice
-          </button>
-        </Dialog.Trigger>
-        <Dialog.Portal className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-          <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-slate-300" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 animate-content-show rounded-md bg-white p-6 shadow-md focus:outline-none">
-            <Dialog.Title className="m-0 font-medium text-gray-800">
-              Import invoice
-            </Dialog.Title>
-            <Dialog.Description className="mx-0 mb-5 mt-3 text-sm text-gray-400">
-              Import and preview invoice from pdf file
-            </Dialog.Description>
-            <div>
+    <SessionAuth>
+      <PermissionToProject projectId={projectId}>
+        <div className="pt-5">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
               <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-3 lg:gap-x-16">
                 <div className="col-span-2 mx-auto text-left lg:mx-0 lg:text-left">
-                  <div className="flex justify-between">
-                    <h2 className="mb-6 pb-2 text-2xl font-bold uppercase tracking-wider">
-                      Invoice
-                    </h2>
-                  </div>
+                <div className="flex items-center mb-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void router.push(
+                        "/projects/" + projectId + "/invoice"
+                      );
+                    }}
+                    className="block rounded-md bg-white px-3 py-2 mx-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                  </button>
+                  <h2 className="py-2 px-3 text-2xl font-bold uppercase tracking-wider">
+                    Invoice
+                  </h2>
+                </div>
 
                   <div className="mb-8 flex justify-between">
                     <div className="w-2/4">
@@ -392,31 +392,13 @@ const InvoiceFormPage = () => {
                 >
                   Confirm
                 </button>
-                <button
-                  className="mb-2 mr-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                  type="button"
-                >
-                  Cancel
-                </button>
               </div>
             </div>
-            <Dialog.Close asChild>
-              <button
-                className="absolute right-4 top-4 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-blue-200 focus:border-2 focus:border-blue-500 focus:outline-none"
-                aria-label="Close"
-                type="button"
-              >
-                <Close className="h-4 w-4" />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </>
+          </div>
+        </div>
+      </PermissionToProject>
+    </SessionAuth>
   );
 };
 
-export default InvoiceFormPage;
+export default InvoiceImportPage;
