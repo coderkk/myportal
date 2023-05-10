@@ -3,14 +3,21 @@ import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createSupplierInvoiceSchema = z.object({
-  supplierInvoiceNo: z.string(),
-  supplierInvoiceDate: z.date(),
-  supplierInvoiceCostCode: z.string(),
+  invoiceNo: z.string(),
+  invoiceDate: z.date(),
+  costCenterId: z.string(),
   description: z.string(),
   vendorName: z.string(),
+  vendorAddress: z.string(),
+  vendorPhone: z.string(),
   supplierName: z.string(),
-  totalCost: z.number(),
+  supplierAddress: z.string(),
+  supplierPhone: z.string(),
+  grandAmount: z.number(),
+  taxAmount: z.number(),
+  netAmount: z.number(),
   projectId: z.string(),
+  fileId: z.string()
 });
 
 export const getSupplierInvoicesSchema = z.object({
@@ -23,8 +30,20 @@ export const getSupplierInvoiceInfoSchema = z.object({
 
 export const updateSupplierInvoiceSchema = z.object({
   supplierInvoiceId: z.string(),
-  supplierInvoiceNo: z.string(),
-  supplierInvoiceDate: z.date(),
+  invoiceNo: z.string(),
+  invoiceDate: z.date(),
+  costCenterId: z.string(),
+  description: z.string(),
+  vendorName: z.string(),
+  vendorAddress: z.string(),
+  vendorPhone: z.string(),
+  supplierName: z.string(),
+  supplierAddress: z.string(),
+  supplierPhone: z.string(),
+  grandAmount: z.number(),
+  taxAmount: z.number(),
+  netAmount: z.number(),
+  projectId: z.string(),
 });
 
 export const deleteSupplierInvoiceSchema = z.object({
@@ -39,14 +58,26 @@ export const supplierInvoiceRouter = createTRPCRouter({
         fn: () => {
           return ctx.prisma.supplierInvoice.create({
             data: {
-              createdById: ctx.session.user.id,
-              invoiceNo: input.supplierInvoiceNo,
-              invoiceDate: input.supplierInvoiceDate,
-              description: input.description,
+              invoiceNo: input.invoiceNo,
+              invoiceDate: input.invoiceDate,
+              costCenterId: input.costCenterId,
               vendorName: input.vendorName,
+              vendorAddress: input.vendorAddress,
+              vendorPhone: input.vendorPhone,
               supplierName: input.supplierName,
-              totalCost: input.totalCost,
+              supplierAddress: input.supplierAddress,
+              supplierPhone: input.supplierPhone,
+              grandAmount: input.grandAmount,
+              taxAmount: input.taxAmount,
+              netAmount: input.netAmount,
+              createdById: ctx.session.user.id,
               projectId: input.projectId,
+              paymentDue: new Date(),
+              description: "",
+              salePerson: "",
+              deliveryMethod: "",
+              deliveryTerm: "",
+              fileId: input.fileId,
             },
           });
         },
@@ -78,10 +109,19 @@ export const supplierInvoiceRouter = createTRPCRouter({
             id: supplierInvoice.id,
             invoiceNo: supplierInvoice.invoiceNo,
             invoiceDate: supplierInvoice.invoiceDate,
-            costCode: supplierInvoice.costCode,
+            costCenterId: supplierInvoice.costCenterId,
             description: supplierInvoice.description,
+            vendorName: supplierInvoice.vendorName,
+            vendorAddress: supplierInvoice.vendorAddress,
+            vendorPhone: supplierInvoice.vendorPhone,
             supplierName: supplierInvoice.supplierName,
-            totalCost: supplierInvoice.totalCost,
+            supplierAddress: supplierInvoice.supplierAddress,
+            supplierPhone: supplierInvoice.supplierPhone,
+            grandAmount: supplierInvoice.grandAmount,
+            taxAmount: supplierInvoice.taxAmount,
+            netAmount: supplierInvoice.netAmount,
+            projectId: supplierInvoice.projectId,
+            createdBy: supplierInvoice.createdBy,
           }));
         },
         errorMessages: ["Failed to get supplier invoices"],
@@ -102,6 +142,15 @@ export const supplierInvoiceRouter = createTRPCRouter({
                   name: true,
                 },
               },
+              supplierInvoiceDetails: {
+                include: {
+                  createdBy: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
             },
           });
         },
@@ -118,8 +167,18 @@ export const supplierInvoiceRouter = createTRPCRouter({
               id: input.supplierInvoiceId,
             },
             data: {
-              invoiceNo: input.supplierInvoiceNo,
-              invoiceDate: input.supplierInvoiceDate,
+              invoiceNo: input.invoiceNo,
+              invoiceDate: input.invoiceDate,
+              costCenterId: input.costCenterId,
+              vendorName: input.vendorName,
+              vendorAddress: input.vendorAddress,
+              vendorPhone: input.vendorPhone,
+              supplierName: input.supplierName,
+              supplierAddress: input.supplierAddress,
+              supplierPhone: input.supplierPhone,
+              grandAmount: input.grandAmount,
+              taxAmount: input.taxAmount,
+              netAmount: input.netAmount,
             },
           });
         },

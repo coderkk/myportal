@@ -1,15 +1,9 @@
-import { useRouter } from "next/router";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
-import { useGetPreSignedURLForUpload } from "../../hooks/s3";
-import { api } from "../../utils/api";
 import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
-
-import { nanoid } from "nanoid";
 import dynamic from "next/dynamic";
-import { env } from "../../env/client.mjs";
 import type { supplierInvoice } from "../../hooks/supplierInvoice";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
@@ -18,31 +12,38 @@ const Document = dynamic(() =>
   import("react-pdf").then((module) => module.Document)
 );
 
+type SupplierInvoiceDetail = {
+  item: string;
+  description: string;
+  quantity: number;
+  uom: string;
+  unitPrice: number;
+  discount: number;
+  amount: number;
+}
+
+interface SupplierInvoiceWithDetail extends supplierInvoice {
+  supplierInvoiceDetail: SupplierInvoiceDetail[];
+}
+
 interface InvoiceUploadProps {
-  onData: (data: supplierInvoice, fileId: string) => void;
+  onData: (data: SupplierInvoiceWithDetail, file: File | null) => void;
 }
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 
-const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
+const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
 
-  const router = useRouter();
-  const utils = api.useContext();
-  const projectId = router.query.projectId as string;
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pdfDocRef = useRef<HTMLInputElement | null>(null);
 
-  const [fileId, setFileId] = useState<string>("");
-  const [file, setFile] = useState<File | string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
-  const [folderPrefix] = useState("/");
   const [uploadFile, setUploadFile] = useState<File | undefined | null>(
       undefined
   );
-
-  const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
 
   const onDocumentLoadSuccess = (pdf: PDFDocumentProxy) => {
     setNumPages(pdf.numPages);
@@ -70,73 +71,15 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
     if (data != null) {
       onData(
         data,
-        fileId
+        file
       );
     }
   };
 
-  const handleUploadClick = () => {
+  const handleLoadClick = () => {
     // 👇 We redirect the click event onto the hidden input element
     inputRef.current?.click();
   };
-  const handleUploadFile = useCallback(
-    async (file: File) => {
-
-      const id = nanoid()
-      const fileName =
-        file.name.slice(0, file.name.lastIndexOf(".")) +
-        "-" +
-        id +
-        file.name.slice(file.name.lastIndexOf("."));
-      const fileId = folderPrefix === "/" ? fileName : folderPrefix + fileName;
-      setFileId(fileId);
-      try {
-        const { preSignedURLForUpload } = await getPreSignedURLForUpload({
-          fileId: fileId,
-          projectId: projectId,
-          aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
-        });
-
-        const uploadFile = fetch(preSignedURLForUpload, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type,
-          },
-          body: file,
-        })
-          .catch(() => {
-            throw new Error();
-          })
-          .finally(() => {
-            setFile(file);
-            setUploadFile(undefined);
-            void utils.s3.fetchS3BucketContents.invalidate({
-              aws_s3_bucket_name: env.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME,
-              projectId: projectId,
-              prefix: folderPrefix,
-            });
-          });
-
-        await toast.promise(uploadFile, {
-          loading: "Uploading file",
-          success: "File uploaded successfully",
-          error: "Error when uploading file",
-        });
-      } catch (error) {
-        // This try catch is necessary as getPreSignedURLForDownload
-        // returns a promise that can possibly cause a runtime error.
-        // we handle this error in src/utils/api.ts so there's no need
-        // to do anything here other than catch the error.
-        throw error;
-      }
-    },
-    [
-      folderPrefix,
-      getPreSignedURLForUpload,
-      projectId,
-      utils.s3.fetchS3BucketContents,
-    ]
-  );
 
   const validatePdfFile = async (file: File) => {
     try {
@@ -161,7 +104,7 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
       try {
         await validatePdfFile(files[0]);
         setUploadFile(files[0]);
-        await handleUploadFile(files[0]);
+        setFile(files[0]);
       } catch {
         toast.error("An error occured while handling the pdf file.");
       }
@@ -176,9 +119,9 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
         <button
           type="button"
           className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-          onClick={handleUploadClick}
+          onClick={handleLoadClick}
         >
-          {uploadFile ? `${uploadFile.name}` : "Upload file"}
+          {uploadFile ? `${uploadFile.name}` : "Load file"}
         </button>
         <input
           type="file"
@@ -209,4 +152,4 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
   ``;
 };
 
-export default InvoiceUpload;
+export default InvoiceLoad;

@@ -75,8 +75,10 @@ model User {
     assignedTasks                 Task[]                  @relation("assignedTasks")
     projects                      UsersOnProjects[]
     createdSupplierInvoices       SupplierInvoice[]
+    supplierInvoiceDetail         SupplierInvoiceDetail[]
     createdAt                     DateTime                @default(now())
     updatedAt                     DateTime                @default(now()) @updatedAt
+    CostCenter                    CostCenter[]
 }
 
 model VerificationToken {
@@ -103,6 +105,7 @@ model Project {
     supplierInvoices       SupplierInvoice[]
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @updatedAt
+    CostCenter             CostCenter[]
 
     @@index([createdById])
 }
@@ -307,23 +310,74 @@ model Budget {
     @@index([createdById])
 }
 
-model SupplierInvoice {
-    id           String   @id @default(cuid())
-    costCode     String   @default("")
-    description  String
-    invoiceNo    String
-    invoiceDate  DateTime
-    vendorName   String
-    supplierName String
-    totalCost    Float
-    projectId    String
-    project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById  String
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @default(now()) @updatedAt
+model CostCenter {
+    id               String            @id @default(cuid())
+    code             String
+    name             String
+    budget           Float
+    cost             Float
+    supplierInvoices SupplierInvoice[]
+    project          Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId        String
+    createdBy        User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById      String
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @default(now()) @updatedAt
 
     @@index([projectId])
+    @@index([createdById])
+}
+
+model SupplierInvoice {
+    id                     String                  @id @default(cuid())
+    costCenter             CostCenter?             @relation(fields: [costCenterId], references: [id], onDelete: Cascade)
+    costCenterId           String?
+    description            String
+    invoiceNo              String
+    invoiceDate            DateTime
+    vendorName             String
+    vendorAddress          String
+    vendorPhone            String
+    paymentDue             DateTime
+    salePerson             String
+    supplierName           String
+    supplierAddress        String
+    supplierPhone          String
+    deliveryMethod         String
+    deliveryTerm           String
+    grandAmount            Float
+    taxAmount              Float
+    netAmount              Float
+    fileId                 String                  @default("")
+    supplierInvoiceDetails SupplierInvoiceDetail[]
+    projectId              String
+    project                Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById            String
+    createdAt              DateTime                @default(now())
+    updatedAt              DateTime                @default(now()) @updatedAt
+
+    @@index([costCenterId])
+    @@index([projectId])
+    @@index([createdById])
+}
+
+model SupplierInvoiceDetail {
+    id                String          @id @default(cuid())
+    supplierInvoice   SupplierInvoice @relation(fields: [supplierInvoiceId], references: [id], onDelete: Cascade)
+    supplierInvoiceId String
+    description       String
+    unitPrice         Float
+    quantity          Float
+    amount            Float
+    discount          Float
+    uom               String
+    createdBy         User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById       String
+    createdAt         DateTime        @default(now())
+    updatedAt         DateTime        @default(now()) @updatedAt
+
+    @@index([supplierInvoiceId])
     @@index([createdById])
 }
 
