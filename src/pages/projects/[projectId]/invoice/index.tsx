@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { useGetSupplierInvoices } from "../../../../hooks/supplierInvoice";
-import InvoiceForm from '../../../../components/invoice/InvoiceForm'
 
 const Invoices = () => {
   const router = useRouter();
@@ -40,7 +39,17 @@ const Invoices = () => {
                   >
                     Add Supplier Invoice
                   </button>
-                  <InvoiceForm />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void router.push(
+                        "/projects/" + projectId + "/invoice/import"
+                      );
+                    }}
+                    className="block rounded-md bg-indigo-600 px-3 py-2 mx-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Add Supplier Invoice
+                  </button>
                 </div>
               </div>
               <div className="mt-8 flow-root">
