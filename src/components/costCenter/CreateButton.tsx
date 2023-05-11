@@ -2,8 +2,16 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useCreateCostCenter } from "../../hooks/costCenter";
+
+type FormValues = {
+  projectId: string,
+  code: string,
+  name: string,
+  budget: number,
+  cost: number
+};
 
 const CreateButton = ({ projectId }: { projectId: string }) => {
   const {
@@ -11,11 +19,11 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormValues>();
   const { createCostCenter } = useCreateCostCenter();
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -23,10 +31,10 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset();
     createCostCenter({
       projectId: projectId,
-      code: data.code as string,
-      name: data.name as string,
-      budget: data.budget as number,
-      cost: data.cost as number
+      code: data.code,
+      name: data.name,
+      budget: data.budget,
+      cost: data.cost
     });
   };
   const [open, setOpen] = useState(false);
