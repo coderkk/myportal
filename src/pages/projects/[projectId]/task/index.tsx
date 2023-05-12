@@ -6,8 +6,11 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import type { MutableRefObject } from "react";
-import { useCallback, useRef, useState } from "react";
-import { statusAtom } from "../../../../atoms/taskAtoms";
+import { useCallback, useRef } from "react";
+import {
+  activeSearchFiltersAtom,
+  activeStatusFiltersAtom,
+} from "../../../../atoms/taskAtoms";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import Spinner from "../../../../components/common/Spinner";
@@ -16,6 +19,7 @@ import EmptyState from "../../../../components/task/EmptyState";
 import FilterBar from "../../../../components/task/FilterBar";
 import {
   INFINITE_QUERY_LIMIT,
+  getSearchType,
   useDeleteTask,
   useGetTasks,
 } from "../../../../hooks/task";
@@ -32,7 +36,7 @@ const EditButton = dynamic(
   () => import("../../../../components/task/EditButton")
 );
 
-const transformStatusToFrontendValue = (status: TaskStatus) => {
+export const transformStatusToFrontendValue = (status: TaskStatus) => {
   switch (status) {
     case "COMPLETED":
       return "Completed";
@@ -45,53 +49,24 @@ const transformStatusToFrontendValue = (status: TaskStatus) => {
   }
 };
 
-export const filterIDs = [
-  "status",
-  "description",
-  "assignedTo",
-  "assignedBy",
-] as const;
-
-export type filterID = (typeof filterIDs)[number];
-
-export const filters = [
-  {
-    id: filterIDs[0],
-    name: "Status",
-    options: [
-      { value: "NOT_STARTED", label: "Not started" },
-      { value: "IN_PROGRESS", label: "In Progress" },
-      { value: "COMPLETED", label: "Completed" },
-    ],
-  },
-];
-
-export type section = {
-  id: filterID;
-  name: string;
-  options: option[];
-};
-
-export type option = {
-  value: string;
-  label: string;
-};
-
-export type activeFilter = {
-  filterID: filterID;
-  value: string;
-  label: string;
-};
-
 const Task = () => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
-  const [activeFilters, setActiveFilters] = useState<activeFilter[]>([]);
-  const [status] = useAtom(statusAtom);
+  const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+
   const { tasks, hasNextPage, fetchNextPage, isFetching } = useGetTasks({
     projectId: projectId,
     limit: INFINITE_QUERY_LIMIT,
-    statuses: status,
+    statuses: activeStatusFilters.map(
+      (activeStatusFilter) => activeStatusFilter.value
+    ),
+    searches: activeSearchFilters.map((activeSearchFilter) => {
+      return {
+        category: getSearchType(activeSearchFilter.label),
+        value: activeSearchFilter.value,
+      };
+    }),
   });
   const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
@@ -124,10 +99,7 @@ const Task = () => {
             <CreateButton projectId={projectId} description="New Task" />
           </div>
           <div className="mt-6">
-            <FilterBar
-              activeFilters={activeFilters}
-              setActiveFilters={setActiveFilters}
-            />
+            <FilterBar />
           </div>
           {tasks.length === 0 && !isFetching ? (
             <EmptyState projectId={projectId} />

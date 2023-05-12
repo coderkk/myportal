@@ -1,4 +1,6 @@
-import type { TaskStatus } from "@prisma/client";
 import { atom } from "jotai";
+import type { activeSearchFilter } from "../components/task/SearchFilter";
+import type { activeStatusFilter } from "../components/task/StatusFilter";
 
-export const statusAtom = atom<TaskStatus[] | undefined>(undefined);
+export const activeStatusFiltersAtom = atom<activeStatusFilter[]>([]);
+export const activeSearchFiltersAtom = atom<activeSearchFilter[]>([]);
