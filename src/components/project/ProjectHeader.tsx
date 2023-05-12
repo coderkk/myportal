@@ -4,10 +4,16 @@ import {
   PhoneIcon,
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
+import { useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useRef } from "react";
+import {
+  activeSearchFiltersAtom,
+  activeStatusFiltersAtom,
+} from "../../atoms/taskAtoms.jsx";
 import { env } from "../../env/client.mjs";
+import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task.js";
 import { api } from "../../utils/api";
 import { Header, MobileNavLink } from "../common/Header";
 import { projectFeatures } from "./data";
@@ -22,6 +28,8 @@ export const ProjectHeader = () => {
   const utils = api.useContext();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const projectId = router.query.projectId as string;
+  const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
 
   // TODO: add prefetching for financial dashboard, invoice processing, settings, and photos
   const prefetch = ({
@@ -70,8 +78,21 @@ export const ProjectHeader = () => {
         );
         break;
       case "/task":
-        void utils.task.getTasks.prefetch(
-          { projectId: projectId },
+        void utils.task.getTasks.prefetchInfinite(
+          {
+            projectId: projectId,
+            limit: INFINITE_QUERY_LIMIT,
+            statuses: activeStatusFilters.map(
+              (activeStatusFilter) => activeStatusFilter.value
+            ),
+            searches: activeSearchFilters.map((activeSearchFilter) => {
+              return {
+                category: getSearchType(activeSearchFilter.label),
+                value: activeSearchFilter.value,
+              };
+            }),
+          },
+          undefined,
           {
             staleTime: Infinity,
           }

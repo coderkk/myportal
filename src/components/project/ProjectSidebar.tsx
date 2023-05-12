@@ -8,9 +8,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { ReactNode } from "react";
 import { Fragment, useEffect, useState } from "react";
-import { statusAtom } from "../../atoms/taskAtoms";
+import {
+  activeSearchFiltersAtom,
+  activeStatusFiltersAtom,
+} from "../../atoms/taskAtoms";
 import { env } from "../../env/client.mjs";
-import { INFINITE_QUERY_LIMIT } from "../../hooks/task";
+import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task";
 import { api } from "../../utils/api";
 import { Logo } from "../common/Logo";
 import { projectFeatures } from "../project/data";
@@ -22,7 +25,8 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
   const projectId = router.query.projectId as string;
   const utils = api.useContext();
   const session = useSession();
-  const [status] = useAtom(statusAtom);
+  const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
 
   // TODO: add prefetching for financial dashboard, invoice processing, settings, and photos
   const prefetch = ({
@@ -85,7 +89,15 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
           {
             projectId: projectId,
             limit: INFINITE_QUERY_LIMIT,
-            statuses: status,
+            statuses: activeStatusFilters.map(
+              (activeStatusFilter) => activeStatusFilter.value
+            ),
+            searches: activeSearchFilters.map((activeSearchFilter) => {
+              return {
+                category: getSearchType(activeSearchFilter.label),
+                value: activeSearchFilter.value,
+              };
+            }),
           },
           undefined,
           {
