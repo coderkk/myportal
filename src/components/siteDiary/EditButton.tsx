@@ -106,8 +106,12 @@ const EditButton = ({
                             onChange(date);
                           }
                         }}
-                        previousMonthButtonLabel=<ChevronLeftIcon />
-                        nextMonthButtonLabel=<ChevronRightIcon />
+                        previousMonthButtonLabel={
+                          <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
+                        }
+                        nextMonthButtonLabel={
+                          <ChevronRightIcon className="h-6 w-6 text-slate-500" />
+                        }
                         popperClassName="react-datepicker-bottom"
                         dateFormat="dd/MM/yyyy"
                       />

@@ -7,15 +7,13 @@ export const createSiteDiarySchema = z.object({
   siteDiaryName: z.string(),
   siteDiaryDate: z.date(),
   projectId: z.string(),
-  startDate: z.date(),
-  endDate: z.date(),
 });
 
 export const getSiteDiariesSchema = z.object({
   projectId: z.string(),
-  siteDiaryName: z.string(),
-  startDate: z.date(),
-  endDate: z.date(),
+  siteDiaryNames: z.array(z.string()),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
 });
 
 export const getSiteDiaryInfoSchema = z.object({
@@ -26,15 +24,10 @@ export const updateSiteDiarySchema = z.object({
   siteDiaryId: z.string(),
   siteDiaryName: z.string(),
   siteDiaryDate: z.date(),
-  startDate: z.date(),
-  endDate: z.date(),
 });
 
 export const deleteSiteDiarySchema = z.object({
   siteDiaryId: z.string(),
-  siteDiaryName: z.string(),
-  startDate: z.date(),
-  endDate: z.date(),
 });
 
 export const siteDiaryRouter = createTRPCRouter({
@@ -60,65 +53,48 @@ export const siteDiaryRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await trycatch({
         fn: async () => {
-          if (input.startDate > input.endDate) {
+          if (
+            input.startDate &&
+            input.endDate &&
+            input.startDate > input.endDate
+          ) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
             });
           }
-          if (input.siteDiaryName === "") {
-            const siteDiaries = await ctx.prisma.siteDiary.findMany({
-              where: {
-                projectId: input.projectId,
-                date: {
-                  gte: input.startDate,
-                  lte: input.endDate,
+          const siteDiaries = await ctx.prisma.siteDiary.findMany({
+            where: {
+              projectId: input.projectId,
+              OR: !(input.siteDiaryNames.length > 0)
+                ? undefined
+                : input.siteDiaryNames.map((siteDiaryName) => {
+                    return {
+                      name: {
+                        contains: siteDiaryName,
+                      },
+                    };
+                  }),
+              date: {
+                gte: input.startDate,
+                lte: input.endDate,
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            select: {
+              id: true,
+              name: true,
+              date: true,
+              createdBy: {
+                select: {
+                  name: true,
                 },
               },
-              orderBy: {
-                createdAt: "desc",
-              },
-              select: {
-                id: true,
-                name: true,
-                date: true,
-                createdBy: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            });
+            },
+          });
 
-            return siteDiaries;
-          } else {
-            const siteDiaries = await ctx.prisma.siteDiary.findMany({
-              where: {
-                projectId: input.projectId,
-                name: {
-                  contains: input.siteDiaryName,
-                },
-                date: {
-                  gte: input.startDate,
-                  lte: input.endDate,
-                },
-              },
-              orderBy: {
-                createdAt: "desc",
-              },
-              select: {
-                id: true,
-                name: true,
-                date: true,
-                createdBy: {
-                  select: {
-                    name: true,
-                  },
-                },
-              },
-            });
-
-            return siteDiaries;
-          }
+          return siteDiaries;
         },
         errorMessages: ["Failed to get site diaries"],
       })();
