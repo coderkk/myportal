@@ -30,8 +30,6 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
       projectId: projectId,
       siteDiaryDate: data.date,
       siteDiaryName: data.name,
-      startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
-      endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
     });
   };
   const [open, setOpen] = useState(false);
