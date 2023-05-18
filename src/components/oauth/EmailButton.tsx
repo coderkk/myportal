@@ -28,10 +28,10 @@ const EmailButton = ({ callbackUrl }: { callbackUrl: string }) => {
   };
   return (
     <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
-      <div className="relative mb-2" data-te-input-wrapper-init>
+      <div className="relative mb-2">
         <input
           type="text"
-          className="peer h-full w-full rounded-[7px] border border-white border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-white placeholder-gray-500 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-white placeholder-shown:border-t-white focus:border-2 focus:border-blue-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-white"
+          className="peer h-full w-full rounded-[7px] border border-white border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-white placeholder-gray-500 placeholder-opacity-0 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-white placeholder-shown:border-t-white focus:border-2 focus:border-blue-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-white"
           id="email"
           placeholder="Email address"
           {...register("email", {

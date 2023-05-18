@@ -4,12 +4,23 @@ import {
   PhoneIcon,
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
+import { useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useRef } from "react";
+import {
+  activeDateFiltersAtom,
+  activeSearchFiltersAtom as activeSearchFiltersAtomForSiteDiary,
+} from "../../atoms/siteDiaryAtoms";
+import {
+  activeSearchFiltersAtom as activeSearchFiltersAtomForTask,
+  activeStatusFiltersAtom,
+} from "../../atoms/taskAtoms";
 import { env } from "../../env/client.mjs";
+import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task.js";
 import { api } from "../../utils/api";
 import { Header, MobileNavLink } from "../common/Header";
+import { getDateFromActiveFilter } from "../siteDiary/DateFilter";
 import { projectFeatures } from "./data";
 
 const callsToAction = [
@@ -22,6 +33,12 @@ export const ProjectHeader = () => {
   const utils = api.useContext();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const projectId = router.query.projectId as string;
+  const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
+  const [activeSearchFiltersForTask] = useAtom(activeSearchFiltersAtomForTask);
+  const [activeSearchFiltersForSiteDiary] = useAtom(
+    activeSearchFiltersAtomForSiteDiary
+  );
+  const [activeDateFilters] = useAtom(activeDateFiltersAtom);
 
   // TODO: add prefetching for financial dashboard, invoice processing, settings, and photos
   const prefetch = ({
@@ -60,9 +77,11 @@ export const ProjectHeader = () => {
         void utils.siteDiary.getSiteDiaries.prefetch(
           {
             projectId: projectId,
-            siteDiaryName: "",
-            startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
-            endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
+            siteDiaryNames: activeSearchFiltersForSiteDiary.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           {
             staleTime: Infinity,
@@ -70,8 +89,21 @@ export const ProjectHeader = () => {
         );
         break;
       case "/task":
-        void utils.task.getTasks.prefetch(
-          { projectId: projectId },
+        void utils.task.getTasks.prefetchInfinite(
+          {
+            projectId: projectId,
+            limit: INFINITE_QUERY_LIMIT,
+            statuses: activeStatusFilters.map(
+              (activeStatusFilter) => activeStatusFilter.value
+            ),
+            searches: activeSearchFiltersForTask.map((activeSearchFilter) => {
+              return {
+                category: getSearchType(activeSearchFilter.label),
+                value: activeSearchFilter.value,
+              };
+            }),
+          },
+          undefined,
           {
             staleTime: Infinity,
           }

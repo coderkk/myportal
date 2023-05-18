@@ -1,7 +1,10 @@
 import type { TaskStatus } from "@prisma/client";
 import { useAtom } from "jotai";
 import type { MutableRefObject } from "react";
-import { statusAtom } from "../atoms/taskAtoms";
+import {
+  activeSearchFiltersAtom,
+  activeStatusFiltersAtom,
+} from "../atoms/taskAtoms";
 import { api } from "../utils/api";
 
 export type task = {
@@ -13,13 +16,39 @@ export type task = {
 
 export const INFINITE_QUERY_LIMIT = 5;
 
+export const getSearchType = (label: string) => {
+  switch (label) {
+    case "Description":
+      return "DESCRIPTION";
+    case "Assigned To":
+      return "ASSIGNED_TO";
+    case "Assigned By":
+      return "ASSIGNED_BY";
+    default:
+      throw new Error("Invalid search type");
+  }
+};
+
 export const useCreateTask = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
-  const [status] = useAtom(statusAtom);
+  const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
   const { mutate: createTask } = api.task.createTask.useMutation({
     onSuccess(data) {
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
+        {
+          projectId: projectId,
+          limit: INFINITE_QUERY_LIMIT,
+          statuses: activeStatusFilters.map(
+            (activeStatusFilter) => activeStatusFilter.value
+          ),
+          searches: activeSearchFilters.map((activeSearchFilter) => {
+            return {
+              category: getSearchType(activeSearchFilter.label),
+              value: activeSearchFilter.value,
+            };
+          }),
+        },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -56,7 +85,15 @@ export const useCreateTask = ({ projectId }: { projectId: string }) => {
       await utils.task.getTasks.invalidate({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
-        statuses: status,
+        statuses: activeStatusFilters.map(
+          (activeStatusFilter) => activeStatusFilter.value
+        ),
+        searches: activeSearchFilters.map((activeSearchFilter) => {
+          return {
+            category: getSearchType(activeSearchFilter.label),
+            value: activeSearchFilter.value,
+          };
+        }),
       });
     },
   });
@@ -65,21 +102,38 @@ export const useCreateTask = ({ projectId }: { projectId: string }) => {
   };
 };
 
+export const category = ["DESCRIPTION", "ASSIGNED_TO", "ASSIGNED_BY"] as const;
+
+export type category = (typeof category)[number];
+
+type search = {
+  category: category;
+  value: string;
+};
+
 export const useGetTasks = ({
   projectId,
   limit,
   statuses,
+  searches,
 }: {
   projectId: string;
   limit: number;
-  statuses?: TaskStatus[];
+  statuses: TaskStatus[];
+  searches: search[];
 }) => {
   const { data, isLoading, isSuccess, hasNextPage, fetchNextPage, isFetching } =
     api.task.getTasks.useInfiniteQuery(
       {
         projectId: projectId,
         limit: limit,
-        statuses: statuses && statuses.length > 0 ? statuses : undefined,
+        statuses: statuses,
+        searches: searches.map((search) => {
+          return {
+            category: search.category,
+            value: search.value,
+          };
+        }),
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -97,17 +151,38 @@ export const useGetTasks = ({
 
 export const useUpdateTask = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
-  const [status] = useAtom(statusAtom);
+  const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
   const { mutate: updateTask } = api.task.updateTask.useMutation({
     async onMutate({ taskId, taskDescription, taskStatus, taskAssignedTo }) {
       await utils.task.getTasks.cancel();
       const previousData = utils.task.getTasks.getInfiniteData({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
-        statuses: status,
+        statuses: activeStatusFilters.map(
+          (activeStatusFilter) => activeStatusFilter.value
+        ),
+        searches: activeSearchFilters.map((activeSearchFilter) => {
+          return {
+            category: getSearchType(activeSearchFilter.label),
+            value: activeSearchFilter.value,
+          };
+        }),
       });
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
+        {
+          projectId: projectId,
+          limit: INFINITE_QUERY_LIMIT,
+          statuses: activeStatusFilters.map(
+            (activeStatusFilter) => activeStatusFilter.value
+          ),
+          searches: activeSearchFilters.map((activeSearchFilter) => {
+            return {
+              category: getSearchType(activeSearchFilter.label),
+              value: activeSearchFilter.value,
+            };
+          }),
+        },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -147,7 +222,15 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
           {
             projectId: projectId,
             limit: INFINITE_QUERY_LIMIT,
-            statuses: status,
+            statuses: activeStatusFilters.map(
+              (activeStatusFilter) => activeStatusFilter.value
+            ),
+            searches: activeSearchFilters.map((activeSearchFilter) => {
+              return {
+                category: getSearchType(activeSearchFilter.label),
+                value: activeSearchFilter.value,
+              };
+            }),
           },
           previousData
         );
@@ -159,7 +242,19 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
     },
     onSuccess(data, { taskId, taskDescription, taskStatus, taskAssignedTo }) {
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
+        {
+          projectId: projectId,
+          limit: INFINITE_QUERY_LIMIT,
+          statuses: activeStatusFilters.map(
+            (activeStatusFilter) => activeStatusFilter.value
+          ),
+          searches: activeSearchFilters.map((activeSearchFilter) => {
+            return {
+              category: getSearchType(activeSearchFilter.label),
+              value: activeSearchFilter.value,
+            };
+          }),
+        },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -199,7 +294,15 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
       await utils.task.getTasks.invalidate({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
-        statuses: status,
+        statuses: activeStatusFilters.map(
+          (activeStatusFilter) => activeStatusFilter.value
+        ),
+        searches: activeSearchFilters.map((activeSearchFilter) => {
+          return {
+            category: getSearchType(activeSearchFilter.label),
+            value: activeSearchFilter.value,
+          };
+        }),
       });
     },
   });
@@ -216,7 +319,8 @@ export const useDeleteTask = ({
   projectId: string;
 }) => {
   const utils = api.useContext();
-  const [status] = useAtom(statusAtom);
+  const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
   const { mutate: deleteTask } = api.task.deleteTask.useMutation({
     async onMutate({ taskId }) {
       if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
@@ -224,10 +328,30 @@ export const useDeleteTask = ({
       const previousData = utils.task.getTasks.getInfiniteData({
         projectId: projectId,
         limit: INFINITE_QUERY_LIMIT,
-        statuses: status,
+        statuses: activeStatusFilters.map(
+          (activeStatusFilter) => activeStatusFilter.value
+        ),
+        searches: activeSearchFilters.map((activeSearchFilter) => {
+          return {
+            category: getSearchType(activeSearchFilter.label),
+            value: activeSearchFilter.value,
+          };
+        }),
       });
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
+        {
+          projectId: projectId,
+          limit: INFINITE_QUERY_LIMIT,
+          statuses: activeStatusFilters.map(
+            (activeStatusFilter) => activeStatusFilter.value
+          ),
+          searches: activeSearchFilters.map((activeSearchFilter) => {
+            return {
+              category: getSearchType(activeSearchFilter.label),
+              value: activeSearchFilter.value,
+            };
+          }),
+        },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -249,7 +373,15 @@ export const useDeleteTask = ({
           {
             projectId: projectId,
             limit: INFINITE_QUERY_LIMIT,
-            statuses: status,
+            statuses: activeStatusFilters.map(
+              (activeStatusFilter) => activeStatusFilter.value
+            ),
+            searches: activeSearchFilters.map((activeSearchFilter) => {
+              return {
+                category: getSearchType(activeSearchFilter.label),
+                value: activeSearchFilter.value,
+              };
+            }),
           },
           previousData
         );
@@ -261,7 +393,19 @@ export const useDeleteTask = ({
     },
     onSuccess(data, { taskId }) {
       utils.task.getTasks.setInfiniteData(
-        { projectId: projectId, limit: INFINITE_QUERY_LIMIT, statuses: status },
+        {
+          projectId: projectId,
+          limit: INFINITE_QUERY_LIMIT,
+          statuses: activeStatusFilters.map(
+            (activeStatusFilter) => activeStatusFilter.value
+          ),
+          searches: activeSearchFilters.map((activeSearchFilter) => {
+            return {
+              category: getSearchType(activeSearchFilter.label),
+              value: activeSearchFilter.value,
+            };
+          }),
+        },
         (oldInfiniteData) => {
           if (oldInfiniteData) {
             const newInfiniteData = { ...oldInfiniteData };
@@ -286,14 +430,30 @@ export const useDeleteTask = ({
           await utils.task.getTasks.invalidate({
             projectId: projectId,
             limit: INFINITE_QUERY_LIMIT,
-            statuses: status,
+            statuses: activeStatusFilters.map(
+              (activeStatusFilter) => activeStatusFilter.value
+            ),
+            searches: activeSearchFilters.map((activeSearchFilter) => {
+              return {
+                category: getSearchType(activeSearchFilter.label),
+                value: activeSearchFilter.value,
+              };
+            }),
           });
         }
       } else {
         await utils.task.getTasks.invalidate({
           projectId: projectId,
           limit: INFINITE_QUERY_LIMIT,
-          statuses: status,
+          statuses: activeStatusFilters.map(
+            (activeStatusFilter) => activeStatusFilter.value
+          ),
+          searches: activeSearchFilters.map((activeSearchFilter) => {
+            return {
+              category: getSearchType(activeSearchFilter.label),
+              value: activeSearchFilter.value,
+            };
+          }),
         });
       }
     },

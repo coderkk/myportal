@@ -162,8 +162,12 @@ const AddInvoicePage = ({}) => {
                                         onChange(date);
                                       }
                                     }}
-                                    previousMonthButtonLabel=<ChevronLeftIcon />
-                                    nextMonthButtonLabel=<ChevronRightIcon />
+                                    previousMonthButtonLabel={
+                                      <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
+                                    }
+                                    nextMonthButtonLabel={
+                                      <ChevronRightIcon className="h-6 w-6 text-slate-500" />
+                                    }
                                     popperClassName="react-datepicker-bottom"
                                     placeholderText="From (dd/mm/yyyy)"
                                     dateFormat="dd/MM/yyyy"

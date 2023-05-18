@@ -30,8 +30,6 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
       projectId: projectId,
       siteDiaryDate: data.date,
       siteDiaryName: data.name,
-      startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
-      endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
     });
   };
   const [open, setOpen] = useState(false);
@@ -93,8 +91,8 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                             onChange(date);
                           }
                         }}
-                        previousMonthButtonLabel=<ChevronLeftIcon />
-                        nextMonthButtonLabel=<ChevronRightIcon />
+                        previousMonthButtonLabel=<ChevronLeftIcon className="h-6 w-6 text-slate-500" />
+                        nextMonthButtonLabel=<ChevronRightIcon className="h-6 w-6 text-slate-500" />
                         popperClassName="react-datepicker-bottom"
                         dateFormat="dd/MM/yyyy"
                       />

@@ -3,50 +3,38 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useAtom } from "jotai";
 import { Fragment, useState } from "react";
 import {
+  activeDateFiltersAtom,
   activeSearchFiltersAtom,
-  activeStatusFiltersAtom,
-} from "../../atoms/taskAtoms";
-import { transformStatusToFrontendValue } from "../../pages/projects/[projectId]/task";
+} from "../../atoms/siteDiaryAtoms";
+import { DesktopDateFilter, MobileDateFilter } from "./DateFilter";
 import { DesktopSearchFilter, MobileSearchFilter } from "./SearchFilter";
-import { DesktopStatusFilter, MobileStatusFilter } from "./StatusFilter";
 
-export const filterIDs = ["status", "search"] as const;
+export const filterIDs = ["search", "date"] as const;
 
 export type filterID = (typeof filterIDs)[number];
 
-export const TaskStatuses = [
-  "NOT_STARTED",
-  "IN_PROGRESS",
-  "COMPLETED",
-] as const;
-
-export const statusFilter = {
+export const searchFilter = {
   id: filterIDs[0],
-  name: "Status",
-  options: [
-    { value: TaskStatuses[0], label: "Not started" },
-    { value: TaskStatuses[1], label: "In Progress" },
-    { value: TaskStatuses[2], label: "Completed" },
-  ],
+  name: "Search",
+  options: [{ value: "", label: "Name" }],
 };
 
-export const searchFilter = {
+export const dateFilter = {
   id: filterIDs[1],
-  name: "Search",
+  name: "Date",
   options: [
-    { value: "", label: "Description" },
-    { value: "", label: "Assigned To" },
-    { value: "", label: "Assigned By" },
+    { value: undefined, label: "From" },
+    { value: undefined, label: "To" },
   ],
 };
 
 const FilterBar = () => {
   const [open, setOpen] = useState(false);
-  const [activeStatusFilters, setActiveStatusFilters] = useAtom(
-    activeStatusFiltersAtom
-  );
   const [activeSearchFilters, setActiveSearchFilters] = useAtom(
     activeSearchFiltersAtom
+  );
+  const [activeDateFilters, setActiveDateFilters] = useAtom(
+    activeDateFiltersAtom
   );
 
   return (
@@ -93,13 +81,13 @@ const FilterBar = () => {
                 <div className="mt-4">
                   <Disclosure
                     as="div"
-                    key={statusFilter.name}
+                    key={searchFilter.name}
                     className="border-t border-gray-200 px-4 py-6"
                   >
                     {({ open }) => (
-                      <MobileStatusFilter
+                      <MobileSearchFilter
                         open={open}
-                        statusFilter={statusFilter}
+                        searchFilter={searchFilter}
                       />
                     )}
                   </Disclosure>
@@ -109,10 +97,7 @@ const FilterBar = () => {
                     className="border-t border-gray-200 px-4 py-6"
                   >
                     {({ open }) => (
-                      <MobileSearchFilter
-                        open={open}
-                        searchFilter={searchFilter}
-                      />
+                      <MobileDateFilter open={open} dateFilter={dateFilter} />
                     )}
                   </Disclosure>
                 </div>
@@ -143,50 +128,6 @@ const FilterBar = () => {
               {/* Active filters */}
               <div className="mt-2 sm:ml-4 sm:mt-0">
                 <div className="-m-1 flex flex-wrap items-center">
-                  {activeStatusFilters?.map((activeStatusFilter, i) => (
-                    <span
-                      key={activeStatusFilter.value}
-                      className="m-1 inline-flex items-center rounded-xl border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
-                    >
-                      <span className="flex flex-col">
-                        <span className="text-[10px] text-slate-400">
-                          {activeStatusFilter.label}
-                        </span>
-                        <span className="flex items-center justify-between">
-                          {transformStatusToFrontendValue(
-                            activeStatusFilter.value
-                          )}
-                          <button
-                            type="button"
-                            className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
-                            onClick={() => {
-                              const newActiveStatusFilters = [
-                                ...activeStatusFilters,
-                              ];
-                              newActiveStatusFilters.splice(i, 1);
-                              setActiveStatusFilters(newActiveStatusFilters);
-                            }}
-                          >
-                            <span className="sr-only">
-                              Remove filter for {activeStatusFilter.label}
-                            </span>
-                            <svg
-                              className="h-2 w-2"
-                              stroke="currentColor"
-                              fill="none"
-                              viewBox="0 0 8 8"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeWidth="1.5"
-                                d="M1 1l6 6m0-6L1 7"
-                              />
-                            </svg>
-                          </button>
-                        </span>
-                      </span>
-                    </span>
-                  ))}
                   {activeSearchFilters?.map((activeSearchFilter, i) => (
                     <span
                       key={`${activeSearchFilter.value}-${i}`}
@@ -211,6 +152,48 @@ const FilterBar = () => {
                           >
                             <span className="sr-only">
                               Remove filter for {activeSearchFilter.label}
+                            </span>
+                            <svg
+                              className="h-2 w-2"
+                              stroke="currentColor"
+                              fill="none"
+                              viewBox="0 0 8 8"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeWidth="1.5"
+                                d="M1 1l6 6m0-6L1 7"
+                              />
+                            </svg>
+                          </button>
+                        </span>
+                      </span>
+                    </span>
+                  ))}
+                  {activeDateFilters?.map((activeDateFilter, i) => (
+                    <span
+                      key={i}
+                      className="m-1 inline-flex items-center rounded-xl border border-gray-200 bg-white py-1 pl-2 pr-2 text-sm font-medium text-gray-900"
+                    >
+                      <span className="flex flex-col">
+                        <span className="text-[10px] text-slate-400">
+                          {activeDateFilter.label}
+                        </span>
+                        <span className="flex items-center justify-between">
+                          {activeDateFilter?.value?.toLocaleDateString()}
+                          <button
+                            type="button"
+                            className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
+                            onClick={() => {
+                              const newActiveDateFilters = [
+                                ...activeDateFilters,
+                              ];
+                              newActiveDateFilters.splice(i, 1);
+                              setActiveDateFilters(newActiveDateFilters);
+                            }}
+                          >
+                            <span className="sr-only">
+                              Remove filter for {activeDateFilter.label}
                             </span>
                             <svg
                               className="h-2 w-2"
@@ -258,13 +241,13 @@ const FilterBar = () => {
             <div className="hidden sm:block">
               <div className="flow-root">
                 <Popover.Group className="-mx-4 flex items-center divide-x divide-gray-200">
-                  <DesktopStatusFilter
-                    key={statusFilter.id}
-                    statusFilter={statusFilter}
-                  />
                   <DesktopSearchFilter
                     key={searchFilter.id}
                     searchFilter={searchFilter}
+                  />
+                  <DesktopDateFilter
+                    key={dateFilter.id}
+                    dateFilter={dateFilter}
                   />
                 </Popover.Group>
               </div>

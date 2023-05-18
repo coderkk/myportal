@@ -22,9 +22,13 @@ export const getTasksSchema = z.object({
   projectId: z.string(),
   cursor: z.string().optional(),
   limit: z.number().min(1).max(10).default(5),
-  statuses: z
-    .array(z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED"]))
-    .optional(),
+  statuses: z.array(z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED"])),
+  searches: z.array(
+    z.object({
+      category: z.enum(["DESCRIPTION", "ASSIGNED_TO", "ASSIGNED_BY"]),
+      value: z.string(),
+    })
+  ),
 });
 
 export const getTaskInfoSchema = z.object({
@@ -84,8 +88,39 @@ export const taskRouter = createTRPCRouter({
             where: {
               projectId: input.projectId,
               status: {
-                in: input.statuses ? input.statuses : undefined,
+                in: input.statuses.length > 0 ? input.statuses : undefined,
               },
+              AND: !(input.searches.length > 0)
+                ? undefined
+                : input.searches.map((search) => {
+                    if (search.category === "DESCRIPTION")
+                      return {
+                        description: {
+                          contains: search.value,
+                        },
+                      };
+                    else if (search.category === "ASSIGNED_TO") {
+                      return {
+                        assignedTo: {
+                          email: {
+                            contains: search.value,
+                          },
+                        },
+                      };
+                    } else if (search.category === "ASSIGNED_BY") {
+                      return {
+                        createdBy: {
+                          email: {
+                            contains: search.value,
+                          },
+                        },
+                      };
+                    }
+                    // Here so that Typesciprt won't throw an error
+                    return {
+                      description: undefined,
+                    };
+                  }),
             },
             include: {
               createdBy: {

@@ -64,6 +64,7 @@ export type state = {
   queryPageSize: number;
   search_key: string;
 };
+
 export type action = {
   type: actionType;
   payload: number | string;
