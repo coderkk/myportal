@@ -1,4 +1,13 @@
-const tenderInformationItems = [
+import { Edit } from "@styled-icons/boxicons-solid/";
+import { ReactNode, useEffect, useState } from "react";
+
+type tenderData = {
+  id: number;
+  name: string;
+  icon: ReactNode;
+  description: string;
+};
+const tenderInformationItems: tenderData[] = [
   {
     id: 1,
     name: "Contract Value",
@@ -107,34 +116,57 @@ const TenderInformation = () => {
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-8   px-2 py-2 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         {tenderInformationItems.map((tenderInformationItem) => (
-          <span
+          <TenderComponent
             key={tenderInformationItem.id}
-            className="overflow-hidden rounded-xl border border-gray-200"
-          >
-            <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
-              <span
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
-                aria-hidden="true"
-              >
-                <span className="text-indigo-400">
-                  {tenderInformationItem.icon}
-                </span>
-              </span>
-              <div className="text-sm font-medium leading-6 text-gray-900">
-                {tenderInformationItem.name}
-              </div>
-            </div>
-            <dl className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6">
-              <div className="flex justify-between gap-x-4 py-3">
-                <dd className="text-gray-700">
-                  <span>{tenderInformationItem.description}</span>
-                </dd>
-              </div>
-            </dl>
-          </span>
+            tenderInformationItem={tenderInformationItem}
+          />
         ))}
       </div>
     </div>
+  );
+};
+
+const TenderComponent = ({
+  tenderInformationItem,
+}: {
+  tenderInformationItem: tenderData;
+}) => {
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    console.log(isHovering);
+  }, [isHovering]);
+  return (
+    <span
+      key={tenderInformationItem.id}
+      className="overflow-hidden rounded-xl border border-gray-200"
+    >
+      <div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-white object-cover ring-1 ring-gray-900/10"
+          aria-hidden="true"
+        >
+          <span className="text-indigo-400">{tenderInformationItem.icon}</span>
+        </span>
+        <div className="text-sm font-medium leading-6 text-gray-900">
+          {tenderInformationItem.name}
+        </div>
+      </div>
+      <dl
+        className="-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        <div className="flex justify-between gap-x-4 py-3">
+          <dd className="text-gray-700">
+            <span>{tenderInformationItem.description}</span>
+          </dd>
+          {isHovering && (
+            <Edit className="h-6 w-6  text-green-500 hover:cursor-pointer" />
+          )}
+        </div>
+      </dl>
+    </span>
   );
 };
 
