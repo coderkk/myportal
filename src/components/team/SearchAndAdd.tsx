@@ -24,7 +24,7 @@ const SearchAndAdd = ({
     setSelectedOptions([...newValue]);
   };
   return (
-    <>
+    <div className="flex flex-col gap-3 sm:flex-row">
       <Select
         value={selectedOptions.length === 0 ? null : selectedOptions} // needed so clear works properly
         className="w-full"
@@ -45,7 +45,7 @@ const SearchAndAdd = ({
         usersToBeAdded={selectedOptions}
         setSelectedOptions={setSelectedOptions}
       />
-    </>
+    </div>
   );
 };
 
