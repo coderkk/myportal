@@ -2,8 +2,16 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Edit } from "@styled-icons/boxicons-solid/";
 import { Close } from "@styled-icons/ionicons-outline";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useUpdateCostCenter } from "../../hooks/costCenter";
+
+type FormValues = {
+  id: string,
+  code: string,
+  name: string,
+  budget: number,
+  cost: number
+};
 
 type costCenter = {
   id: string;
@@ -28,7 +36,7 @@ const EditButton = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     values: {
       id: costCenter.id,
       code: costCenter.code,
@@ -40,17 +48,17 @@ const EditButton = ({
   const { updateCostCenter } = useUpdateCostCenter({ projectId: projectId });
 
   const onSubmit = (
-    data: FieldValues,
+    data: FormValues,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     setOpen(false);
     updateCostCenter({
-      costCenterId: data.id as string,
-      code: data.code as string,
-      name: data.name as string,
-      budget: data.budget as number,
-      cost: data.cost as number,
+      costCenterId: data.id,
+      code: data.code,
+      name: data.name,
+      budget: data.budget,
+      cost: data.cost,
     });
     reset();
   };

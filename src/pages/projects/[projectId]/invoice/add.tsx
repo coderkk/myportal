@@ -110,9 +110,7 @@ const AddInvoicePage = ({}) => {
                           <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                             Invoice No.
                           </label>
-                          <span className="mr-4 inline-block hidden md:block">
-                            :
-                          </span>
+                          <span className="mr-4 inline-block md:block">:</span>
                           <div className="flex-1">
                             <Controller
                               name="invoiceNo"
@@ -136,9 +134,7 @@ const AddInvoicePage = ({}) => {
                           <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                             Invoice Date
                           </label>
-                          <span className="mr-4 inline-block hidden md:block">
-                            :
-                          </span>
+                          <span className="mr-4 inline-block md:block">:</span>
                           <div className="flex-1">
                             <Controller
                               name="invoiceDate"
