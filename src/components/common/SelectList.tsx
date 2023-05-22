@@ -1,5 +1,5 @@
 import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
 import { Fragment } from "react";
 
@@ -10,10 +10,10 @@ export default function SelectList({
   options,
   buttonClassName = "relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm",
 }: {
-  value: string | undefined | null;
+  value: string | number | undefined | null;
   onChange: (arg0: string) => void;
   disabled?: boolean;
-  options: string[];
+  options: string[] | number[];
   buttonClassName?: string;
 }) {
   return (
@@ -22,7 +22,7 @@ export default function SelectList({
         <Listbox.Button className={buttonClassName}>
           <span className="block truncate">{value}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronUpDownIcon
+            <ChevronDownIcon
               className="h-5 w-5 text-gray-400"
               aria-hidden="true"
             />

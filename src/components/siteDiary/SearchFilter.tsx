@@ -65,7 +65,6 @@ const handleSearch = (
       newActiveSearchFilters.push(newActiveSearchFilterCandidate);
     }
   }
-  console.log(activeSearchFilters);
   setActiveSearchFilters([...activeSearchFilters, ...newActiveSearchFilters]);
   dispatch({ type: "name", payload: "" });
 };

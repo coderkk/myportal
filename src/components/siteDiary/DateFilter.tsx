@@ -5,11 +5,14 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/20/solid";
 import classNames from "classnames";
+import { getMonth, getYear } from "date-fns";
 import { useAtom } from "jotai";
 import { Fragment } from "react";
 import ReactDatePicker from "react-datepicker";
 import toast from "react-hot-toast";
 import { activeDateFiltersAtom } from "../../atoms/siteDiaryAtoms";
+import SelectList from "../common/SelectList";
+import CustomDateInput from "./CustomDateInput";
 import type { filterID } from "./FilterBar";
 import { filterIDs } from "./FilterBar";
 
@@ -29,6 +32,26 @@ export type activeDateFilter = {
   value: Date | undefined;
   label: string;
 };
+
+const range = (size: number, startAt = 0) => {
+  return [...Array(size).keys()].map((i) => i + startAt);
+};
+
+const years = range(80, getYear(new Date()) - 40);
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export const getDateFromActiveFilter = (
   fromNotTo: boolean,
@@ -54,8 +77,6 @@ const handleDateChange = (
   if (newDate) {
     // updating from date, check if fromDate is > toDate
     if (fromNotTo && toDate && newDate.getTime() > toDate.getTime()) {
-      console.log("==================================");
-      console.log(newDate.getTime(), toDate.getTime());
       toast.error("From date cannot be greater than To date");
       return;
     }
@@ -117,20 +138,55 @@ export const MobileDateFilter = ({
           {dateFilter.options.map((option, i) => (
             <div key={i} className="items-center">
               <div className="relative mb-2 flex flex-col justify-between gap-5">
-                <div className="flex items-center gap-2">
+                <div className=" items-center">
                   <ReactDatePicker
+                    renderCustomHeader={({
+                      date,
+                      changeMonth,
+                      changeYear,
+                      decreaseMonth,
+                      increaseMonth,
+                      prevMonthButtonDisabled,
+                      nextMonthButtonDisabled,
+                    }) => (
+                      <div className="m-2 flex justify-between">
+                        <SelectList
+                          value={getYear(date)}
+                          onChange={(value) => changeYear(Number(value))}
+                          options={years}
+                          buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
+                        />
+                        <SelectList
+                          value={months[getMonth(date)]}
+                          onChange={(value) =>
+                            changeMonth(months.indexOf(value))
+                          }
+                          options={Object.values(months)}
+                          buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
+                        />
+                        <div className="flex items-center">
+                          <button
+                            type="button"
+                            onClick={decreaseMonth}
+                            disabled={prevMonthButtonDisabled}
+                            title="Previous Month"
+                          >
+                            <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={increaseMonth}
+                            disabled={nextMonthButtonDisabled}
+                            title="Next Month"
+                          >
+                            <ChevronRightIcon className="h-6 w-6 text-slate-500" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     selected={getDateFromActiveFilter(
                       option.label === "From",
                       activeDateFilters
-                    )}
-                    className={classNames(
-                      getDateFromActiveFilter(
-                        option.label === "From",
-                        activeDateFilters
-                      )
-                        ? "pr-2"
-                        : "px-2",
-                      "h-10 w-full  text-center focus:border-blue-300 focus:outline-none sm:col-start-2"
                     )}
                     onChange={(date) => {
                       if (date) {
@@ -154,31 +210,25 @@ export const MobileDateFilter = ({
                       <ChevronRightIcon className="h-6 w-6 text-slate-500" />
                     }
                     popperClassName="react-datepicker-bottom"
-                    placeholderText="From (dd/mm/yyyy)"
+                    placeholderText={
+                      option.label === "From"
+                        ? "From (dd/mm/yyyy)"
+                        : "To (dd/mm/yyyy)"
+                    }
                     dateFormat="dd/MM/yyyy"
+                    customInput={
+                      <CustomDateInput
+                        clearInput={() =>
+                          handleDateChange(
+                            activeDateFilters,
+                            setActiveDateFilters,
+                            option.label === "From",
+                            undefined
+                          )
+                        }
+                      />
+                    }
                   />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="h-6 w-6"
-                    onClick={() => {
-                      handleDateChange(
-                        activeDateFilters,
-                        setActiveDateFilters,
-                        option.label === "From",
-                        undefined
-                      );
-                    }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
                 </div>
               </div>
             </div>
@@ -230,20 +280,55 @@ export const DesktopDateFilter = ({
             {dateFilter.options.map((option, i) => (
               <div key={i} className="items-center">
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center">
                     <ReactDatePicker
+                      renderCustomHeader={({
+                        date,
+                        changeMonth,
+                        changeYear,
+                        decreaseMonth,
+                        increaseMonth,
+                        prevMonthButtonDisabled,
+                        nextMonthButtonDisabled,
+                      }) => (
+                        <div className="m-2 flex justify-between">
+                          <SelectList
+                            value={getYear(date)}
+                            onChange={(value) => changeYear(Number(value))}
+                            options={years}
+                            buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
+                          />
+                          <SelectList
+                            value={months[getMonth(date)]}
+                            onChange={(value) =>
+                              changeMonth(months.indexOf(value))
+                            }
+                            options={Object.values(months)}
+                            buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
+                          />
+                          <div className="flex items-center">
+                            <button
+                              type="button"
+                              onClick={decreaseMonth}
+                              disabled={prevMonthButtonDisabled}
+                              title="Previous Month"
+                            >
+                              <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={increaseMonth}
+                              disabled={nextMonthButtonDisabled}
+                              title="Next Month"
+                            >
+                              <ChevronRightIcon className="h-6 w-6 text-slate-500" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       selected={getDateFromActiveFilter(
                         option.label === "From",
                         activeDateFilters
-                      )}
-                      className={classNames(
-                        getDateFromActiveFilter(
-                          option.label === "From",
-                          activeDateFilters
-                        )
-                          ? "pr-2"
-                          : "px-2",
-                        "h-10 w-full  text-center focus:border-blue-300 focus:outline-none sm:col-start-2"
                       )}
                       onChange={(date) => {
                         if (date) {
@@ -260,38 +345,26 @@ export const DesktopDateFilter = ({
                           );
                         }
                       }}
-                      previousMonthButtonLabel={
-                        <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
-                      }
-                      nextMonthButtonLabel={
-                        <ChevronRightIcon className="h-6 w-6 text-slate-500" />
-                      }
                       popperClassName="react-datepicker-bottom"
-                      placeholderText="From (dd/mm/yyyy)"
+                      placeholderText={
+                        option.label === "From"
+                          ? "From (dd/mm/yyyy)"
+                          : "To (dd/mm/yyyy)"
+                      }
                       dateFormat="dd/MM/yyyy"
+                      customInput={
+                        <CustomDateInput
+                          clearInput={() =>
+                            handleDateChange(
+                              activeDateFilters,
+                              setActiveDateFilters,
+                              option.label === "From",
+                              undefined
+                            )
+                          }
+                        />
+                      }
                     />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="h-6 w-6"
-                      onClick={() => {
-                        handleDateChange(
-                          activeDateFilters,
-                          setActiveDateFilters,
-                          option.label === "From",
-                          undefined
-                        );
-                      }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
                   </div>
                 </div>
               </div>

@@ -93,7 +93,7 @@ const FilterBar = () => {
                   </Disclosure>
                   <Disclosure
                     as="div"
-                    key={searchFilter.name}
+                    key={dateFilter.name}
                     className="border-t border-gray-200 px-4 py-6"
                   >
                     {({ open }) => (
