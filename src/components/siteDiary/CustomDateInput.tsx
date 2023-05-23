@@ -8,7 +8,7 @@ type CustomDateInputProps = HTMLProps<HTMLInputElement> & {
 const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
   ({ clearInput, ...rest }, forwardedRef) => {
     return (
-      <div className="flex max-w-sm">
+      <div className="flex max-w-sm items-center">
         <input
           {...rest}
           className="peer h-full w-full rounded-[7px] border border-slate-300 border-t-transparent bg-transparent px-3
@@ -29,39 +29,37 @@ const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
         >
           {rest.placeholder}
         </label>
-        <div className="absolute inset-y-0 right-0 flex items-center p-3">
-          {rest.value ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-full w-full rounded-full text-gray-500 hover:bg-gray-500/10"
-              onClick={clearInput}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          ) : (
-            <svg
-              aria-hidden="true"
-              className="h-full w-full  text-gray-500 dark:text-gray-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-          )}
-        </div>
+        {rest.value ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="absolute right-1 h-8 w-8 rounded-full p-1 text-gray-500 hover:bg-gray-500/10 peer-focus:text-slate-800"
+            onClick={clearInput}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        ) : (
+          <svg
+            aria-hidden="true"
+            className="absolute right-1 h-8 w-8 p-1 text-gray-500 peer-focus:text-blue-500 dark:text-gray-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+              clipRule="evenodd"
+            ></path>
+          </svg>
+        )}
       </div>
     );
   }
