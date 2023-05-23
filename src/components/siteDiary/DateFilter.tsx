@@ -1,5 +1,6 @@
-import { Disclosure, Popover, Transition } from "@headlessui/react";
+import { Disclosure, Listbox, Popover, Transition } from "@headlessui/react";
 import {
+  CheckIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -11,7 +12,6 @@ import { Fragment } from "react";
 import ReactDatePicker from "react-datepicker";
 import toast from "react-hot-toast";
 import { activeDateFiltersAtom } from "../../atoms/siteDiaryAtoms";
-import SelectList from "../common/SelectList";
 import CustomDateInput from "./CustomDateInput";
 import type { filterID } from "./FilterBar";
 import { filterIDs } from "./FilterBar";
@@ -138,11 +138,10 @@ export const MobileDateFilter = ({
           {dateFilter.options.map((option, i) => (
             <div key={i} className="items-center">
               <div className="relative mb-2 flex flex-col justify-between gap-5">
-                <div className=" items-center">
+                <div className="items-center">
                   <ReactDatePicker
                     renderCustomHeader={({
                       date,
-                      changeMonth,
                       changeYear,
                       decreaseMonth,
                       increaseMonth,
@@ -150,38 +149,93 @@ export const MobileDateFilter = ({
                       nextMonthButtonDisabled,
                     }) => (
                       <div className="m-2 flex justify-between">
-                        <SelectList
-                          value={getYear(date)}
-                          onChange={(value) => changeYear(Number(value))}
-                          options={years}
-                          buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
-                        />
-                        <SelectList
-                          value={months[getMonth(date)]}
-                          onChange={(value) =>
-                            changeMonth(months.indexOf(value))
-                          }
-                          options={Object.values(months)}
-                          buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
-                        />
-                        <div className="flex items-center">
-                          <button
-                            type="button"
-                            onClick={decreaseMonth}
-                            disabled={prevMonthButtonDisabled}
-                            title="Previous Month"
+                        <button
+                          type="button"
+                          onClick={decreaseMonth}
+                          disabled={prevMonthButtonDisabled}
+                          title="Previous Month"
+                        >
+                          <ChevronLeftIcon className="h-6 w-6 text-slate-500 hover:bg-gray-50" />
+                        </button>
+                        <div>
+                          <Listbox
+                            value={getYear(date)}
+                            onChange={(value) => changeYear(Number(value))}
                           >
-                            <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={increaseMonth}
-                            disabled={nextMonthButtonDisabled}
-                            title="Next Month"
-                          >
-                            <ChevronRightIcon className="h-6 w-6 text-slate-500" />
-                          </button>
+                            <div className="relative">
+                              <Listbox.Button className="mx-2 flex w-28 cursor-default items-center justify-between rounded-lg bg-white p-2 text-left hover:bg-gray-50 focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm">
+                                <div className="block w-full font-medium text-slate-800">
+                                  {months[getMonth(date)]} {getYear(date)}
+                                </div>
+                                <span className="pointer-events-none flex items-center">
+                                  <ChevronDownIcon
+                                    className="h-5 w-5 font-medium text-slate-800"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              </Listbox.Button>
+                              <Transition
+                                as={Fragment}
+                                leave="transition ease-in duration-100"
+                                leaveFrom="opacity-100"
+                                leaveTo="opacity-0"
+                              >
+                                <Listbox.Options className="absolute mt-1 max-h-60 w-28 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                  {years.map((year, idx) => (
+                                    <Listbox.Option
+                                      key={idx}
+                                      className={({ active }) =>
+                                        `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                          active
+                                            ? "bg-blue-600 text-white"
+                                            : "text-gray-900"
+                                        }`
+                                      }
+                                      value={year}
+                                    >
+                                      {({ selected, active }) => (
+                                        <>
+                                          <span
+                                            className={`block truncate ${
+                                              selected
+                                                ? "font-medium"
+                                                : "font-normal"
+                                            }`}
+                                          >
+                                            {year}
+                                          </span>
+                                          {selected ? (
+                                            <span
+                                              className={classNames(
+                                                active
+                                                  ? "text-white"
+                                                  : "text-blue-600",
+                                                "absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"
+                                              )}
+                                            >
+                                              <CheckIcon
+                                                className="h-5 w-5 "
+                                                aria-hidden="true"
+                                              />
+                                            </span>
+                                          ) : null}
+                                        </>
+                                      )}
+                                    </Listbox.Option>
+                                  ))}
+                                </Listbox.Options>
+                              </Transition>
+                            </div>
+                          </Listbox>
                         </div>
+                        <button
+                          type="button"
+                          onClick={increaseMonth}
+                          disabled={nextMonthButtonDisabled}
+                          title="Next Month"
+                        >
+                          <ChevronRightIcon className="h-6 w-6 text-slate-500 hover:bg-gray-50" />
+                        </button>
                       </div>
                     )}
                     selected={getDateFromActiveFilter(
@@ -204,10 +258,10 @@ export const MobileDateFilter = ({
                       }
                     }}
                     previousMonthButtonLabel={
-                      <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
+                      <ChevronLeftIcon className="h-6 w-6 text-slate-500 hover:bg-gray-50" />
                     }
                     nextMonthButtonLabel={
-                      <ChevronRightIcon className="h-6 w-6 text-slate-500" />
+                      <ChevronRightIcon className="h-6 w-6 text-slate-500 hover:bg-gray-50" />
                     }
                     popperClassName="react-datepicker-bottom"
                     placeholderText={
@@ -284,7 +338,6 @@ export const DesktopDateFilter = ({
                     <ReactDatePicker
                       renderCustomHeader={({
                         date,
-                        changeMonth,
                         changeYear,
                         decreaseMonth,
                         increaseMonth,
@@ -292,38 +345,93 @@ export const DesktopDateFilter = ({
                         nextMonthButtonDisabled,
                       }) => (
                         <div className="m-2 flex justify-between">
-                          <SelectList
-                            value={getYear(date)}
-                            onChange={(value) => changeYear(Number(value))}
-                            options={years}
-                            buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
-                          />
-                          <SelectList
-                            value={months[getMonth(date)]}
-                            onChange={(value) =>
-                              changeMonth(months.indexOf(value))
-                            }
-                            options={Object.values(months)}
-                            buttonClassName="w-28 cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left hover:bg-gray-50  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm"
-                          />
-                          <div className="flex items-center">
-                            <button
-                              type="button"
-                              onClick={decreaseMonth}
-                              disabled={prevMonthButtonDisabled}
-                              title="Previous Month"
+                          <button
+                            type="button"
+                            onClick={decreaseMonth}
+                            disabled={prevMonthButtonDisabled}
+                            title="Previous Month"
+                          >
+                            <ChevronLeftIcon className="h-6 w-6 text-slate-500 hover:bg-gray-50" />
+                          </button>
+                          <div>
+                            <Listbox
+                              value={getYear(date)}
+                              onChange={(value) => changeYear(Number(value))}
                             >
-                              <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={increaseMonth}
-                              disabled={nextMonthButtonDisabled}
-                              title="Next Month"
-                            >
-                              <ChevronRightIcon className="h-6 w-6 text-slate-500" />
-                            </button>
+                              <div className="relative">
+                                <Listbox.Button className="mx-2 flex w-28 cursor-default items-center justify-between rounded-lg bg-white p-2 text-left hover:bg-gray-50 focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm">
+                                  <div className="block w-full font-medium text-slate-800">
+                                    {months[getMonth(date)]} {getYear(date)}
+                                  </div>
+                                  <span className="pointer-events-none flex items-center">
+                                    <ChevronDownIcon
+                                      className="h-5 w-5 font-medium text-slate-800"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                </Listbox.Button>
+                                <Transition
+                                  as={Fragment}
+                                  leave="transition ease-in duration-100"
+                                  leaveFrom="opacity-100"
+                                  leaveTo="opacity-0"
+                                >
+                                  <Listbox.Options className="absolute mt-1 max-h-60 w-28 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    {years.map((year, idx) => (
+                                      <Listbox.Option
+                                        key={idx}
+                                        className={({ active }) =>
+                                          `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                            active
+                                              ? "bg-blue-600 text-white"
+                                              : "text-gray-900"
+                                          }`
+                                        }
+                                        value={year}
+                                      >
+                                        {({ selected, active }) => (
+                                          <>
+                                            <span
+                                              className={`block truncate ${
+                                                selected
+                                                  ? "font-medium"
+                                                  : "font-normal"
+                                              }`}
+                                            >
+                                              {year}
+                                            </span>
+                                            {selected ? (
+                                              <span
+                                                className={classNames(
+                                                  active
+                                                    ? "text-white"
+                                                    : "text-blue-600",
+                                                  "absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"
+                                                )}
+                                              >
+                                                <CheckIcon
+                                                  className="h-5 w-5 "
+                                                  aria-hidden="true"
+                                                />
+                                              </span>
+                                            ) : null}
+                                          </>
+                                        )}
+                                      </Listbox.Option>
+                                    ))}
+                                  </Listbox.Options>
+                                </Transition>
+                              </div>
+                            </Listbox>
                           </div>
+                          <button
+                            type="button"
+                            onClick={increaseMonth}
+                            disabled={nextMonthButtonDisabled}
+                            title="Next Month"
+                          >
+                            <ChevronRightIcon className="h-6 w-6 text-slate-500 hover:bg-gray-50" />
+                          </button>
                         </div>
                       )}
                       selected={getDateFromActiveFilter(
