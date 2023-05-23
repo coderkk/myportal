@@ -7,7 +7,7 @@ import { useUpdateProject } from "../../hooks/project";
 type FormValues = {
   name: string;
 };
-type project = {
+export type project = {
   id: string;
   name: string;
   createdBy: { name: string | null };
