@@ -1,7 +1,7 @@
 import { CheckIcon } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
 import classnames from "classnames";
-import React, { type ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 
 type SelectItemProps = {
   children: ReactNode;
@@ -9,7 +9,7 @@ type SelectItemProps = {
   value: string;
 };
 
-const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
+const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
   ({ children, className, value, ...props }, forwardedRef) => {
     return (
       <Select.Item

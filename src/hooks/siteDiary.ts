@@ -1,5 +1,9 @@
+import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
 import type { MutableRefObject } from "react";
+import { activeDateFiltersAtom } from "../atoms/siteDiaryAtoms";
+import { activeSearchFiltersAtom } from "../atoms/taskAtoms";
+import { getDateFromActiveFilter } from "../components/siteDiary/DateFilter";
 import { api } from "../utils/api";
 
 export type siteDiary = {
@@ -12,23 +16,29 @@ export type siteDiary = {
 export const useCreateSiteDiary = () => {
   const utils = api.useContext();
   const session = useSession();
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+  const [activeDateFilters] = useAtom(activeDateFiltersAtom);
   const { mutate: createSiteDiary } = api.siteDiary.createSiteDiary.useMutation(
     {
-      async onMutate({
-        projectId,
-        siteDiaryName,
-        siteDiaryDate,
-        startDate,
-        endDate,
-      }) {
+      async onMutate({ projectId, siteDiaryName, siteDiaryDate }) {
         await utils.siteDiary.getSiteDiaries.cancel();
-        const previousData = utils.siteDiary.getSiteDiaries.getData();
+        const previousData = utils.siteDiary.getSiteDiaries.getData({
+          projectId: projectId,
+          siteDiaryNames: activeSearchFilters.map(
+            (activeSearchFilter) => activeSearchFilter.value
+          ),
+          startDate: getDateFromActiveFilter(true, activeDateFilters),
+          endDate: getDateFromActiveFilter(false, activeDateFilters),
+        });
+
         utils.siteDiary.getSiteDiaries.setData(
           {
             projectId: projectId,
-            siteDiaryName: siteDiaryName,
-            startDate: startDate,
-            endDate: endDate,
+            siteDiaryNames: activeSearchFilters.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           (oldSiteDiaries) => {
             const optimisticUpdateObject = {
@@ -48,9 +58,11 @@ export const useCreateSiteDiary = () => {
           utils.siteDiary.getSiteDiaries.setData(
             {
               projectId: projectId,
-              siteDiaryName: siteDiaryName,
-              startDate: startDate,
-              endDate: endDate,
+              siteDiaryNames: activeSearchFilters.map(
+                (activeSearchFilter) => activeSearchFilter.value
+              ),
+              startDate: getDateFromActiveFilter(true, activeDateFilters),
+              endDate: getDateFromActiveFilter(false, activeDateFilters),
             },
             previousData
           );
@@ -60,8 +72,15 @@ export const useCreateSiteDiary = () => {
           rollback();
         }
       },
-      async onSettled() {
-        await utils.siteDiary.getSiteDiaries.invalidate();
+      async onSettled(_, __, values) {
+        await utils.siteDiary.getSiteDiaries.invalidate({
+          projectId: values.projectId,
+          siteDiaryNames: activeSearchFilters.map(
+            (activeSearchFilter) => activeSearchFilter.value
+          ),
+          startDate: getDateFromActiveFilter(true, activeDateFilters),
+          endDate: getDateFromActiveFilter(false, activeDateFilters),
+        });
       },
     }
   );
@@ -72,21 +91,21 @@ export const useCreateSiteDiary = () => {
 
 export const useGetSiteDiaries = ({
   projectId,
-  siteDiaryName,
+  siteDiaryNames,
   startDate,
   endDate,
 }: {
   projectId: string;
-  siteDiaryName: string;
+  siteDiaryNames: string[];
   startDate?: Date;
   endDate?: Date;
 }) => {
   const { data, isLoading } = api.siteDiary.getSiteDiaries.useQuery(
     {
       projectId: projectId,
-      siteDiaryName: siteDiaryName,
-      startDate: startDate || new Date(Date.parse("0001-01-01T18:00:00Z")),
-      endDate: endDate || new Date(Date.parse("9999-12-31T18:00:00Z")),
+      siteDiaryNames: siteDiaryNames,
+      startDate: startDate,
+      endDate: endDate,
     },
     {
       keepPreviousData: true,
@@ -110,23 +129,28 @@ export const useGetSiteDiary = ({ siteDiaryId }: { siteDiaryId: string }) => {
 
 export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+  const [activeDateFilters] = useAtom(activeDateFiltersAtom);
   const { mutate: updateSiteDiary } = api.siteDiary.updateSiteDiary.useMutation(
     {
-      async onMutate({
-        siteDiaryId,
-        siteDiaryName,
-        siteDiaryDate,
-        startDate,
-        endDate,
-      }) {
+      async onMutate({ siteDiaryId, siteDiaryName, siteDiaryDate }) {
         await utils.siteDiary.getSiteDiaries.cancel();
-        const previousData = utils.siteDiary.getSiteDiaries.getData();
+        const previousData = utils.siteDiary.getSiteDiaries.getData({
+          projectId: projectId,
+          siteDiaryNames: activeSearchFilters.map(
+            (activeSearchFilter) => activeSearchFilter.value
+          ),
+          startDate: getDateFromActiveFilter(true, activeDateFilters),
+          endDate: getDateFromActiveFilter(false, activeDateFilters),
+        });
         utils.siteDiary.getSiteDiaries.setData(
           {
             projectId: projectId,
-            siteDiaryName: siteDiaryName,
-            startDate: startDate,
-            endDate: endDate,
+            siteDiaryNames: activeSearchFilters.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           (oldSiteDiaries) => {
             if (oldSiteDiaries) {
@@ -152,9 +176,11 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
           utils.siteDiary.getSiteDiaries.setData(
             {
               projectId: projectId,
-              siteDiaryName: siteDiaryName,
-              startDate: startDate,
-              endDate: endDate,
+              siteDiaryNames: activeSearchFilters.map(
+                (activeSearchFilter) => activeSearchFilter.value
+              ),
+              startDate: getDateFromActiveFilter(true, activeDateFilters),
+              endDate: getDateFromActiveFilter(false, activeDateFilters),
             },
             previousData
           );
@@ -164,16 +190,15 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
           rollback();
         }
       },
-      onSuccess(
-        data,
-        { siteDiaryId, siteDiaryName, siteDiaryDate, startDate, endDate }
-      ) {
+      onSuccess(data, { siteDiaryId, siteDiaryName, siteDiaryDate }) {
         utils.siteDiary.getSiteDiaries.setData(
           {
             projectId: projectId,
-            siteDiaryName: siteDiaryName,
-            startDate: startDate,
-            endDate: endDate,
+            siteDiaryNames: activeSearchFilters.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           (oldSiteDiaries) => {
             if (oldSiteDiaries) {
@@ -197,7 +222,14 @@ export const useUpdateSiteDiary = ({ projectId }: { projectId: string }) => {
         );
       },
       async onSettled() {
-        await utils.siteDiary.getSiteDiaries.invalidate();
+        await utils.siteDiary.getSiteDiaries.invalidate({
+          projectId: projectId,
+          siteDiaryNames: activeSearchFilters.map(
+            (activeSearchFilter) => activeSearchFilter.value
+          ),
+          startDate: getDateFromActiveFilter(true, activeDateFilters),
+          endDate: getDateFromActiveFilter(false, activeDateFilters),
+        });
       },
     }
   );
@@ -214,19 +246,29 @@ export const useDeleteSiteDiary = ({
   projectId: string;
 }) => {
   const utils = api.useContext();
-
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+  const [activeDateFilters] = useAtom(activeDateFiltersAtom);
   const { mutate: deleteSiteDiary } = api.siteDiary.deleteSiteDiary.useMutation(
     {
-      async onMutate({ siteDiaryId, siteDiaryName, startDate, endDate }) {
+      async onMutate({ siteDiaryId }) {
         if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
         await utils.siteDiary.getSiteDiaries.cancel();
-        const previousData = utils.siteDiary.getSiteDiaries.getData();
+        const previousData = utils.siteDiary.getSiteDiaries.getData({
+          projectId: projectId,
+          siteDiaryNames: activeSearchFilters.map(
+            (activeSearchFilter) => activeSearchFilter.value
+          ),
+          startDate: getDateFromActiveFilter(true, activeDateFilters),
+          endDate: getDateFromActiveFilter(false, activeDateFilters),
+        });
         utils.siteDiary.getSiteDiaries.setData(
           {
             projectId: projectId,
-            siteDiaryName: siteDiaryName,
-            startDate: startDate,
-            endDate: endDate,
+            siteDiaryNames: activeSearchFilters.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           (oldSiteDiaries) => {
             const newSiteDiaries = oldSiteDiaries?.filter(
@@ -239,9 +281,11 @@ export const useDeleteSiteDiary = ({
           utils.siteDiary.getSiteDiaries.setData(
             {
               projectId: projectId,
-              siteDiaryName: siteDiaryName,
-              startDate: startDate,
-              endDate: endDate,
+              siteDiaryNames: activeSearchFilters.map(
+                (activeSearchFilter) => activeSearchFilter.value
+              ),
+              startDate: getDateFromActiveFilter(true, activeDateFilters),
+              endDate: getDateFromActiveFilter(false, activeDateFilters),
             },
             previousData
           );
@@ -251,13 +295,15 @@ export const useDeleteSiteDiary = ({
           rollback();
         }
       },
-      onSuccess(data, { siteDiaryId, siteDiaryName, startDate, endDate }) {
+      onSuccess(data, { siteDiaryId }) {
         utils.siteDiary.getSiteDiaries.setData(
           {
             projectId: projectId,
-            siteDiaryName: siteDiaryName,
-            startDate: startDate,
-            endDate: endDate,
+            siteDiaryNames: activeSearchFilters.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           (oldSiteDiaries) => {
             const newSiteDiaries = oldSiteDiaries?.filter(
@@ -271,10 +317,24 @@ export const useDeleteSiteDiary = ({
         if (pendingDeleteCountRef) {
           pendingDeleteCountRef.current -= 1;
           if (pendingDeleteCountRef.current === 0) {
-            await utils.siteDiary.getSiteDiaries.invalidate();
+            await utils.siteDiary.getSiteDiaries.invalidate({
+              projectId: projectId,
+              siteDiaryNames: activeSearchFilters.map(
+                (activeSearchFilter) => activeSearchFilter.value
+              ),
+              startDate: getDateFromActiveFilter(true, activeDateFilters),
+              endDate: getDateFromActiveFilter(false, activeDateFilters),
+            });
           }
         } else {
-          await utils.siteDiary.getSiteDiaries.invalidate();
+          await utils.siteDiary.getSiteDiaries.invalidate({
+            projectId: projectId,
+            siteDiaryNames: activeSearchFilters.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
+          });
         }
       },
     }

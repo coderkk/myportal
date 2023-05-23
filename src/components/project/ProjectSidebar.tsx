@@ -9,7 +9,11 @@ import { useRouter } from "next/router";
 import type { ReactNode } from "react";
 import { Fragment, useEffect, useState } from "react";
 import {
-  activeSearchFiltersAtom,
+  activeDateFiltersAtom,
+  activeSearchFiltersAtom as activeSearchFiltersAtomForSiteDiary,
+} from "../../atoms/siteDiaryAtoms";
+import {
+  activeSearchFiltersAtom as activeSearchFiltersAtomForTask,
   activeStatusFiltersAtom,
 } from "../../atoms/taskAtoms";
 import { env } from "../../env/client.mjs";
@@ -17,6 +21,7 @@ import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task";
 import { api } from "../../utils/api";
 import { Logo } from "../common/Logo";
 import { projectFeatures } from "../project/data";
+import { getDateFromActiveFilter } from "../siteDiary/DateFilter";
 
 const ProjectSidebar = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -26,7 +31,11 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
   const utils = api.useContext();
   const session = useSession();
   const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
-  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+  const [activeSearchFiltersForTask] = useAtom(activeSearchFiltersAtomForTask);
+  const [activeSearchFiltersForSiteDiary] = useAtom(
+    activeSearchFiltersAtomForSiteDiary
+  );
+  const [activeDateFilters] = useAtom(activeDateFiltersAtom);
 
   // TODO: add prefetching for financial dashboard, invoice processing, settings, and photos
   const prefetch = ({
@@ -75,9 +84,11 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         void utils.siteDiary.getSiteDiaries.prefetch(
           {
             projectId: projectId,
-            siteDiaryName: "",
-            startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
-            endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
+            siteDiaryNames: activeSearchFiltersForSiteDiary.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           {
             staleTime: Infinity,
@@ -92,7 +103,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
             statuses: activeStatusFilters.map(
               (activeStatusFilter) => activeStatusFilter.value
             ),
-            searches: activeSearchFilters.map((activeSearchFilter) => {
+            searches: activeSearchFiltersForTask.map((activeSearchFilter) => {
               return {
                 category: getSearchType(activeSearchFilter.label),
                 value: activeSearchFilter.value,

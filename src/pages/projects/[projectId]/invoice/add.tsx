@@ -123,9 +123,7 @@ const AddInvoicePage = ({}) => {
                           <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                             Invoice No.
                           </label>
-                          <span className="mr-4 inline-block hidden md:block">
-                            :
-                          </span>
+                          <span className="mr-4 inline-block md:block">:</span>
                           <div className="flex-1">
                             <Controller
                               name="invoiceNo"
@@ -149,9 +147,7 @@ const AddInvoicePage = ({}) => {
                           <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                             Invoice Date
                           </label>
-                          <span className="mr-4 inline-block hidden md:block">
-                            :
-                          </span>
+                          <span className="mr-4 inline-block md:block">:</span>
                           <div className="flex-1">
                             <Controller
                               name="invoiceDate"
@@ -175,8 +171,12 @@ const AddInvoicePage = ({}) => {
                                         onChange(date);
                                       }
                                     }}
-                                    previousMonthButtonLabel=<ChevronLeftIcon />
-                                    nextMonthButtonLabel=<ChevronRightIcon />
+                                    previousMonthButtonLabel={
+                                      <ChevronLeftIcon className="h-6 w-6 text-slate-500" />
+                                    }
+                                    nextMonthButtonLabel={
+                                      <ChevronRightIcon className="h-6 w-6 text-slate-500" />
+                                    }
                                     popperClassName="react-datepicker-bottom"
                                     placeholderText="From (dd/mm/yyyy)"
                                     dateFormat="dd/MM/yyyy"

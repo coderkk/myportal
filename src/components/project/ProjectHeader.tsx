@@ -9,13 +9,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useRef } from "react";
 import {
-  activeSearchFiltersAtom,
+  activeDateFiltersAtom,
+  activeSearchFiltersAtom as activeSearchFiltersAtomForSiteDiary,
+} from "../../atoms/siteDiaryAtoms";
+import {
+  activeSearchFiltersAtom as activeSearchFiltersAtomForTask,
   activeStatusFiltersAtom,
-} from "../../atoms/taskAtoms.jsx";
+} from "../../atoms/taskAtoms";
 import { env } from "../../env/client.mjs";
 import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task.js";
 import { api } from "../../utils/api";
 import { Header, MobileNavLink } from "../common/Header";
+import { getDateFromActiveFilter } from "../siteDiary/DateFilter";
 import { projectFeatures } from "./data";
 
 const callsToAction = [
@@ -29,7 +34,11 @@ export const ProjectHeader = () => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const projectId = router.query.projectId as string;
   const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
-  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+  const [activeSearchFiltersForTask] = useAtom(activeSearchFiltersAtomForTask);
+  const [activeSearchFiltersForSiteDiary] = useAtom(
+    activeSearchFiltersAtomForSiteDiary
+  );
+  const [activeDateFilters] = useAtom(activeDateFiltersAtom);
 
   // TODO: add prefetching for financial dashboard, invoice processing, settings, and photos
   const prefetch = ({
@@ -68,9 +77,11 @@ export const ProjectHeader = () => {
         void utils.siteDiary.getSiteDiaries.prefetch(
           {
             projectId: projectId,
-            siteDiaryName: "",
-            startDate: new Date(Date.parse("0001-01-01T18:00:00Z")),
-            endDate: new Date(Date.parse("9999-12-31T18:00:00Z")),
+            siteDiaryNames: activeSearchFiltersForSiteDiary.map(
+              (activeSearchFilter) => activeSearchFilter.value
+            ),
+            startDate: getDateFromActiveFilter(true, activeDateFilters),
+            endDate: getDateFromActiveFilter(false, activeDateFilters),
           },
           {
             staleTime: Infinity,
@@ -85,7 +96,7 @@ export const ProjectHeader = () => {
             statuses: activeStatusFilters.map(
               (activeStatusFilter) => activeStatusFilter.value
             ),
-            searches: activeSearchFilters.map((activeSearchFilter) => {
+            searches: activeSearchFiltersForTask.map((activeSearchFilter) => {
               return {
                 category: getSearchType(activeSearchFilter.label),
                 value: activeSearchFilter.value,
