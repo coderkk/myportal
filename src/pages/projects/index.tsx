@@ -80,7 +80,9 @@ const Projects = () => {
                           <MotionTR
                             key={project.id}
                             project={project}
-                            deleteProject={deleteProject}
+                            deleteProject={() =>
+                              deleteProject({ projectId: project.id })
+                            }
                           />
                         ))}
                       </AnimatePresence>
@@ -93,7 +95,7 @@ const Projects = () => {
               <Spinner />
             ) : (
               <span className="flex justify-center">
-                <p className="max-auto p-4 text-slate-500">End of tasks</p>
+                <p className="max-auto p-4 text-slate-500">End of projects</p>
               </span>
             )}
             {projects?.map((project) => (
@@ -142,16 +144,12 @@ const Projects = () => {
   );
 };
 
-type id = {
-  id: string;
-};
-
 const MotionTR = ({
   project,
   deleteProject,
 }: {
   project: project;
-  deleteProject: (projectId: id) => void;
+  deleteProject: () => void;
 }) => {
   return (
     <motion.tr
@@ -186,17 +184,20 @@ const MotionTR = ({
           </div>
         </div>
       </td>
+      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+        <div className="flex items-center">
+          <div className="m-0">
+            <div className="font-medium text-gray-900">{project.createdAt}</div>
+          </div>
+        </div>
+      </td>
       <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
         <span className="flex items-center justify-center">
           <EditButton project={project} />
           <DeleteButton
             title={`Delete Project ${project.name}`}
             subtitle="Are you sure you want to permanently delete this project?"
-            onDelete={() => {
-              deleteProject({
-                id: project.id,
-              });
-            }}
+            onDelete={deleteProject}
           />
         </span>
         <span className="sr-only">{project.createdBy.name}</span>
