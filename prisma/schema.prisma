@@ -72,7 +72,6 @@ model User {
     createdReplies                Reply[]
     createdBudgets                Budget[]
     createdTasks                  Task[]                  @relation("createdTasks")
-    createdCostCenters            CostCenter[]
     createdSupplierInvoiceDetails SupplierInvoiceDetail[]
     assignedTasks                 Task[]                  @relation("assignedTasks")
     projects                      UsersOnProjects[]
@@ -103,7 +102,6 @@ model Project {
     users                  UsersOnProjects[]
     budgets                Budget[]
     supplierInvoices       SupplierInvoice[]
-    costCenters            CostCenter[]
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @updatedAt
 
@@ -294,35 +292,18 @@ model UsersOnProjects {
 }
 
 model Budget {
-    id             String   @id @default(cuid())
-    costCode       String   @default("")
-    description    String
-    expectedBudget Int
-    costsIncurred  Int
-    project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId      String
-    createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById    String
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @default(now()) @updatedAt
-
-    @@index([projectId])
-    @@index([createdById])
-}
-
-model CostCenter {
     id               String            @id @default(cuid())
-    code             String
-    name             String
-    budget           Float
-    cost             Float
-    supplierInvoices SupplierInvoice[]
+    costCode         String            @default("")
+    description      String
+    expectedBudget   Int
+    costsIncurred    Int
     project          Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId        String
     createdBy        User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById      String
     createdAt        DateTime          @default(now())
     updatedAt        DateTime          @default(now()) @updatedAt
+    supplierInvoices SupplierInvoice[]
 
     @@index([projectId])
     @@index([createdById])
@@ -351,14 +332,14 @@ model SupplierInvoice {
     supplierInvoiceDetails SupplierInvoiceDetail[]
     projectId              String
     project                Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    costCenter             CostCenter?             @relation(fields: [costCenterId], references: [id], onDelete: Cascade)
-    costCenterId           String?
+    budget                 Budget?                 @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+    budgetId               String?
     createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById            String
     createdAt              DateTime                @default(now())
     updatedAt              DateTime                @default(now()) @updatedAt
 
-    @@index([costCenterId])
+    @@index([budgetId])
     @@index([projectId])
     @@index([createdById])
 }
