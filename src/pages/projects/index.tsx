@@ -37,7 +37,7 @@ const Projects = () => {
           <div className="m-auto">
             <div className="flex justify-between">
               <div className="text-lg font-medium">Projects</div>
-              <CreateButton />
+              <CreateButton description="New Project" />
             </div>
             <div className="mt-8 flow-root">
               <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
