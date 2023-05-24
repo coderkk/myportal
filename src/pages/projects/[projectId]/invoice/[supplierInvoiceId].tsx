@@ -7,9 +7,9 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import CostCenterDropdown from "../../../../components/costCenter/CostCenterDropdown";
+import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
 import { env } from "../../../../env/client.mjs";
-import { useGetCostCenters } from "../../../../hooks/costCenter";
+import { useGetBudgets } from "../../../../hooks/budget";
 import { useGetPreSignedURLForDownload } from "../../../../hooks/s3";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
 import {
@@ -29,7 +29,7 @@ const SupplierInvoiceView = () => {
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
   });
-  const { costCenters } = useGetCostCenters({ projectId: projectId });
+  const { budgets } = useGetBudgets({ projectId: projectId, pageSize: 100, pageIndex: 0, searchKey: ""  });
 
   const { supplierInvoiceDetails: supplierInvoiceDetailsData } =
     useGetSupplierInvoiceDetails({
@@ -56,7 +56,7 @@ const SupplierInvoiceView = () => {
       supplierInvoiceId: supplierInvoiceId,
       projectId: projectId,
       description: "",
-      costCenterId: data.costCenterId as string,
+      budgetId: data.budgetId as string,
       invoiceNo: data.invoiceNo as string,
       invoiceDate: data.invoiceDate as Date,
       vendorName: data.vendorName as string,
@@ -158,9 +158,6 @@ const SupplierInvoiceView = () => {
                               <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                                 Invoice No.
                               </label>
-                              <span className="mr-4 inline-block hidden md:block">
-                                :
-                              </span>
                               <div className="flex-1">
                                 <Controller
                                   name="invoiceNo"
@@ -186,9 +183,6 @@ const SupplierInvoiceView = () => {
                               <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                                 Invoice Date
                               </label>
-                              <span className="mr-4 inline-block hidden md:block">
-                                :
-                              </span>
                               <div className="flex-1">
                                 <Controller
                                   name="invoiceDate"
@@ -233,22 +227,19 @@ const SupplierInvoiceView = () => {
                             </div>
                             <div className="mb-2 items-center md:mb-1 md:flex">
                               <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
-                                Cost center
+                                Assign to cost code
                               </label>
-                              <span className="mr-4 inline-block hidden md:block">
-                                :
-                              </span>
                               <div className="flex-1">
                                 <Controller
-                                  name="costCenterId"
+                                  name="budgetId"
                                   control={control}
                                   render={({ field }) => {
                                     const { onChange, value } = field;
                                     return (
-                                      <CostCenterDropdown
-                                        costCenters={costCenters || []}
+                                      <CostCodeDropdown
+                                        budgets={budgets || []}
                                         defaultValue={value || null}
-                                        onCostCenterChange={(v) => onChange(v)}
+                                        onCostCodeChange={(v) => onChange(v)}
                                       />
                                     );
                                   }}

@@ -6,8 +6,8 @@ import ReactDatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import CostCenterDropdown from "../../../../components/costCenter/CostCenterDropdown";
-import { useGetCostCenters } from "../../../../hooks/costCenter";
+import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
+import { useGetBudgets } from "../../../../hooks/budget";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 
@@ -20,7 +20,7 @@ const AddInvoicePage = ({}) => {
     projectId: projectId,
     invoiceNo: "",
     invoiceDate: null,
-    costCenterId: "",
+    budgetId: "",
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
@@ -43,7 +43,7 @@ const AddInvoicePage = ({}) => {
   });
 
   const { createSupplierInvoice } = useCreateSupplierInvoice();
-  const { costCenters } = useGetCostCenters({ projectId: projectId });
+  const { budgets } = useGetBudgets({ projectId: projectId, pageSize: 100, pageIndex: 0, searchKey: "" });
 
   const { handleSubmit, control, register } = useForm<supplierInvoice>({
     values: invoiceData,
@@ -66,7 +66,7 @@ const AddInvoicePage = ({}) => {
       void createSupplierInvoice({
         projectId: projectId,
         description: "",
-        costCenterId: "",
+        budgetId: "",
         invoiceNo: data.invoiceNo as string,
         invoiceDate: data.invoiceDate as Date,
         vendorName: data.vendorName as string,
@@ -123,7 +123,6 @@ const AddInvoicePage = ({}) => {
                           <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                             Invoice No.
                           </label>
-                          <span className="mr-4 inline-block md:block">:</span>
                           <div className="flex-1">
                             <Controller
                               name="invoiceNo"
@@ -147,7 +146,6 @@ const AddInvoicePage = ({}) => {
                           <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                             Invoice Date
                           </label>
-                          <span className="mr-4 inline-block md:block">:</span>
                           <div className="flex-1">
                             <Controller
                               name="invoiceDate"
@@ -188,20 +186,19 @@ const AddInvoicePage = ({}) => {
                         </div>
                         <div className="mb-2 items-center md:mb-1 md:flex">
                           <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
-                            Cost center
+                            Assign to cost code
                           </label>
-                          <span className="mr-4 inline-block md:block">:</span>
                           <div className="flex-1">
                             <Controller
-                              name="costCenterId"
+                              name="budgetId"
                               control={control}
                               render={({ field }) => {
                                 const { onChange } = field;
                                 return (
-                                  <CostCenterDropdown
-                                    costCenters={costCenters || []}
+                                  <CostCodeDropdown
+                                    budgets={budgets || []}
                                     defaultValue={null}
-                                    onCostCenterChange={(value) =>
+                                    onCostCodeChange={(value) =>
                                       onChange(value)
                                     }
                                   />

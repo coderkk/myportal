@@ -13,8 +13,8 @@ import { env } from "../../../../env/client.mjs";
 import { useGetPreSignedURLForUpload } from "../../../../hooks/s3";
 import { api } from "../../../../utils/api";
 
-import CostCenterDropdown from "../../../../components/costCenter/CostCenterDropdown";
-import { useGetCostCenters } from "../../../../hooks/costCenter";
+import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
+import { useGetBudgets } from "../../../../hooks/budget";
 
 import InvoiceLoad from "../../../../components/invoice/InvoiceLoad";
 
@@ -49,7 +49,7 @@ const InvoiceImportPage = () => {
     projectId: projectId,
     invoiceNo: "",
     invoiceDate: null,
-    costCodeId: "",
+    budgetId: "",
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
@@ -69,12 +69,12 @@ const InvoiceImportPage = () => {
     taxAmount: 0,
     netAmount: 0,
     fileId: "",
-    supplierInvoiceDetail: [],
+    supplierInvoiceDetail: []
   };
 
   const [invoiceData, setInvoiceData] =
     useState<SupplierInvoiceWithDetail>(emptyData);
-  const { costCenters } = useGetCostCenters({ projectId: projectId });
+  const { budgets } = useGetBudgets({ projectId: projectId, pageSize: 100, pageIndex: 0, searchKey: "" });
 
   const handleData = (data: SupplierInvoiceWithDetail, file: File | null) => {
     setInvoiceData(data);
@@ -160,7 +160,7 @@ const InvoiceImportPage = () => {
       const supplierInvoiceId = await createSupplierInvoice({
         projectId: projectId,
         description: "",
-        costCenterId: data.costCenterId as string,
+        budgetId: data.budgetId as string,
         invoiceNo: data.invoiceNo as string,
         invoiceDate: data.invoiceDate as Date,
         vendorName: data.vendorName as string,
@@ -227,14 +227,12 @@ const InvoiceImportPage = () => {
                         <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                           Invoice No.
                         </label>
-                        <span className="mr-4 inline-block md:block">:</span>
                         <div className="flex-1">{invoiceData.invoiceNo}</div>
                       </div>
                       <div className="mb-2 items-center md:mb-1 md:flex">
                         <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                           Invoice Date
                         </label>
-                        <span className="mr-4 inline-block md:block">:</span>
                         <div className="flex-1">
                           {invoiceData.invoiceDate == undefined ||
                           invoiceData.invoiceDate == null
@@ -244,17 +242,16 @@ const InvoiceImportPage = () => {
                       </div>
                       <div className="mb-2 items-center md:mb-1 md:flex">
                         <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
-                          Cost center
+                          Assign to cost code
                         </label>
-                        <span className="mr-4 inline-block md:block">:</span>
                         <div className="flex-1">
-                          <CostCenterDropdown
-                            costCenters={costCenters || []}
+                          <CostCodeDropdown
+                            budgets={budgets || []}
                             defaultValue={null}
-                            onCostCenterChange={(value) => {
+                            onCostCodeChange={(value) => {
                               setInvoiceData({
                                 ...invoiceData,
-                                costCenterId: value,
+                                budgetId: value,
                               });
                             }}
                           />
@@ -385,7 +382,7 @@ const InvoiceImportPage = () => {
                   disabled={
                     invoiceData.invoiceNo == "" ||
                     invoiceData.invoiceDate == null ||
-                    invoiceData.costCenterId == null
+                    invoiceData.budgetId == null
                   }
                   className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                   onClick={(e) => void handleConfirmUpload(e)}
