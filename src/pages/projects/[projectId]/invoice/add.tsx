@@ -1,7 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { parse } from "date-fns";
 import { useRouter } from "next/router";
-import { useState, type BaseSyntheticEvent } from "react";
+import React, { useState, type BaseSyntheticEvent } from "react";
 import ReactDatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
@@ -10,10 +10,22 @@ import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
 import { useGetBudgets } from "../../../../hooks/budget";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
+import { useCreateSupplierInvoiceDetail } from "../../../../hooks/supplierInvoiceDetail";
+import InvoiceItem from "../../../../components/invoice/InvoiceItem"
 
 const AddInvoicePage = ({}) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
+
+  type SupplierInvoiceDetail = {
+    item: string;
+    description: string;
+    quantity: number;
+    uom: string;
+    unitPrice: number;
+    discount: number;
+    amount: number;
+  };
 
   const [invoiceData] = useState<supplierInvoice>({
     supplierInvoiceId: "",
@@ -42,7 +54,10 @@ const AddInvoicePage = ({}) => {
     fileId: "",
   });
 
+  const [supplierInvoiceDetail, setSupplierInvoiceDetail] = useState<SupplierInvoiceDetail[]>([]);
+
   const { createSupplierInvoice } = useCreateSupplierInvoice();
+  const { createSupplierInvoiceDetail } = useCreateSupplierInvoiceDetail();
   const { budgets } = useGetBudgets({
     projectId: projectId,
     pageSize: 100,
@@ -50,25 +65,39 @@ const AddInvoicePage = ({}) => {
     searchKey: "",
   });
 
-  const { handleSubmit, control, register } = useForm<supplierInvoice>({
+  const { handleSubmit, control, register, reset } = useForm<supplierInvoice>({
     values: invoiceData,
     // resetOptions: {
     //   keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
     // }
   });
-  const onSubmit = (
+  const onSubmit = async (
     data: supplierInvoice,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
-    // reset();
-    saveRecord(data);
+    reset();
+    await saveRecord(data);
   };
 
-  const saveRecord = (data: supplierInvoice) => {
+  const invoiceItemUpdateHandler = (InvoiceItem: SupplierInvoiceDetail, index: number) => {
+    if (index == -1)
+      supplierInvoiceDetail.push(InvoiceItem);
+    else
+      supplierInvoiceDetail[index] = InvoiceItem;
+    setSupplierInvoiceDetail([...supplierInvoiceDetail]);
+  }
+
+  const removeInvoiceItemHandler = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    e?.preventDefault();
+    supplierInvoiceDetail.splice(index, 1);
+    setSupplierInvoiceDetail([...supplierInvoiceDetail]);
+  }
+
+  const saveRecord = async (data: supplierInvoice) => {
     data.projectId = projectId;
     try {
-      void createSupplierInvoice({
+      const supplierInvoiceId = await createSupplierInvoice({
         projectId: projectId,
         description: "",
         budgetId: "",
@@ -84,7 +113,23 @@ const AddInvoicePage = ({}) => {
         taxAmount: data.taxAmount as number,
         netAmount: data.netAmount as number,
         fileId: data.fileId as string,
-      });
+      }).then((res) => res.id);
+
+      for (let i = 0; i < supplierInvoiceDetail.length; i++) {
+        const detail = supplierInvoiceDetail[i];
+        if (detail) {
+          createSupplierInvoiceDetail({
+            supplierInvoiceId: supplierInvoiceId,
+            description: detail.description,
+            uom: detail.uom,
+            quantity: detail.quantity,
+            unitPrice: detail.unitPrice,
+            amount: detail.amount,
+            discount: 0,
+          });
+        }
+      }
+
       void router.push("/projects/" + projectId + "/invoice/");
     } catch (error) {
       throw error;
@@ -210,13 +255,13 @@ const AddInvoicePage = ({}) => {
                               name="budgetId"
                               control={control}
                               render={({ field }) => {
-                                const { onChange } = field;
+                                const { onChange, value } = field;
                                 return (
                                   <CostCodeDropdown
                                     budgets={budgets || []}
-                                    defaultValue={null}
-                                    onCostCodeChange={(value) =>
-                                      onChange(value)
+                                    defaultValue={value || null}
+                                    onCostCodeChange={(v) =>
+                                      onChange(v)
                                     }
                                   />
                                 );
@@ -361,15 +406,77 @@ const AddInvoicePage = ({}) => {
                         </p>
                       </div>
 
-                      <div className="w-20 px-1 text-center"></div>
+                      <div className="w-40 px-1 text-center"></div>
                     </div>
+                    {supplierInvoiceDetail.map((row, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="mx-1 flex items-center border-b py-2"
+                        >
+                          <div className="flex-1 px-1">
+                            <p className="text-sm tracking-wide text-gray-800">
+                              {row?.description}
+                            </p>
+                          </div>
+                          <div className="w-20 px-1 text-right">
+                            <p className="text-sm tracking-wide text-gray-800">
+                              {row?.uom}
+                            </p>
+                          </div>
 
-                    <button
-                      className="mt-6 rounded border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-100"
-                      type="button"
-                    >
-                      Add Invoice Items
-                    </button>
+                          <div className="w-32 px-1 text-right">
+                            <p className="leading-none">
+                              <span className="block text-sm tracking-wide text-gray-800">
+                                {row?.unitPrice}
+                              </span>
+                            </p>
+                          </div>
+
+                          <div className="w-32 px-1 text-right">
+                            <p className="leading-none">
+                              <span className="block text-sm tracking-wide text-gray-800">
+                                {row?.amount}
+                              </span>
+                            </p>
+                          </div>
+                          <div className="w-50 px-1 text-center">
+                            <InvoiceItem 
+                              title="Edit"
+                              index={i}
+                              invoiceItem={row} 
+                              onUpdate={(data, index) => {
+                                  invoiceItemUpdateHandler(data as SupplierInvoiceDetail, index)
+                                }
+                              }
+                              />
+                              <button
+                                type="button"
+                                className="mx-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                onClick={(e) => removeInvoiceItemHandler(e, i)}
+                              >
+                                Delete
+                              </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    <div className="mt-5">
+                      <InvoiceItem 
+                        title="Add new item"
+                        index={-1}
+                        invoiceItem={{
+                        description: "",
+                        quantity: 0,
+                        uom: "",
+                        unitPrice: 0,
+                        amount: 0
+                      }} onUpdate={(data, index) => {
+                          invoiceItemUpdateHandler(data as SupplierInvoiceDetail, index)
+                        }
+                      }  />
+                    </div>
 
                     <div className="ml-auto mt-5 w-full py-2 sm:w-2/4 lg:w-1/2">
                       <div className="mb-3 flex justify-between">
@@ -386,9 +493,10 @@ const AddInvoicePage = ({}) => {
                                 <input
                                   className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
                                   type="number"
+                                  step="0.01"
                                   placeholder="Amount"
                                   defaultValue={invoiceData.grandAmount}
-                                  {...register("grandAmount")}
+                                  {...register("grandAmount", { valueAsNumber: true })}
                                 />
                               );
                             }}
@@ -396,7 +504,7 @@ const AddInvoicePage = ({}) => {
                         </div>
                       </div>
                       <div className="mb-4 flex justify-between">
-                        <div className="mr-2 flex-1 text-right text-sm text-gray-600">
+                        <div className="mr-2 flex-1 text-right text-gray-800">
                           Sale Tax
                         </div>
                         <div className="w-40">
@@ -409,9 +517,10 @@ const AddInvoicePage = ({}) => {
                                 <input
                                   className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
                                   type="number"
+                                  step="0.01"
                                   placeholder="Tax Amount"
                                   defaultValue={invoiceData.taxAmount}
-                                  {...register("taxAmount")}
+                                  {...register("taxAmount", { valueAsNumber: true })}
                                 />
                               );
                             }}
@@ -421,7 +530,7 @@ const AddInvoicePage = ({}) => {
 
                       <div className="border-b border-t py-2">
                         <div className="flex justify-between">
-                          <div className="mr-2 flex-1 text-right text-xl text-gray-600">
+                          <div className="mr-2 flex-1 text-right text-xl text-gray-800">
                             Total
                           </div>
                           <div className="w-40">
@@ -434,9 +543,10 @@ const AddInvoicePage = ({}) => {
                                   <input
                                     className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
                                     type="number"
+                                    step="0.01"
                                     placeholder="Total Amount"
                                     defaultValue={invoiceData.netAmount}
-                                    {...register("netAmount")}
+                                    {...register("netAmount", { valueAsNumber: true })}
                                   />
                                 );
                               }}
@@ -446,7 +556,7 @@ const AddInvoicePage = ({}) => {
                       </div>
                     </div>
                     <button
-                      className="inline-flex h-9 items-center justify-center rounded-md bg-blue-100 px-4 py-0 text-sm font-medium text-blue-700 hover:bg-blue-200 disabled:bg-blue-50 disabled:text-blue-200"
+                      className="bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-blue-700 disabled:bg-blue-50 disabled:text-blue-200"
                       type="submit"
                     >
                       Submit
