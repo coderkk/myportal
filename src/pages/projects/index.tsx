@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { Header } from "../../components/common/Header";
 import Spinner from "../../components/common/Spinner";
@@ -51,13 +51,13 @@ const Projects = () => {
                     <tr>
                       <th
                         scope="col"
-                        className=" py-3.5 pl-3 text-left text-sm font-semibold text-gray-900 sm:pl-2"
+                        className=" max-w-col max-w-xs px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:px-2"
                       >
                         Description
                       </th>
                       <th
                         scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 "
                       >
                         Created By
                       </th>
@@ -69,7 +69,7 @@ const Projects = () => {
                       </th>
                       <th
                         scope="col"
-                        className="relative py-3.5 text-sm sm:pr-0"
+                        className="relative py-3.5 pr-3 text-sm sm:pr-2"
                       >
                         Actions
                       </th>
@@ -151,11 +151,6 @@ const MotionTR = ({
   project: project;
   deleteProject: () => void;
 }) => {
-  const motionRef = useRef(null);
-
-  useEffect(() => {
-    console.log(motionRef.current);
-  });
   return (
     <motion.tr
       layout
@@ -166,13 +161,12 @@ const MotionTR = ({
       }}
       transition={{ opacity: { duration: 0.2 } }}
       className="w-full"
-      ref={motionRef}
     >
-      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+      <td className="w-col-s sm:w-col-l px-3 py-5 text-sm text-gray-500">
         <div className="text-gray-900">{project.name}</div>
       </td>
-      <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-        <div className="flex items-center gap-2 sm:gap-3">
+      <td className="px-3 py-5 text-sm text-gray-500">
+        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-start sm:gap-3">
           <Image
             className=" h-8 w-8 rounded-full sm:h-11 sm:w-11"
             src={"/images/default-photo.jpg"}
@@ -180,7 +174,7 @@ const MotionTR = ({
             width={44}
             height={44}
           />
-          <div className="flex flex-wrap font-medium text-gray-900">
+          <div className="break-words font-medium text-gray-900">
             {project.createdBy.name}
           </div>
           {/* <div className="mt-1 text-gray-500">{task.createdBy?.email}</div> */}
