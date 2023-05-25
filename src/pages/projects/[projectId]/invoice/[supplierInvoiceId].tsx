@@ -7,9 +7,9 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import CostCenterDropdown from "../../../../components/costCenter/CostCenterDropdown";
+import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
 import { env } from "../../../../env/client.mjs";
-import { useGetCostCenters } from "../../../../hooks/costCenter";
+import { useGetBudgets } from "../../../../hooks/budget";
 import { useGetPreSignedURLForDownload } from "../../../../hooks/s3";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
 import {
@@ -29,7 +29,12 @@ const SupplierInvoiceView = () => {
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
   });
-  const { costCenters } = useGetCostCenters({ projectId: projectId });
+  const { budgets } = useGetBudgets({
+    projectId: projectId,
+    pageSize: 100,
+    pageIndex: 0,
+    searchKey: "",
+  });
 
   const { supplierInvoiceDetails: supplierInvoiceDetailsData } =
     useGetSupplierInvoiceDetails({
@@ -56,7 +61,7 @@ const SupplierInvoiceView = () => {
       supplierInvoiceId: supplierInvoiceId,
       projectId: projectId,
       description: "",
-      costCenterId: data.costCenterId as string,
+      budgetId: data.budgetId as string,
       invoiceNo: data.invoiceNo as string,
       invoiceDate: data.invoiceDate as Date,
       vendorName: data.vendorName as string,
@@ -134,8 +139,33 @@ const SupplierInvoiceView = () => {
                             </button>
                           </div>
                         )}
-                        <div className="flex justify-between">
-                          <h2 className="mb-6 pb-2 text-2xl font-bold uppercase tracking-wider">
+                        <div className="mb-6 flex items-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              void router.push(
+                                "/projects/" + projectId + "/invoice"
+                              );
+                            }}
+                            title="Back"
+                            className="mx-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              className="h-6 w-6"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                              />
+                            </svg>
+                          </button>
+                          <h2 className="px-3 py-2 text-2xl font-bold uppercase tracking-wider">
                             Invoice
                           </h2>
                         </div>
@@ -146,9 +176,6 @@ const SupplierInvoiceView = () => {
                               <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                                 Invoice No.
                               </label>
-                              <span className="mr-4 inline-block hidden md:block">
-                                :
-                              </span>
                               <div className="flex-1">
                                 <Controller
                                   name="invoiceNo"
@@ -174,9 +201,6 @@ const SupplierInvoiceView = () => {
                               <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                                 Invoice Date
                               </label>
-                              <span className="mr-4 inline-block hidden md:block">
-                                :
-                              </span>
                               <div className="flex-1">
                                 <Controller
                                   name="invoiceDate"
@@ -221,22 +245,19 @@ const SupplierInvoiceView = () => {
                             </div>
                             <div className="mb-2 items-center md:mb-1 md:flex">
                               <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
-                                Cost center
+                                Cost code
                               </label>
-                              <span className="mr-4 inline-block hidden md:block">
-                                :
-                              </span>
                               <div className="flex-1">
                                 <Controller
-                                  name="costCenterId"
+                                  name="budgetId"
                                   control={control}
                                   render={({ field }) => {
                                     const { onChange, value } = field;
                                     return (
-                                      <CostCenterDropdown
-                                        costCenters={costCenters || []}
+                                      <CostCodeDropdown
+                                        budgets={budgets || []}
                                         defaultValue={value || null}
-                                        onCostCenterChange={(v) => onChange(v)}
+                                        onCostCodeChange={(v) => onChange(v)}
                                       />
                                     );
                                   }}

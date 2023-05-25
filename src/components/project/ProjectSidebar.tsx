@@ -58,16 +58,6 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
           }
         );
         break;
-      case "/cost-center":
-        void utils.costCenter.getCostCenters.prefetch(
-          {
-            projectId: projectId,
-          },
-          {
-            staleTime: Infinity,
-          }
-        );
-        break;
       case "/invoice":
         void utils.s3.fetchS3BucketContents.prefetch(
           {

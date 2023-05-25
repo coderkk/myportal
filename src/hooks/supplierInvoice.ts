@@ -7,7 +7,7 @@ export type supplierInvoice = {
   projectId?: string;
   invoiceNo?: string;
   invoiceDate?: Date | null;
-  costCenterId?: string | null;
+  budgetId?: string | null;
   vendorName?: string;
   vendorAddress?: string;
   vendorPhone?: string;
@@ -43,7 +43,7 @@ export const useCreateSupplierInvoice = () => {
           (oldSupplierInvoices) => {
             const optimisticUpdateObject = {
               id: Date.now().toString(),
-              costCenterId: values.costCenterId,
+              budgetId: values.budgetId,
               invoiceNo: values.invoiceNo,
               invoiceDate: values.invoiceDate,
               description: values.description,
