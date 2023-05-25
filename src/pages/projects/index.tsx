@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { Header } from "../../components/common/Header";
 import Spinner from "../../components/common/Spinner";
@@ -33,62 +33,62 @@ const Projects = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="flex h-screen">
-          <div className="m-auto">
-            <div className="flex justify-between">
-              <div className="text-lg font-medium">Projects</div>
-              <CreateButton description="New Project" />
-            </div>
-            <div className="mt-8 flow-root">
-              <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <table
-                    className="min-w-full divide-y divide-gray-300 overflow-hidden"
-                    cellPadding={0}
-                  >
-                    <thead>
-                      <tr>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          Description
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          Created By
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          Created On
-                        </th>
-                        <th
-                          scope="col"
-                          className="relative py-3.5 text-sm sm:pr-0"
-                        >
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white">
-                      <AnimatePresence>
-                        {projects?.map((project) => (
-                          <MotionTR
-                            key={project.id}
-                            project={project}
-                            deleteProject={() =>
-                              deleteProject({ projectId: project.id })
-                            }
-                          />
-                        ))}
-                      </AnimatePresence>
-                    </tbody>
-                  </table>
-                </div>
+        <div className="mx-auto flex h-screen max-w-7xl flex-col items-center px-4 py-4 sm:px-6 lg:px-8">
+          <div className="mx-auto flex w-full items-center justify-between">
+            <h1 className="text-base font-semibold leading-6 text-gray-900">
+              Projects
+            </h1>
+            <CreateButton description="New Project" />
+          </div>
+          <div className="mt-8 flow-root w-full">
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table
+                  className="min-w-full divide-y divide-gray-300 overflow-hidden"
+                  cellPadding={0}
+                >
+                  <thead>
+                    <tr>
+                      <th
+                        scope="col"
+                        className=" py-3.5 pl-3 text-left text-sm font-semibold text-gray-900 sm:pl-2"
+                      >
+                        Description
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Created By
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Created On
+                      </th>
+                      <th
+                        scope="col"
+                        className="relative py-3.5 text-sm sm:pr-0"
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    <AnimatePresence>
+                      {projects?.map((project) => (
+                        <MotionTR
+                          key={project.id}
+                          project={project}
+                          deleteProject={() =>
+                            deleteProject({ projectId: project.id })
+                          }
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
               </div>
             </div>
             {isLoading ? (
@@ -151,6 +151,11 @@ const MotionTR = ({
   project: project;
   deleteProject: () => void;
 }) => {
+  const motionRef = useRef(null);
+
+  useEffect(() => {
+    console.log(motionRef.current);
+  });
   return (
     <motion.tr
       layout
@@ -161,27 +166,24 @@ const MotionTR = ({
       }}
       transition={{ opacity: { duration: 0.2 } }}
       className="w-full"
+      ref={motionRef}
     >
       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
         <div className="text-gray-900">{project.name}</div>
       </td>
       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-        <div className="flex items-center">
-          <div className="h-11 w-11 flex-shrink-0">
-            <Image
-              className="h-11 w-11 rounded-full"
-              src={"/images/default-photo.jpg"}
-              alt="Created by photo"
-              width={44}
-              height={44}
-            />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Image
+            className=" h-8 w-8 rounded-full sm:h-11 sm:w-11"
+            src={"/images/default-photo.jpg"}
+            alt="Created by photo"
+            width={44}
+            height={44}
+          />
+          <div className="flex flex-wrap font-medium text-gray-900">
+            {project.createdBy.name}
           </div>
-          <div className="ml-4">
-            <div className="font-medium text-gray-900">
-              {project.createdBy.name}
-            </div>
-            {/* <div className="mt-1 text-gray-500">{task.createdBy?.email}</div> */}
-          </div>
+          {/* <div className="mt-1 text-gray-500">{task.createdBy?.email}</div> */}
         </div>
       </td>
       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
