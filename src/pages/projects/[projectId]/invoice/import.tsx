@@ -28,9 +28,9 @@ type SupplierInvoiceDetail = {
   amount: number;
 };
 
-interface SupplierInvoiceWithDetail extends supplierInvoice {
+type SupplierInvoiceWithDetail = supplierInvoice & {
   supplierInvoiceDetail: SupplierInvoiceDetail[];
-}
+};
 
 const InvoiceImportPage = () => {
   const router = useRouter();
