@@ -176,7 +176,10 @@ const SupplierInvoiceView = () => {
                             <button
                               type="button"
                               className="inline-flex items-center rounded bg-gray-300 px-4 py-2 font-bold text-gray-800 hover:bg-gray-400"
-                              onClick={void handleDownloadFile}
+                              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                                e.preventDefault();
+                                void handleDownloadFile();
+                              }}
                             >
                               <svg
                                 className="mr-2 h-4 w-4 fill-current"
