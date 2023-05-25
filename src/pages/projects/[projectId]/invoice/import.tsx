@@ -1,11 +1,11 @@
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
+import SessionAuth from "../../../../components/auth/SessionAuth";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoiceDetail } from "../../../../hooks/supplierInvoiceDetail";
-import PermissionToProject from "../../../../components/auth/PermissionToProject";
-import SessionAuth from "../../../../components/auth/SessionAuth";
 
 import { nanoid } from "nanoid";
 import toast from "react-hot-toast";
@@ -69,12 +69,17 @@ const InvoiceImportPage = () => {
     taxAmount: 0,
     netAmount: 0,
     fileId: "",
-    supplierInvoiceDetail: []
+    supplierInvoiceDetail: [],
   };
 
   const [invoiceData, setInvoiceData] =
     useState<SupplierInvoiceWithDetail>(emptyData);
-  const { budgets } = useGetBudgets({ projectId: projectId, pageSize: 100, pageIndex: 0, searchKey: "" });
+  const { budgets } = useGetBudgets({
+    projectId: projectId,
+    pageSize: 100,
+    pageIndex: 0,
+    searchKey: "",
+  });
 
   const handleData = (data: SupplierInvoiceWithDetail, file: File | null) => {
     setInvoiceData(data);
@@ -202,24 +207,34 @@ const InvoiceImportPage = () => {
             <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
               <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-3 lg:gap-x-16">
                 <div className="col-span-2 mx-auto text-left lg:mx-0 lg:text-left">
-                <div className="flex items-center mb-6">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void router.push(
-                        "/projects/" + projectId + "/invoice"
-                      );
-                    }}
-                    className="block rounded-md bg-white px-3 py-2 mx-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                    </svg>
-                  </button>
-                  <h2 className="py-2 px-3 text-2xl font-bold uppercase tracking-wider">
-                    Invoice
-                  </h2>
-                </div>
+                  <div className="mb-6 flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void router.push("/projects/" + projectId + "/invoice");
+                      }}
+                      title="Back"
+                      className="mx-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        className="h-6 w-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                        />
+                      </svg>
+                    </button>
+                    <h2 className="px-3 py-2 text-2xl font-bold uppercase tracking-wider">
+                      Invoice
+                    </h2>
+                  </div>
 
                   <div className="mb-8 flex justify-between">
                     <div className="w-2/4">
@@ -242,7 +257,7 @@ const InvoiceImportPage = () => {
                       </div>
                       <div className="mb-2 items-center md:mb-1 md:flex">
                         <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
-                          Assign to cost code
+                          Cost code
                         </label>
                         <div className="flex-1">
                           <CostCodeDropdown
