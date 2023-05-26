@@ -21,8 +21,6 @@ const DeleteButton = dynamic(
 const EditButton = dynamic(() => import("../../components/project/EditButton"));
 
 const Projects = () => {
-  const router = useRouter();
-  const utils = api.useContext();
   const { projects, isLoading } = useGetProjects();
   const pendingDeleteCountRef = useRef(0);
 
@@ -98,45 +96,6 @@ const Projects = () => {
                 <p className="max-auto p-4 text-slate-500">End of projects</p>
               </span>
             )}
-            {projects?.map((project) => (
-              <div
-                key={project.id}
-                className="flex"
-                onMouseEnter={() => {
-                  void utils.me.hasPermissionToProject.prefetch(
-                    { projectId: project.id },
-                    {
-                      staleTime: Infinity,
-                    }
-                  );
-                }}
-              >
-                <span
-                  className="w-full bg-blue-500 text-white hover:bg-blue-200 hover:text-blue-500"
-                  onClick={() =>
-                    void router.push(
-                      `/projects/${project.id}/financial-dashboard`
-                    )
-                  }
-                >
-                  <div>
-                    <span className="mr-4">{project.name}</span>
-                    <span className="mr-4">{project.createdBy.name}</span>
-                    <span className="mr-4">{project.createdAt}</span>
-                  </div>
-                </span>
-                {/* <EditButton project={project} />
-                <DeleteButton
-                  title={`Delete Project ${project.name}`}
-                  subtitle="Are you sure you want to permanently delete this project?"
-                  onDelete={() => {
-                    deleteProject({
-                      projectId: project.id,
-                    });
-                  }}
-                /> */}
-              </div>
-            ))}
           </div>
         </div>
       )}
@@ -151,6 +110,8 @@ const MotionTR = ({
   project: project;
   deleteProject: () => void;
 }) => {
+  const router = useRouter();
+  const utils = api.useContext();
   return (
     <motion.tr
       layout
@@ -161,8 +122,21 @@ const MotionTR = ({
       }}
       transition={{ opacity: { duration: 0.2 } }}
       className="w-full"
+      onMouseEnter={() => {
+        void utils.me.hasPermissionToProject.prefetch(
+          { projectId: project.id },
+          {
+            staleTime: Infinity,
+          }
+        );
+      }}
     >
-      <td className="w-col-s sm:w-col-l px-3 py-5 text-sm text-gray-500">
+      <td
+        className="w-col-s sm:w-col-l px-3 py-5 text-sm text-gray-500 hover:cursor-pointer"
+        onClick={() =>
+          void router.push(`/projects/${project.id}/financial-dashboard`)
+        }
+      >
         <div className="text-gray-900">{project.name}</div>
       </td>
       <td className="px-3 py-5 text-sm text-gray-500">
