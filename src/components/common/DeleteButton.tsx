@@ -27,7 +27,12 @@ const DeleteButton = ({
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>
-        <span className={classNames(flex ? "flex" : "", "items-center")}>
+        <span
+          className={classNames(
+            flex ? "flex" : "",
+            "cursor-pointer items-center"
+          )}
+        >
           {!hideButton && <Delete className="mr-2 h-6 w-6 text-red-500" />}
           {triggerLabel}
         </span>
