@@ -22,13 +22,13 @@ type SupplierInvoiceDetail = {
   amount: number;
 };
 
-interface SupplierInvoiceWithDetail extends supplierInvoice {
+type SupplierInvoiceWithDetail = supplierInvoice & {
   supplierInvoiceDetail: SupplierInvoiceDetail[];
-}
+};
 
-interface InvoiceUploadProps {
+type InvoiceUploadProps = {
   onData: (data: SupplierInvoiceWithDetail, file: File | null) => void;
-}
+};
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 
