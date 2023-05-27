@@ -1,4 +1,5 @@
 import { budgetRouter } from "./routers/budget";
+import { gptRouter } from "./routers/gpt";
 import { laborerRouter } from "./routers/laborer";
 import { materialRouter } from "./routers/material";
 import { meRouter } from "./routers/me";
@@ -10,12 +11,12 @@ import { requestForInformationRouter } from "./routers/requestForInformation";
 import { s3Router } from "./routers/s3";
 import { siteDiaryRouter } from "./routers/siteDiary";
 import { siteProblemRouter } from "./routers/siteProblem";
+import { supplierInvoiceRouter } from "./routers/supplierInvoice";
+import { supplierInvoiceDetailRouter } from "./routers/supplierInvoiceDetail";
 import { taskRouter } from "./routers/task";
 import { userRouter } from "./routers/user";
 import { weatherRouter } from "./routers/weather";
 import { workProgressRouter } from "./routers/workProgress";
-import { supplierInvoiceRouter } from "./routers/supplierInvoice";
-import { supplierInvoiceDetailRouter } from "./routers/supplierInvoiceDetail";
 import { createTRPCRouter } from "./trpc";
 
 /**
@@ -42,6 +43,7 @@ export const appRouter = createTRPCRouter({
   budget: budgetRouter,
   supplierInvoice: supplierInvoiceRouter,
   supplierInvoiceDetail: supplierInvoiceDetailRouter,
+  gpt: gptRouter,
 });
 
 // export type definition of API
