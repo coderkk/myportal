@@ -103,7 +103,7 @@ export const parseData = (pdfContent: string) => {
     projectId: "",
     invoiceNo: "",
     invoiceDate: null,
-    costCode: "",
+    budgetId: "",
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",

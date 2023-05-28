@@ -107,7 +107,7 @@ const InvoiceImportPage = () => {
       if (fileId != "") {
         invoiceData.fileId = fileId;
         await saveRecord(invoiceData);
-        // router.reload();
+        void router.push("/projects/" + projectId + "/invoice");
       }
     } catch (e) {
       toast.error("An error occured");
@@ -262,11 +262,11 @@ const InvoiceImportPage = () => {
                         <div className="flex-1">
                           <CostCodeDropdown
                             budgets={budgets || []}
-                            defaultValue={null}
-                            onCostCodeChange={(value) => {
+                            defaultValue={invoiceData.budgetId}
+                            onCostCodeChange={(v) => {
                               setInvoiceData({
                                 ...invoiceData,
-                                budgetId: value,
+                                budgetId: v,
                               });
                             }}
                           />
