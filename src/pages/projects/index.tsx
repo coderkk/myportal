@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { Header } from "../../components/common/Header";
 import Spinner from "../../components/common/Spinner";
-import { project } from "../../components/project/EditButton";
+import type { project } from "../../components/project/EditButton";
 import { api } from "../../utils/api";
 
 const CreateButton = dynamic(
@@ -76,12 +76,12 @@ const Projects = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     <AnimatePresence>
-                      {projects?.map((project) => (
+                      {projects?.map((i: project) => (
                         <MotionTR
-                          key={project.id}
-                          project={project}
+                          key={i.id}
+                          project={i}
                           deleteProject={() =>
-                            deleteProject({ projectId: project.id })
+                            deleteProject({ projectId: i.id })
                           }
                         />
                       ))}
