@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
+import { EnterIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
@@ -111,6 +112,7 @@ const MotionTR = ({
   deleteProject: () => void;
 }) => {
   const [isHovering, setIsHovering] = useState(false);
+  const [isDescriptionHovering, setIsDescriptionHovering] = useState(true);
   const router = useRouter();
   const utils = api.useContext();
 
@@ -137,12 +139,19 @@ const MotionTR = ({
       onMouseLeave={() => setIsHovering(false)}
     >
       <td
-        className="w-col-s sm:w-col-l px-3 py-5 text-sm text-gray-500 hover:cursor-pointer"
+        className="w-col-s sm:w-col-l relative px-3 py-5 text-sm text-gray-500 hover:cursor-pointer"
         onClick={() =>
           void router.push(`/projects/${project.id}/financial-dashboard`)
         }
+        onMouseEnter={() => setIsDescriptionHovering(true)}
+        onMouseLeave={() => setIsDescriptionHovering(false)}
       >
         <div className="text-gray-900">{project.name}</div>
+        {isDescriptionHovering && (
+          <div className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black transition duration-300 hover:scale-125  hover:shadow-xl">
+            <EnterIcon className="h-5 w-5 text-white" />
+          </div>
+        )}
       </td>
       <td className="px-3 py-5 text-sm text-gray-500">
         <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-start lg:gap-3">
