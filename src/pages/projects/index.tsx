@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { Header } from "../../components/common/Header";
 import Spinner from "../../components/common/Spinner";
@@ -110,8 +110,19 @@ const MotionTR = ({
   project: project;
   deleteProject: () => void;
 }) => {
+  const [isHovering, setIsHovering] = useState(false);
   const router = useRouter();
   const utils = api.useContext();
+
+  const onEnterCb = () => {
+    setIsHovering(true);
+    void utils.me.hasPermissionToProject.prefetch(
+      { projectId: project.id },
+      {
+        staleTime: Infinity,
+      }
+    );
+  };
   return (
     <motion.tr
       layout
@@ -121,15 +132,9 @@ const MotionTR = ({
         opacity: 0,
       }}
       transition={{ opacity: { duration: 0.2 } }}
-      className="w-full"
-      onMouseEnter={() => {
-        void utils.me.hasPermissionToProject.prefetch(
-          { projectId: project.id },
-          {
-            staleTime: Infinity,
-          }
-        );
-      }}
+      className={isHovering ? "w-full bg-slate-100" : "w-full"}
+      onMouseEnter={onEnterCb}
+      onMouseLeave={() => setIsHovering(false)}
     >
       <td
         className="w-col-s sm:w-col-l px-3 py-5 text-sm text-gray-500 hover:cursor-pointer"
@@ -140,7 +145,7 @@ const MotionTR = ({
         <div className="text-gray-900">{project.name}</div>
       </td>
       <td className="px-3 py-5 text-sm text-gray-500">
-        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-start sm:gap-3">
+        <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-start lg:gap-3">
           <Image
             className=" h-8 w-8 rounded-full sm:h-11 sm:w-11"
             src={"/images/default-photo.jpg"}
