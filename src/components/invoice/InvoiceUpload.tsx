@@ -18,9 +18,9 @@ const Document = dynamic(() =>
   import("react-pdf").then((module) => module.Document)
 );
 
-interface InvoiceUploadProps {
+type InvoiceUploadProps = {
   onData: (data: supplierInvoice, fileId: string) => void;
-}
+};
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 

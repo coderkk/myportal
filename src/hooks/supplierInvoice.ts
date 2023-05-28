@@ -7,7 +7,7 @@ export type supplierInvoice = {
   projectId?: string;
   invoiceNo?: string;
   invoiceDate?: Date | null;
-  budgetId?: string | null;
+  budgetId: string | null;
   vendorName?: string;
   vendorAddress?: string;
   vendorPhone?: string;

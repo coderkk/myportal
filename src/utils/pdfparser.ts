@@ -23,9 +23,9 @@ type SupplierInvoiceDetail = {
   amount: number;
 };
 
-interface SupplierInvoiceWithDetail extends supplierInvoice {
+type SupplierInvoiceWithDetail = supplierInvoice & {
   supplierInvoiceDetail: SupplierInvoiceDetail[];
-}
+};
 
 export const getPDFText = async (pdf: PDFDocumentProxy) => {
   const pageTextPromises = [];
@@ -103,7 +103,7 @@ export const parseData = (pdfContent: string) => {
     projectId: "",
     invoiceNo: "",
     invoiceDate: null,
-    costCode: "",
+    budgetId: "",
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
