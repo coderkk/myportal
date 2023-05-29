@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import { useGetSupplierInvoices } from "../../../../hooks/supplierInvoice";
+import { format } from "date-fns";
 
 const Invoices = () => {
   const router = useRouter();
@@ -101,10 +102,10 @@ const Invoices = () => {
                                 {supplierInvoice.invoiceNo}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {supplierInvoice.invoiceDate.toString()}
+                                {format(supplierInvoice.invoiceDate, "dd MMM Y") }
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {supplierInvoice.totalAmount}
+                                {supplierInvoice.netAmount}
                               </td>
                               <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                 <button
