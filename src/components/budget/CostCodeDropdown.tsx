@@ -13,10 +13,12 @@ const CostCodeDropdown = ({
   budgets,
   defaultValue,
   onCostCodeChange,
+  error = false
 }: {
   budgets: Budget[];
   defaultValue: string | null;
   onCostCodeChange: (value: string) => void;
+  error?: boolean;
 }) => {
   const budgetValues = budgets.map((budget) => budget.id);
   return (
@@ -32,8 +34,10 @@ const CostCodeDropdown = ({
         budgetValues.length > 0 ? budgetValues : ["No cost code"]
       }
       onChange={(value: string) => {
-        onCostCodeChange(value);
-      }}
+          onCostCodeChange(value);
+        }
+      }
+      error={error}
     />
   );
 };

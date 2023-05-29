@@ -16,6 +16,7 @@ import type {
 } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import type { SupplierInvoiceWithDetails } from "./import";
+import classNames from 'classnames';
 
 const AddInvoicePage = ({}) => {
   const router = useRouter();
@@ -56,7 +57,13 @@ const AddInvoicePage = ({}) => {
     searchKey: "",
   });
 
-  const { handleSubmit, control, register, reset } = useForm<supplierInvoice>({
+  const { 
+    handleSubmit, 
+    control, 
+    register, 
+    reset, 
+    formState: { errors }, 
+  } = useForm<supplierInvoice>({
     values: invoiceData,
   });
 
@@ -146,7 +153,11 @@ const AddInvoicePage = ({}) => {
                               render={() => {
                                 return (
                                   <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                    className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
+                                      errors.invoiceNo
+                                        ? "border-red-400  focus:border-red-400 "
+                                        : ""
+                                    }`}
                                     type="text"
                                     placeholder="Invoice No"
                                     defaultValue={invoiceData.invoiceNo}
@@ -177,7 +188,11 @@ const AddInvoicePage = ({}) => {
                                         ? parse(value, "dd/MM/yyyy", new Date())
                                         : value
                                     }
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                    className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
+                                      errors.invoiceDate
+                                        ? "border-red-400  focus:border-red-400 "
+                                        : ""
+                                    }`}
                                     onChange={(date) => {
                                       if (date) {
                                         date.setHours(0, 0, 0, 0);
@@ -207,6 +222,7 @@ const AddInvoicePage = ({}) => {
                             <Controller
                               name="budgetId"
                               control={control}
+                              rules={{ required: true }}
                               render={({ field }) => {
                                 const { onChange, value } = field;
                                 return (
@@ -214,6 +230,7 @@ const AddInvoicePage = ({}) => {
                                     budgets={budgets || []}
                                     defaultValue={value || null}
                                     onCostCodeChange={(v) => onChange(v)}
+                                    error={(errors.budgetId) ? true : false}
                                   />
                                 );
                               }}
@@ -235,7 +252,11 @@ const AddInvoicePage = ({}) => {
                           render={() => {
                             return (
                               <input
-                                className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
+                                  errors.vendorName
+                                    ? "border-red-400  focus:border-red-400 "
+                                    : ""
+                                }`}
                                 type="text"
                                 placeholder="Vendor Name"
                                 defaultValue={invoiceData.vendorName}
@@ -286,7 +307,11 @@ const AddInvoicePage = ({}) => {
                           render={() => {
                             return (
                               <input
-                                className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
+                                  errors.supplierName
+                                    ? "border-red-400  focus:border-red-400 "
+                                    : ""
+                                }`}
                                 type="text"
                                 placeholder="Supplier Name"
                                 defaultValue={invoiceData.supplierName}
@@ -447,7 +472,11 @@ const AddInvoicePage = ({}) => {
                             render={() => {
                               return (
                                 <input
-                                  className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
+                                  className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                    errors.amount
+                                      ? "border-red-400  focus:border-red-400 "
+                                      : ""
+                                  }`}
                                   type="number"
                                   step="0.01"
                                   placeholder="Amount"
@@ -473,7 +502,11 @@ const AddInvoicePage = ({}) => {
                             render={() => {
                               return (
                                 <input
-                                  className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
+                                  className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                    errors.taxAmount
+                                      ? "border-red-400  focus:border-red-400 "
+                                      : ""
+                                  }`}
                                   type="number"
                                   step="0.01"
                                   placeholder="Tax Amount"
@@ -501,7 +534,11 @@ const AddInvoicePage = ({}) => {
                               render={() => {
                                 return (
                                   <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
+                                    className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                      errors.totalAmount
+                                        ? "border-red-400  focus:border-red-400 "
+                                        : ""
+                                    }`}
                                     type="number"
                                     step="0.01"
                                     placeholder="Total Amount"
