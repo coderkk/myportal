@@ -76,25 +76,24 @@ export const supplierInvoiceRouter = createTRPCRouter({
   createSupplierInvoice: protectedProcedure
     .input(createSupplierInvoiceSchema)
     .mutation(async ({ ctx, input }) => {
-      return await trycatch({
+      return trycatch({
         fn: () => {
           const { supplierInvoiceDetails, ...rest } = input;
-          return ctx.prisma.$transaction(async (tx) => {
-            const newSupplierInvoice = await tx.supplierInvoice.create({
-              data: {
-                ...rest,
-                createdById: ctx.session.user.id,
+          return ctx.prisma.supplierInvoice.create({
+            data: {
+              ...rest,
+              createdById: ctx.session.user.id,
+              supplierInvoiceDetails: {
+                createMany: {
+                  data: supplierInvoiceDetails.map((supplierInvoiceDetail) => {
+                    return {
+                      ...supplierInvoiceDetail,
+                      createdById: ctx.session.user.id,
+                    };
+                  }),
+                },
               },
-            });
-            await tx.supplierInvoiceDetail.createMany({
-              data: supplierInvoiceDetails.map((supplierInvoiceDetail) => {
-                return {
-                  createdById: ctx.session.user.id,
-                  supplierInvoiceId: newSupplierInvoice.id,
-                  ...supplierInvoiceDetail,
-                };
-              }),
-            });
+            },
           });
         },
         errorMessages: ["Failed to create supplier invoice"],
@@ -178,8 +177,8 @@ export const supplierInvoiceRouter = createTRPCRouter({
                       where: { id: id },
                       update: { ...rest },
                       create: {
-                        createdById: ctx.session.user.id,
                         ...rest,
+                        createdById: ctx.session.user.id,
                       },
                     };
                   }
