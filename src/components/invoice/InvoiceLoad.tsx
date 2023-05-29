@@ -52,7 +52,6 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
 
   const parseInvoice = async (pdf: PDFDocumentProxy) => {
     const pdfText = await getPDFText(pdf);
-    console.log(pdfText);
     const data = parseData(pdfText);
     if (data) {
       onData(data, file);
@@ -85,14 +84,18 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
 
   const validatePdfFile = async (file: File) => {
     try {
-      await loadFileObject(file).then((text) => {
-        if (typeof text == "string") {
-          const data = parseData(text);
-          if (!data) {
-            throw new Error();
+      if (["application/pdf", "application/x-pdf", "application/acrobat", "applications/vnd.pdf", "text/pdf", "text/x-pdf"].indexOf(file['type']) == -1) {
+        throw new Error("Invalid document type");
+      } else {
+        await loadFileObject(file).then((text) => {
+          if (typeof text == "string") {
+            const data = parseData(text);
+            if (!data) {
+              throw new Error();
+            }
           }
-        }
-      });
+        });
+      }
     } catch {
       toast.error("An error occured while validating the pdf file.");
     }
@@ -110,6 +113,7 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
         </button>
         <input
           type="file"
+          accept="application/pdf, application/x-pdf,application/acrobat, applications/vnd.pdf, text/pdf, text/x-pdf"
           ref={inputRef}
           onChange={(e) => {
             void handleFileChange(e);

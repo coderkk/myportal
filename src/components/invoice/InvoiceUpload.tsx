@@ -182,6 +182,7 @@ const InvoiceUpload = ({ onData }: InvoiceUploadProps) => {
         </button>
         <input
           type="file"
+          accept="application/pdf, application/x-pdf,application/acrobat, applications/vnd.pdf, text/pdf, text/x-pdf"
           ref={inputRef}
           onChange={(e) => {
             void handleFileChange(e);
