@@ -3,7 +3,7 @@ import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
-import type { SupplierInvoiceWithDetails } from "../../pages/projects/[projectId]/invoice/import";
+import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/import";
 import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
@@ -13,7 +13,7 @@ const Document = dynamic(() =>
 );
 
 type PdfLoadProps = {
-  onData: (data: SupplierInvoiceWithDetails, file: File | null) => void;
+  onData: (data: SupplierInvoiceWithItems, file: File | null) => void;
 };
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));

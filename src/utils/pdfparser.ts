@@ -9,7 +9,7 @@ import type {
   TextMarkedContent,
   TypedArray,
 } from "pdfjs-dist/types/src/display/api";
-import type { SupplierInvoiceWithDetails } from "../pages/projects/[projectId]/invoice/import";
+import type { SupplierInvoiceWithItems } from "../pages/projects/[projectId]/invoice/import";
 
 GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
@@ -77,7 +77,7 @@ export const parseData = (pdfContent: string) => {
   let vendor = false;
   let start_line = false;
 
-  const data: SupplierInvoiceWithDetails = {
+  const data: SupplierInvoiceWithItems = {
     id: "",
     invoiceNo: "",
     invoiceDate: new Date(),

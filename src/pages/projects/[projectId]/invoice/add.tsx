@@ -15,13 +15,13 @@ import type {
   supplierInvoiceItem,
 } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
-import type { SupplierInvoiceWithDetails } from "./import";
+import type { SupplierInvoiceWithItems } from "./import";
 
 const AddInvoicePage = ({}) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
-  const [invoiceData] = useState<SupplierInvoiceWithDetails>({
+  const [invoiceData] = useState<SupplierInvoiceWithItems>({
     id: "",
     description: "",
     invoiceNo: "",

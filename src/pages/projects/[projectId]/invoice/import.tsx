@@ -19,7 +19,7 @@ import PdfLoad from "../../../../components/invoice/PdfLoad";
 
 import type { supplierInvoiceItem } from "../../../../hooks/supplierInvoice";
 
-export type SupplierInvoiceWithDetails = supplierInvoice & {
+export type SupplierInvoiceWithItems = supplierInvoice & {
   supplierInvoiceItems: supplierInvoiceItem[];
 };
 
@@ -40,7 +40,7 @@ const InvoiceImportPage = () => {
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
   const { createSupplierInvoice } = useCreateSupplierInvoice();
 
-  const [invoiceData, setInvoiceData] = useState<SupplierInvoiceWithDetails>({
+  const [invoiceData, setInvoiceData] = useState<SupplierInvoiceWithItems>({
     id: "",
     description: "",
     invoiceNo: "",
@@ -66,7 +66,7 @@ const InvoiceImportPage = () => {
     searchKey: "",
   });
 
-  const handleData = (data: SupplierInvoiceWithDetails, file: File | null) => {
+  const handleData = (data: SupplierInvoiceWithItems, file: File | null) => {
     setInvoiceData(data);
     setFile(file);
 
