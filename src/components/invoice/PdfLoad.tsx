@@ -12,14 +12,14 @@ const Document = dynamic(() =>
   import("react-pdf").then((module) => module.Document)
 );
 
-type InvoiceUploadProps = {
+type PdfLoadProps = {
   onData: (data: SupplierInvoiceWithDetails, file: File | null) => void;
   hideLoadButton: boolean;
 };
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 
-const InvoiceLoad = forwardRef(({ onData, hideLoadButton }: InvoiceUploadProps, ref) => {
+const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pdfDocRef = useRef<HTMLInputElement | null>(null);
 
@@ -147,5 +147,5 @@ const InvoiceLoad = forwardRef(({ onData, hideLoadButton }: InvoiceUploadProps, 
   );
 });
 
-InvoiceLoad.displayName = "InvoiceLoad";
-export default InvoiceLoad;
+PdfLoad.displayName = "PdfLoad";
+export default PdfLoad;

@@ -15,7 +15,7 @@ import { api } from "../../../../utils/api";
 import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
 import { useGetBudgets } from "../../../../hooks/budget";
 
-import InvoiceLoad from "../../../../components/invoice/InvoiceLoad";
+import PdfLoad from "../../../../components/invoice/PdfLoad";
 
 import type { supplierInvoiceDetail } from "../../../../hooks/supplierInvoice";
 
@@ -32,7 +32,7 @@ const InvoiceImportPage = () => {
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
   const [showDocument, setShowDocument] = useState(false);
-  const InvoiceLoadRef = useRef<LoadPDFHandle>(null);
+  const PdfLoadRef = useRef<LoadPDFHandle>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [fileId, setFileId] = useState("");
@@ -110,8 +110,8 @@ const InvoiceImportPage = () => {
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     event.preventDefault();
-    if (InvoiceLoadRef && InvoiceLoadRef.current) {
-      InvoiceLoadRef.current.handleLoadClick();
+    if (PdfLoadRef && PdfLoadRef.current) {
+      PdfLoadRef.current.handleLoadClick();
     }
   };
   const uploadDocument = async () => {
@@ -351,7 +351,7 @@ const InvoiceImportPage = () => {
                 </div>
                 <div>
                 <div className={`${(!showDocument) ? 'hidden' : ''}`}>
-                    <InvoiceLoad onData={handleData} hideLoadButton={true} ref={InvoiceLoadRef}  />
+                    <PdfLoad onData={handleData} hideLoadButton={true} ref={PdfLoadRef}  />
                   </div>
                 </div>
               </div>
