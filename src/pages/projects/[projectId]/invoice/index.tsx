@@ -1,8 +1,10 @@
 import { useRouter } from "next/router";
+import { useRef } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetSupplierInvoicesFilter } from "../../../../hooks/supplierInvoice";
+import { useGetSupplierInvoicesFilter, useDeleteSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import { format } from "date-fns";
+import dynamic from "next/dynamic";
 import { useAtom } from "jotai";
 import {
   activeDateFiltersAtom,
@@ -11,6 +13,10 @@ import {
 import { getDateFromActiveFilter } from "../../../../components/invoice/DateFilter";
 import Spinner from "../../../../components/common/Spinner";
 import FilterBar from "../../../../components/invoice/FilterBar";
+
+const DeleteButton = dynamic(
+  () => import("../../../../components/common/DeleteButton")
+);
 
 const Invoices = () => {
   const router = useRouter();
@@ -25,6 +31,12 @@ const Invoices = () => {
     )[0],
     startDate: getDateFromActiveFilter(true, activeDateFilters),
     endDate: getDateFromActiveFilter(false, activeDateFilters),
+  });
+
+  const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
+  const { deleteSupplierInvoice } = useDeleteSupplierInvoice({
+    pendingDeleteCountRef: pendingDeleteCountRef,
+    projectId: projectId,
   });
 
   return (
@@ -141,7 +153,9 @@ const Invoices = () => {
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.totalAmount}
                               </td>
-                              <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                              <td 
+                                className="flex whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                              >
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -156,6 +170,16 @@ const Invoices = () => {
                                 >
                                   Edit
                                 </button>
+                                <DeleteButton
+                                  title={`Delete Supplier Invoice ${supplierInvoice.invoiceNo}`}
+                                  subtitle="Are you sure you want to permanently delete this supplier invoice?"
+                                  triggerLabel="Delete"
+                                  onDelete={() => {
+                                    deleteSupplierInvoice({
+                                      supplierInvoiceId: supplierInvoice.id,
+                                    });
+                                  }}
+                                />
                               </td>
                             </tr>
                           ))}
