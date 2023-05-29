@@ -157,7 +157,7 @@ const MotionTR = ({
         <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-start lg:gap-3">
           <Image
             className=" h-8 w-8 rounded-full sm:h-11 sm:w-11"
-            src={"/images/default-photo.jpg"}
+            src={project.createdBy?.image || "/images/default-photo.jpg"}
             alt="Created by photo"
             width={44}
             height={44}

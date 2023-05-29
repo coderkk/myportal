@@ -10,7 +10,7 @@ type FormValues = {
 export type project = {
   id: string;
   name: string;
-  createdBy: { name: string | null };
+  createdBy: { name: string | null; image: string | null };
   createdAt: string;
 };
 
