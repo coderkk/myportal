@@ -40,28 +40,25 @@ const InvoiceImportPage = () => {
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
   const { createSupplierInvoice } = useCreateSupplierInvoice();
 
-  const emptyData = {
-    id: "",
-    description: "",
-    invoiceNo: "",
-    invoiceDate: new Date(),
-    vendorName: "",
-    vendorAddress: "",
-    vendorPhone: "",
-    supplierName: "",
-    supplierAddress: "",
-    supplierPhone: "",
-    amount: 0,
-    taxAmount: 0,
-    totalAmount: 0,
-    fileId: "",
-    projectId: projectId,
-    budgetId: "",
-    supplierInvoiceDetails: [],
-  };
-
   const [invoiceData, setInvoiceData] =
-    useState<SupplierInvoiceWithDetails>(emptyData);
+    useState<SupplierInvoiceWithDetails>({
+      id: "",
+      description: "",
+      invoiceNo: "",
+      invoiceDate: new Date(),
+      vendorName: "",
+      vendorAddress: "",
+      vendorPhone: "",
+      supplierName: "",
+      supplierAddress: "",
+      supplierPhone: "",
+      amount: 0,
+      taxAmount: 0,
+      totalAmount: 0,
+      fileId: "",
+      budgetId: "",
+      supplierInvoiceDetails: [],
+    });
 
   const { budgets } = useGetBudgets({
     projectId: projectId,
