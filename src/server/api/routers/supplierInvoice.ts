@@ -186,25 +186,6 @@ export const supplierInvoiceRouter = createTRPCRouter({
                 ),
               },
             },
-
-            // // How to upsert many https://github.com/prisma/prisma/discussions/7547
-            // const promises = input.supplierInvoiceDetails.map(
-            //   async (supplierInvoiceDetail) => {
-            //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            //     const { id, ...rest } = supplierInvoiceDetail; // we omit the id property if we were to create the object
-            //     return tx.supplierInvoiceDetail.upsert({
-            //       where: { id: id },
-            //       update: { ...rest },
-            //       create: {
-            //         supplierInvoiceId: supplierInvoice.id,
-            //         createdById: ctx.session.user.id,
-            //         ...rest,
-            //       },
-            //     });
-            //   }
-            // );
-
-            // await Promise.all(promises);
           });
         },
         errorMessages: ["Failed to update supplier invoice"],
