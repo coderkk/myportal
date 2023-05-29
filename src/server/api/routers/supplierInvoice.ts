@@ -144,7 +144,10 @@ export const supplierInvoiceRouter = createTRPCRouter({
                 },
               },
             });
-          return supplierInvoice;
+          return {
+            ...supplierInvoice,
+            budgetId: supplierInvoice.budgetId || "", // PLANETSCALE FIX
+          };
         },
         errorMessages: ["Failed to get supplier invoice"],
       })();

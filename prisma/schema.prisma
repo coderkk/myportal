@@ -328,7 +328,7 @@ model SupplierInvoice {
     projectId              String
     project                Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
     budget                 Budget?                 @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-    budgetId               String?
+    budgetId               String? // PLANETSCALE FIX
     createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById            String
     createdAt              DateTime                @default(now())
