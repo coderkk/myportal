@@ -17,10 +17,10 @@ import { useGetBudgets } from "../../../../hooks/budget";
 
 import PdfLoad from "../../../../components/invoice/PdfLoad";
 
-import type { supplierInvoiceDetail } from "../../../../hooks/supplierInvoice";
+import type { supplierInvoiceItem } from "../../../../hooks/supplierInvoice";
 
 export type SupplierInvoiceWithDetails = supplierInvoice & {
-  supplierInvoiceDetails: supplierInvoiceDetail[];
+  supplierInvoiceItem: supplierInvoiceItem[];
 };
 
 type LoadPDFHandle = {
@@ -57,7 +57,7 @@ const InvoiceImportPage = () => {
       totalAmount: 0,
       fileId: "",
       budgetId: "",
-      supplierInvoiceDetails: [],
+      supplierInvoiceItem: [],
     });
 
   const { budgets } = useGetBudgets({
@@ -285,7 +285,7 @@ const InvoiceImportPage = () => {
                       </p>
                     </div>
                   </div>
-                  {invoiceData?.supplierInvoiceDetails.map((row, i) => {
+                  {invoiceData?.supplierInvoiceItem.map((row, i) => {
                     return (
                       <div
                         key={i}

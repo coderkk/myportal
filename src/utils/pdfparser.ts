@@ -105,7 +105,7 @@ export const parseData = (pdfContent: string) => {
     totalAmount: 0,
     fileId: "",
     budgetId: "",
-    supplierInvoiceDetails: [],
+    supplierInvoiceItem: [],
   };
 
   const pageTexts: string[] = pdfContent.split("\n");
@@ -160,7 +160,7 @@ export const parseData = (pdfContent: string) => {
             pageTextLine
           );
         if (result) {
-          data.supplierInvoiceDetails.push({
+          data.supplierInvoiceItem.push({
             id: nanoid(),
             quantity: parseFloat(result[2] || ""),
             uom: result[3] || "",

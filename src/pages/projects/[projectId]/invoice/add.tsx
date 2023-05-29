@@ -12,7 +12,7 @@ import InvoiceItem from "../../../../components/invoice/InvoiceItem";
 import { useGetBudgets } from "../../../../hooks/budget";
 import type {
   supplierInvoice,
-  supplierInvoiceDetail,
+  supplierInvoiceItem,
 } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import type { SupplierInvoiceWithDetails } from "./import";
@@ -37,11 +37,11 @@ const AddInvoicePage = ({}) => {
     totalAmount: 0,
     fileId: "",
     budgetId: "",
-    supplierInvoiceDetails: [],
+    supplierInvoiceItem: [],
   });
 
-  const [supplierInvoiceDetails, setSupplierInvoiceDetails] = useState<
-    supplierInvoiceDetail[]
+  const [supplierInvoiceItem, setSupplierInvoiceItem] = useState<
+    supplierInvoiceItem[]
   >([]);
 
   const { createSupplierInvoice } = useCreateSupplierInvoice();
@@ -72,24 +72,24 @@ const AddInvoicePage = ({}) => {
     createSupplierInvoice({
       ...data,
       projectId: projectId,
-      supplierInvoiceDetails: supplierInvoiceDetails,
+      supplierInvoiceItem: supplierInvoiceItem,
     });
     void router.push("/projects/" + projectId + "/invoice/");
   };
 
   const onInvoiceUpdate = (
-    invoiceItem: supplierInvoiceDetail,
+    invoiceItem: supplierInvoiceItem,
     index: number
   ) => {
-    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
-    newSupplierInvoiceDetails[index] = invoiceItem;
-    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+    const newSupplierInvoiceItem = [...supplierInvoiceItem];
+    newSupplierInvoiceItem[index] = invoiceItem;
+    setSupplierInvoiceItem(newSupplierInvoiceItem);
   };
 
   const removeInvoiceItem = (index: number) => {
-    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
-    newSupplierInvoiceDetails.splice(index, 1);
-    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+    const newSupplierInvoiceItem = [...supplierInvoiceItem];
+    newSupplierInvoiceItem.splice(index, 1);
+    setSupplierInvoiceItem(newSupplierInvoiceItem);
   };
 
   return (
@@ -380,7 +380,7 @@ const AddInvoicePage = ({}) => {
 
                       <div className="w-40 px-1 text-center"></div>
                     </div>
-                    {supplierInvoiceDetails.map((row, i) => {
+                    {supplierInvoiceItem.map((row, i) => {
                       return (
                         <div
                           key={i}
@@ -446,11 +446,11 @@ const AddInvoicePage = ({}) => {
                           amount: 0,
                         }}
                         addNew={(newInvoiceItem) => {
-                          const newSupplierInvoiceDetails = [
+                          const newSupplierInvoiceItem = [
                             newInvoiceItem,
-                            ...supplierInvoiceDetails,
+                            ...supplierInvoiceItem,
                           ];
-                          setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+                          setSupplierInvoiceItem(newSupplierInvoiceItem);
                         }}
                       />
                     </div>

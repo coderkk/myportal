@@ -15,7 +15,7 @@ import { useGetBudgets } from "../../../../hooks/budget";
 import { useGetPreSignedURLForDownload } from "../../../../hooks/s3";
 import type {
   supplierInvoice,
-  supplierInvoiceDetail,
+  supplierInvoiceItem,
 } from "../../../../hooks/supplierInvoice";
 import {
   useGetSupplierInvoice,
@@ -28,13 +28,13 @@ const SupplierInvoiceView = () => {
   const projectId = router.query.projectId as string;
   const supplierInvoiceId = router.query.supplierInvoiceId as string;
 
-  const [supplierInvoiceDetails, setSupplierInvoiceDetails] = useState<
-    supplierInvoiceDetail[]
+  const [supplierInvoiceItem, setSupplierInvoiceItem] = useState<
+    supplierInvoiceItem[]
   >([]);
   const { supplierInvoiceData, isLoading } = useGetSupplierInvoice({
     supplierInvoiceId: supplierInvoiceId,
-    onSucess: (supplierInvoiceDetails: supplierInvoiceDetail[]) =>
-      setSupplierInvoiceDetails(supplierInvoiceDetails),
+    onSucess: (supplierInvoiceItem: supplierInvoiceItem[]) =>
+      setSupplierInvoiceItem(supplierInvoiceItem),
   });
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
@@ -48,19 +48,19 @@ const SupplierInvoiceView = () => {
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
 
   const onInvoiceUpdate = (
-    invoiceItem: supplierInvoiceDetail,
+    invoiceItem: supplierInvoiceItem,
     index: number
   ) => {
-    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
-    newSupplierInvoiceDetails[index] = invoiceItem;
-    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+    const newSupplierInvoiceItem = [...supplierInvoiceItem];
+    newSupplierInvoiceItem[index] = invoiceItem;
+    setSupplierInvoiceItem(newSupplierInvoiceItem);
   };
 
   const removeInvoiceItem = (index: number) => {
-    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
-    newSupplierInvoiceDetails.splice(index, 1);
-    console.log(newSupplierInvoiceDetails);
-    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+    const newSupplierInvoiceItem = [...supplierInvoiceItem];
+    newSupplierInvoiceItem.splice(index, 1);
+    console.log(newSupplierInvoiceItem);
+    setSupplierInvoiceItem(newSupplierInvoiceItem);
   };
 
   const { 
@@ -82,7 +82,7 @@ const SupplierInvoiceView = () => {
     updateSupplierInvoice({
       ...data,
       projectId: projectId,
-      supplierInvoiceDetails: supplierInvoiceDetails,
+      supplierInvoiceItem: supplierInvoiceItem,
     });
     void router.push("/projects/" + projectId + "/invoice/");
   };
@@ -118,7 +118,7 @@ const SupplierInvoiceView = () => {
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
-        {isLoading || !supplierInvoiceDetails ? (
+        {isLoading || !supplierInvoiceItem ? (
           <div>Loading...</div>
         ) : (
           supplierInvoiceData && (
@@ -449,9 +449,9 @@ const SupplierInvoiceView = () => {
 
                           <div className="w-40 px-1 text-center"></div>
                         </div>
-                        {supplierInvoiceDetails &&
-                          supplierInvoiceDetails.map(
-                            (supplierInvoiceDetail, i) => {
+                        {supplierInvoiceItem &&
+                          supplierInvoiceItem.map(
+                            (supplierInvoiceItem, i) => {
                               return (
                                 <div
                                   key={i}
@@ -459,20 +459,20 @@ const SupplierInvoiceView = () => {
                                 >
                                   <div className="flex-1 px-1">
                                     <p className="text-sm tracking-wide text-gray-800">
-                                      {supplierInvoiceDetail?.description}
+                                      {supplierInvoiceItem?.description}
                                     </p>
                                   </div>
 
                                   <div className="w-20 px-1 text-right">
                                     <p className="text-sm tracking-wide text-gray-800">
-                                      {supplierInvoiceDetail?.uom}
+                                      {supplierInvoiceItem?.uom}
                                     </p>
                                   </div>
 
                                   <div className="w-32 px-1 text-right">
                                     <p className="leading-none">
                                       <span className="block text-sm tracking-wide text-gray-800">
-                                        {supplierInvoiceDetail?.unitPrice}
+                                        {supplierInvoiceItem?.unitPrice}
                                       </span>
                                     </p>
                                   </div>
@@ -480,7 +480,7 @@ const SupplierInvoiceView = () => {
                                   <div className="w-32 px-1 text-right">
                                     <p className="leading-none">
                                       <span className="block text-sm tracking-wide text-gray-800">
-                                        {supplierInvoiceDetail?.amount}
+                                        {supplierInvoiceItem?.amount}
                                       </span>
                                     </p>
                                   </div>
@@ -488,7 +488,7 @@ const SupplierInvoiceView = () => {
                                     <InvoiceItem
                                       title="Edit"
                                       index={i}
-                                      invoiceItem={supplierInvoiceDetail}
+                                      invoiceItem={supplierInvoiceItem}
                                       onUpdate={(data) => {
                                         onInvoiceUpdate(data, i);
                                       }}
@@ -518,12 +518,12 @@ const SupplierInvoiceView = () => {
                               amount: 0,
                             }}
                             addNew={(newInvoiceItem) => {
-                              const newSupplierInvoiceDetails = [
+                              const newSupplierInvoiceItem = [
                                 newInvoiceItem,
-                                ...supplierInvoiceDetails,
+                                ...supplierInvoiceItem,
                               ];
-                              setSupplierInvoiceDetails(
-                                newSupplierInvoiceDetails
+                              setSupplierInvoiceItem(
+                                newSupplierInvoiceItem
                               );
                             }}
                           />
