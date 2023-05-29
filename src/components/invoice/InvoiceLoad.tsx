@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
-import { useRef, useState } from "react";
+import { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
 import type { SupplierInvoiceWithDetails } from "../../pages/projects/[projectId]/invoice/import";
@@ -14,11 +14,12 @@ const Document = dynamic(() =>
 
 type InvoiceUploadProps = {
   onData: (data: SupplierInvoiceWithDetails, file: File | null) => void;
+  hideLoadButton: boolean;
 };
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 
-const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
+const InvoiceLoad = forwardRef(({ onData, hideLoadButton }: InvoiceUploadProps, ref) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pdfDocRef = useRef<HTMLInputElement | null>(null);
 
@@ -57,6 +58,12 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
       onData(data, file);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    handleLoadClick() {
+      inputRef.current?.click();
+    }
+  }));
 
   const handleLoadClick = () => {
     // 👇 We redirect the click event onto the hidden input element
@@ -106,7 +113,7 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
       <div className="mb-5 text-right">
         <button
           type="button"
-          className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+          className={`rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 ${hideLoadButton ? 'hidden' : ''}`}
           onClick={handleLoadClick}
         >
           {uploadFile ? `${uploadFile.name}` : "Load file"}
@@ -138,7 +145,7 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
       </div>
     </>
   );
-  ``;
-};
+});
 
+InvoiceLoad.displayName = "InvoiceLoad";
 export default InvoiceLoad;

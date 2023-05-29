@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
@@ -23,10 +23,16 @@ export type SupplierInvoiceWithDetails = supplierInvoice & {
   supplierInvoiceDetails: supplierInvoiceDetail[];
 };
 
+type LoadPDFHandle = {
+  handleLoadClick: () => void;
+};
+
 const InvoiceImportPage = () => {
   const router = useRouter();
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
+  const [showDocument, setShowDocument] = useState(false);
+  const InvoiceLoadRef = useRef<LoadPDFHandle>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [fileId, setFileId] = useState("");
@@ -100,6 +106,14 @@ const InvoiceImportPage = () => {
     }
   };
 
+  const InvoiceLoadClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+    if (InvoiceLoadRef && InvoiceLoadRef.current) {
+      InvoiceLoadRef.current.handleLoadClick();
+    }
+  };
   const uploadDocument = async () => {
     if (file == null) {
       toast.error("No file detected.");
@@ -151,37 +165,42 @@ const InvoiceImportPage = () => {
         <div className="pt-5">
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-              <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-3 lg:gap-x-16">
-                <div className="col-span-2 mx-auto text-left lg:mx-0 lg:text-left">
-                  <div className="mb-6 flex items-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void router.push("/projects/" + projectId + "/invoice");
-                      }}
-                      title="Back"
-                      className="mx-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+              <div className="flex">
+                <div className="mb-6 grow flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void router.push("/projects/" + projectId + "/invoice");
+                    }}
+                    title="Back"
+                    className="mx-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      className="h-6 w-6"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        className="h-6 w-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                        />
-                      </svg>
-                    </button>
-                    <h2 className="px-3 py-2 text-2xl font-bold uppercase tracking-wider">
-                      Invoice
-                    </h2>
-                  </div>
-
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                      />
+                    </svg>
+                  </button>
+                  <h2 className="px-3 py-2 text-2xl font-bold uppercase tracking-wider">
+                    Invoice
+                  </h2>
+                </div>
+                <div>
+                  <button type="button" onClick={InvoiceLoadClick} className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">Extract PDF</button>
+                  <button type="button" onClick={() => {setShowDocument(!showDocument)}} className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">Show/Hide PDF</button>
+                </div>
+              </div>
+              <div className={`grid grid-cols-1 gap-y-10 lg:gap-x-16 ${(showDocument) ? 'lg:grid-cols-3' : ''}`}>
+                <div className={`mx-auto text-left lg:mx-0 lg:text-left  ${(showDocument) ? 'col-span-2' : ''}`}>
                   <div className="mb-8 flex justify-between">
                     <div className="w-2/4">
                       <div className="mb-2 items-center md:mb-1 md:flex">
@@ -268,8 +287,6 @@ const InvoiceImportPage = () => {
                         </span>
                       </p>
                     </div>
-
-                    <div className="w-20 px-1 text-center"></div>
                   </div>
                   {invoiceData?.supplierInvoiceDetails.map((row, i) => {
                     return (
@@ -304,7 +321,6 @@ const InvoiceImportPage = () => {
                             </span>
                           </p>
                         </div>
-                        <div className="w-20 px-1 text-center"></div>
                       </div>
                     );
                   })}
@@ -314,27 +330,29 @@ const InvoiceImportPage = () => {
                       <div className="mr-2 flex-1 text-right text-gray-800">
                         Subtotal
                       </div>
-                      <div className="w-40">{invoiceData.amount}</div>
+                      <div className="w-40 text-right">{invoiceData.amount}</div>
                     </div>
                     <div className="mb-4 flex justify-between">
-                      <div className="mr-2 flex-1 text-right text-sm text-gray-600">
+                      <div className="mr-2 flex-1 text-right text-gray-800">
                         Sale Tax
                       </div>
-                      <div className="w-40">{invoiceData.taxAmount}</div>
+                      <div className="w-40 text-right">{invoiceData.taxAmount}</div>
                     </div>
 
                     <div className="border-b border-t py-2">
                       <div className="flex justify-between">
-                        <div className="mr-2 flex-1 text-right text-xl text-gray-600">
+                        <div className="mr-2 flex-1 text-right text-xl text-gray-800">
                           Total
                         </div>
-                        <div className="w-40">{invoiceData.totalAmount}</div>
+                        <div className="w-40 text-right">{invoiceData.totalAmount}</div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <InvoiceLoad onData={handleData} />
+                <div className={`${(!showDocument) ? 'hidden' : ''}`}>
+                    <InvoiceLoad onData={handleData} hideLoadButton={true} ref={InvoiceLoadRef}  />
+                  </div>
                 </div>
               </div>
               <div>
