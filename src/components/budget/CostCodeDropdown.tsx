@@ -27,7 +27,7 @@ const CostCodeDropdown = ({
         defaultValue
           ? defaultValue
           : ((budgetValues.length > 0)
-          ? budgetValues[0]
+          ? ""
           : "No cost code")
       }
       options={
