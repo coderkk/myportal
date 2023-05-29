@@ -23,7 +23,7 @@ export type supplierInvoice = {
   budgetId: string;
 };
 
-export type supplierInvoiceDetail = {
+export type supplierInvoiceItem = {
   id: string;
   description: string;
   quantity: number;
@@ -121,18 +121,44 @@ export const useGetSupplierInvoice = ({
   onSucess,
 }: {
   supplierInvoiceId: string;
-  onSucess: (supplierInvoiceDetails: supplierInvoiceDetail[]) => void;
+  onSucess: (supplierInvoiceItem: supplierInvoiceItem[]) => void;
 }) => {
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoice.useQuery(
     {
       supplierInvoiceId: supplierInvoiceId,
     },
     {
-      onSuccess: (data) => onSucess(data.supplierInvoiceDetails),
+      onSuccess: (data) => onSucess(data.supplierInvoiceItem),
     }
   );
   return {
     supplierInvoiceData: data,
+    isLoading: isLoading,
+  };
+};
+
+export const useGetSupplierInvoicesFilter = ({
+  projectId,
+  budgetId,
+  startDate,
+  endDate,
+}: {
+  projectId: string;
+  budgetId?: string;
+  startDate?: Date;
+  endDate?: Date;
+}) => {
+  const { data, isLoading } = api.supplierInvoice.getSupplierInvoicesFilter.useQuery({
+    projectId: projectId,
+    budgetId: budgetId,
+    startDate: startDate,
+    endDate: endDate,
+  },
+  {
+    keepPreviousData: true,
+  });
+  return {
+    supplierInvoices: data,
     isLoading: isLoading,
   };
 };

@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
-import { useRef, useState } from "react";
+import { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
 import type { SupplierInvoiceWithDetails } from "../../pages/projects/[projectId]/invoice/import";
@@ -12,13 +12,14 @@ const Document = dynamic(() =>
   import("react-pdf").then((module) => module.Document)
 );
 
-type InvoiceUploadProps = {
+type PdfLoadProps = {
   onData: (data: SupplierInvoiceWithDetails, file: File | null) => void;
+  hideLoadButton: boolean;
 };
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 
-const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
+const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pdfDocRef = useRef<HTMLInputElement | null>(null);
 
@@ -52,12 +53,17 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
 
   const parseInvoice = async (pdf: PDFDocumentProxy) => {
     const pdfText = await getPDFText(pdf);
-    console.log(pdfText);
     const data = parseData(pdfText);
     if (data) {
       onData(data, file);
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    handleLoadClick() {
+      inputRef.current?.click();
+    }
+  }));
 
   const handleLoadClick = () => {
     // 👇 We redirect the click event onto the hidden input element
@@ -85,14 +91,18 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
 
   const validatePdfFile = async (file: File) => {
     try {
-      await loadFileObject(file).then((text) => {
-        if (typeof text == "string") {
-          const data = parseData(text);
-          if (!data) {
-            throw new Error();
+      if (["application/pdf", "application/x-pdf", "application/acrobat", "applications/vnd.pdf", "text/pdf", "text/x-pdf"].indexOf(file['type']) == -1) {
+        throw new Error("Invalid document type");
+      } else {
+        await loadFileObject(file).then((text) => {
+          if (typeof text == "string") {
+            const data = parseData(text);
+            if (!data) {
+              throw new Error();
+            }
           }
-        }
-      });
+        });
+      }
     } catch {
       toast.error("An error occured while validating the pdf file.");
     }
@@ -103,13 +113,14 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
       <div className="mb-5 text-right">
         <button
           type="button"
-          className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+          className={`rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 ${hideLoadButton ? 'hidden' : ''}`}
           onClick={handleLoadClick}
         >
           {uploadFile ? `${uploadFile.name}` : "Load file"}
         </button>
         <input
           type="file"
+          accept="application/pdf, application/x-pdf,application/acrobat, applications/vnd.pdf, text/pdf, text/x-pdf"
           ref={inputRef}
           onChange={(e) => {
             void handleFileChange(e);
@@ -134,7 +145,7 @@ const InvoiceLoad = ({ onData }: InvoiceUploadProps) => {
       </div>
     </>
   );
-  ``;
-};
+});
 
-export default InvoiceLoad;
+PdfLoad.displayName = "PdfLoad";
+export default PdfLoad;

@@ -85,7 +85,11 @@ export const loadFilename = async (
 };
 
 export const parseData = (pdfContent: string) => {
-  const emptyData = {
+  let supplier = false;
+  let vendor = false;
+  let start_line = false;
+
+  const data: SupplierInvoiceWithDetails = {
     id: "",
     invoiceNo: "",
     invoiceDate: new Date(),
@@ -93,31 +97,16 @@ export const parseData = (pdfContent: string) => {
     vendorAddress: "",
     vendorPhone: "",
     supplierName: "",
-    supplierId: "",
     supplierAddress: "",
     supplierPhone: "",
-    paymentDueDate: null,
-    salePerson: "",
-    paymentTerm: "",
-    deliveryDate: null,
-    shipmentMethod: "",
-    shipmentTerm: "",
-    totalDiscount: 0,
     description: "",
     amount: 0,
     taxAmount: 0,
     totalAmount: 0,
     fileId: "",
-    projectId: "",
     budgetId: "",
-    supplierInvoiceDetails: [],
+    supplierInvoiceItem: [],
   };
-
-  let supplier = false;
-  let vendor = false;
-  let start_line = false;
-
-  const data: SupplierInvoiceWithDetails = Object.assign({}, emptyData);
 
   const pageTexts: string[] = pdfContent.split("\n");
   for (const pageText of pageTexts) {
@@ -171,7 +160,7 @@ export const parseData = (pdfContent: string) => {
             pageTextLine
           );
         if (result) {
-          data.supplierInvoiceDetails.push({
+          data.supplierInvoiceItem.push({
             id: nanoid(),
             quantity: parseFloat(result[2] || ""),
             uom: result[3] || "",
@@ -227,5 +216,5 @@ export const parseData = (pdfContent: string) => {
     });
   }
 
-  return JSON.stringify(data) === JSON.stringify(emptyData) ? null : data;
+  return data;
 };

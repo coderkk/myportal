@@ -15,7 +15,7 @@ import { useGetBudgets } from "../../../../hooks/budget";
 import { useGetPreSignedURLForDownload } from "../../../../hooks/s3";
 import type {
   supplierInvoice,
-  supplierInvoiceDetail,
+  supplierInvoiceItem,
 } from "../../../../hooks/supplierInvoice";
 import {
   useGetSupplierInvoice,
@@ -28,13 +28,13 @@ const SupplierInvoiceView = () => {
   const projectId = router.query.projectId as string;
   const supplierInvoiceId = router.query.supplierInvoiceId as string;
 
-  const [supplierInvoiceDetails, setSupplierInvoiceDetails] = useState<
-    supplierInvoiceDetail[]
+  const [supplierInvoiceItem, setSupplierInvoiceItem] = useState<
+    supplierInvoiceItem[]
   >([]);
   const { supplierInvoiceData, isLoading } = useGetSupplierInvoice({
     supplierInvoiceId: supplierInvoiceId,
-    onSucess: (supplierInvoiceDetails: supplierInvoiceDetail[]) =>
-      setSupplierInvoiceDetails(supplierInvoiceDetails),
+    onSucess: (supplierInvoiceItem: supplierInvoiceItem[]) =>
+      setSupplierInvoiceItem(supplierInvoiceItem),
   });
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
@@ -48,22 +48,28 @@ const SupplierInvoiceView = () => {
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
 
   const onInvoiceUpdate = (
-    invoiceItem: supplierInvoiceDetail,
+    invoiceItem: supplierInvoiceItem,
     index: number
   ) => {
-    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
-    newSupplierInvoiceDetails[index] = invoiceItem;
-    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+    const newSupplierInvoiceItem = [...supplierInvoiceItem];
+    newSupplierInvoiceItem[index] = invoiceItem;
+    setSupplierInvoiceItem(newSupplierInvoiceItem);
   };
 
   const removeInvoiceItem = (index: number) => {
-    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
-    newSupplierInvoiceDetails.splice(index, 1);
-    console.log(newSupplierInvoiceDetails);
-    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+    const newSupplierInvoiceItem = [...supplierInvoiceItem];
+    newSupplierInvoiceItem.splice(index, 1);
+    console.log(newSupplierInvoiceItem);
+    setSupplierInvoiceItem(newSupplierInvoiceItem);
   };
 
-  const { handleSubmit, control, register, reset } = useForm<supplierInvoice>({
+  const { 
+    handleSubmit, 
+    control, 
+    register, 
+    reset, 
+    formState: { errors }, 
+  } = useForm<supplierInvoice>({
     values: supplierInvoiceData,
   });
 
@@ -76,7 +82,7 @@ const SupplierInvoiceView = () => {
     updateSupplierInvoice({
       ...data,
       projectId: projectId,
-      supplierInvoiceDetails: supplierInvoiceDetails,
+      supplierInvoiceItem: supplierInvoiceItem,
     });
     void router.push("/projects/" + projectId + "/invoice/");
   };
@@ -112,7 +118,7 @@ const SupplierInvoiceView = () => {
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
-        {isLoading || !supplierInvoiceDetails ? (
+        {isLoading || !supplierInvoiceItem ? (
           <div>Loading...</div>
         ) : (
           supplierInvoiceData && (
@@ -193,7 +199,12 @@ const SupplierInvoiceView = () => {
                                   render={() => {
                                     return (
                                       <input
-                                        className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                        className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none
+                                        ${
+                                          errors.invoiceNo
+                                            ? "border-red-400  focus:border-red-400"
+                                            : ""
+                                        }`}
                                         type="text"
                                         placeholder="Invoice No"
                                         defaultValue={
@@ -230,7 +241,11 @@ const SupplierInvoiceView = () => {
                                               )
                                             : value
                                         }
-                                        className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                        className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
+                                          errors.invoiceDate
+                                            ? "border-red-400  focus:border-red-400 "
+                                            : ""
+                                        }`}
                                         onChange={(date) => {
                                           if (date) {
                                             date.setHours(0, 0, 0, 0);
@@ -268,6 +283,7 @@ const SupplierInvoiceView = () => {
                                         budgets={budgets || []}
                                         defaultValue={value || null}
                                         onCostCodeChange={(v) => onChange(v)}
+                                        error={(errors.budgetId) ? true : false}
                                       />
                                     );
                                   }}
@@ -289,7 +305,11 @@ const SupplierInvoiceView = () => {
                               render={() => {
                                 return (
                                   <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                    className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
+                                      errors.vendorName
+                                        ? "border-red-400  focus:border-red-400 "
+                                        : ""
+                                    }`}
                                     type="text"
                                     placeholder="Vendor Name"
                                     defaultValue={
@@ -346,7 +366,11 @@ const SupplierInvoiceView = () => {
                               render={() => {
                                 return (
                                   <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
+                                    className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
+                                      errors.supplierName
+                                        ? "border-red-400  focus:border-red-400 "
+                                        : ""
+                                    }`}
                                     type="text"
                                     placeholder="Supplier Name"
                                     defaultValue={
@@ -425,9 +449,9 @@ const SupplierInvoiceView = () => {
 
                           <div className="w-40 px-1 text-center"></div>
                         </div>
-                        {supplierInvoiceDetails &&
-                          supplierInvoiceDetails.map(
-                            (supplierInvoiceDetail, i) => {
+                        {supplierInvoiceItem &&
+                          supplierInvoiceItem.map(
+                            (supplierInvoiceItem, i) => {
                               return (
                                 <div
                                   key={i}
@@ -435,20 +459,20 @@ const SupplierInvoiceView = () => {
                                 >
                                   <div className="flex-1 px-1">
                                     <p className="text-sm tracking-wide text-gray-800">
-                                      {supplierInvoiceDetail?.description}
+                                      {supplierInvoiceItem?.description}
                                     </p>
                                   </div>
 
                                   <div className="w-20 px-1 text-right">
                                     <p className="text-sm tracking-wide text-gray-800">
-                                      {supplierInvoiceDetail?.uom}
+                                      {supplierInvoiceItem?.uom}
                                     </p>
                                   </div>
 
                                   <div className="w-32 px-1 text-right">
                                     <p className="leading-none">
                                       <span className="block text-sm tracking-wide text-gray-800">
-                                        {supplierInvoiceDetail?.unitPrice}
+                                        {supplierInvoiceItem?.unitPrice}
                                       </span>
                                     </p>
                                   </div>
@@ -456,7 +480,7 @@ const SupplierInvoiceView = () => {
                                   <div className="w-32 px-1 text-right">
                                     <p className="leading-none">
                                       <span className="block text-sm tracking-wide text-gray-800">
-                                        {supplierInvoiceDetail?.amount}
+                                        {supplierInvoiceItem?.amount}
                                       </span>
                                     </p>
                                   </div>
@@ -464,7 +488,7 @@ const SupplierInvoiceView = () => {
                                     <InvoiceItem
                                       title="Edit"
                                       index={i}
-                                      invoiceItem={supplierInvoiceDetail}
+                                      invoiceItem={supplierInvoiceItem}
                                       onUpdate={(data) => {
                                         onInvoiceUpdate(data, i);
                                       }}
@@ -494,12 +518,12 @@ const SupplierInvoiceView = () => {
                               amount: 0,
                             }}
                             addNew={(newInvoiceItem) => {
-                              const newSupplierInvoiceDetails = [
+                              const newSupplierInvoiceItem = [
                                 newInvoiceItem,
-                                ...supplierInvoiceDetails,
+                                ...supplierInvoiceItem,
                               ];
-                              setSupplierInvoiceDetails(
-                                newSupplierInvoiceDetails
+                              setSupplierInvoiceItem(
+                                newSupplierInvoiceItem
                               );
                             }}
                           />
@@ -518,7 +542,11 @@ const SupplierInvoiceView = () => {
                                 render={() => {
                                   return (
                                     <input
-                                      className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
+                                      className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                        errors.amount
+                                          ? "border-red-400  focus:border-red-400 "
+                                          : ""
+                                      }`}
                                       type="number"
                                       step="0.01"
                                       placeholder="Amount"
@@ -544,7 +572,11 @@ const SupplierInvoiceView = () => {
                                 render={() => {
                                   return (
                                     <input
-                                      className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
+                                      className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                        errors.taxAmount
+                                          ? "border-red-400  focus:border-red-400 "
+                                          : ""
+                                      }`}
                                       type="number"
                                       step="0.01"
                                       placeholder="Tax Amount"
@@ -574,7 +606,11 @@ const SupplierInvoiceView = () => {
                                   render={() => {
                                     return (
                                       <input
-                                        className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none"
+                                        className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                          errors.totalAmount
+                                            ? "border-red-400  focus:border-red-400 "
+                                            : ""
+                                        }`}
                                         type="number"
                                         step="0.01"
                                         placeholder="Total Amount"

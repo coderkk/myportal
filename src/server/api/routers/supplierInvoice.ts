@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { TRPCError } from "@trpc/server";
 
 export const createSupplierInvoiceSchema = z.object({
   description: z.string(),
@@ -18,7 +19,7 @@ export const createSupplierInvoiceSchema = z.object({
   fileId: z.string(),
   projectId: z.string(),
   budgetId: z.string(),
-  supplierInvoiceDetails: z.array(
+  supplierInvoiceItem: z.array(
     z.object({
       description: z.string(),
       quantity: z.number(),
@@ -32,6 +33,13 @@ export const createSupplierInvoiceSchema = z.object({
 
 export const getSupplierInvoicesSchema = z.object({
   projectId: z.string(),
+});
+
+export const getSupplierInvoicesFilterSchema = z.object({
+  projectId: z.string(),
+  budgetId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
 });
 
 export const getSupplierInvoiceSchema = z.object({
@@ -55,7 +63,7 @@ export const updateSupplierInvoiceSchema = z.object({
   fileId: z.string(),
   projectId: z.string(),
   budgetId: z.string(),
-  supplierInvoiceDetails: z.array(
+  supplierInvoiceItem: z.array(
     z.object({
       id: z.string(),
       description: z.string(),
@@ -78,16 +86,16 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return trycatch({
         fn: () => {
-          const { supplierInvoiceDetails, ...rest } = input;
+          const { supplierInvoiceItem, ...rest } = input;
           return ctx.prisma.supplierInvoice.create({
             data: {
               ...rest,
               createdById: ctx.session.user.id,
-              supplierInvoiceDetails: {
+              supplierInvoiceItem: {
                 createMany: {
-                  data: supplierInvoiceDetails.map((supplierInvoiceDetail) => {
+                  data: supplierInvoiceItem.map((supplierInvoiceItem) => {
                     return {
-                      ...supplierInvoiceDetail,
+                      ...supplierInvoiceItem,
                       createdById: ctx.session.user.id,
                     };
                   }),
@@ -116,6 +124,51 @@ export const supplierInvoiceRouter = createTRPCRouter({
         errorMessages: ["Failed to get supplier invoices"],
       })();
     }),
+    getSupplierInvoicesFilter: protectedProcedure
+    .input(getSupplierInvoicesFilterSchema)
+    .query(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: async () => {
+          if (
+            input.startDate &&
+            input.endDate &&
+            input.startDate > input.endDate
+          ) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+            });
+          }
+          const supplerInvoices = await ctx.prisma.supplierInvoice.findMany({
+            where: {
+              projectId: input.projectId,
+              budgetId: input.budgetId,
+              invoiceDate: {
+                gte: input.startDate,
+                lte: input.endDate,
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            select: {
+              id: true,
+              invoiceNo: true,
+              invoiceDate: true,
+              supplierName: true,
+              budgetId: true,
+              totalAmount: true,
+              createdBy: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          });
+          return supplerInvoices;
+        },
+        errorMessages: ["Failed to get supplier invoices"],
+      })();
+    }),
   getSupplierInvoice: protectedProcedure
     .input(getSupplierInvoiceSchema)
     .query(async ({ ctx, input }) => {
@@ -127,7 +180,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
                 id: input.supplierInvoiceId,
               },
               include: {
-                supplierInvoiceDetails: {
+                supplierInvoiceItem: {
                   select: {
                     id: true,
                     description: true,
@@ -157,7 +210,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
       return await trycatch({
         fn: () => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { supplierInvoiceDetails, ...other } = input;
+          const { supplierInvoiceItem, ...other } = input;
           // https://github.com/prisma/prisma/issues/2255#issuecomment-683811551
           return ctx.prisma.supplierInvoice.update({
             where: {
@@ -165,14 +218,14 @@ export const supplierInvoiceRouter = createTRPCRouter({
             },
             data: {
               ...other,
-              supplierInvoiceDetails: {
+              supplierInvoiceItem: {
                 deleteMany: {
                   supplierInvoiceId: other.id,
-                  NOT: input.supplierInvoiceDetails.map(({ id }) => ({ id })),
+                  NOT: input.supplierInvoiceItem.map(({ id }) => ({ id })),
                 },
-                upsert: input.supplierInvoiceDetails.map(
-                  (supplierInvoiceDetail) => {
-                    const { id, ...rest } = supplierInvoiceDetail;
+                upsert: input.supplierInvoiceItem.map(
+                  (supplierInvoiceItem) => {
+                    const { id, ...rest } = supplierInvoiceItem;
                     return {
                       where: { id: id },
                       update: { ...rest },
