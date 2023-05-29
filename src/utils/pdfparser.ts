@@ -1,4 +1,5 @@
 import parse from "date-fns/parse";
+import { nanoid } from "nanoid";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import * as pdfjsLib from "pdfjs-dist";
 import { GlobalWorkerOptions } from "pdfjs-dist";
@@ -8,24 +9,9 @@ import type {
   TextMarkedContent,
   TypedArray,
 } from "pdfjs-dist/types/src/display/api";
-
-import type { supplierInvoice } from "../hooks/supplierInvoice";
+import type { SupplierInvoiceWithDetails } from "../pages/projects/[projectId]/invoice/import";
 
 GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
-
-type SupplierInvoiceDetail = {
-  item: string;
-  description: string;
-  quantity: number;
-  uom: string;
-  unitPrice: number;
-  discount: number;
-  amount: number;
-};
-
-type SupplierInvoiceWithDetail = supplierInvoice & {
-  supplierInvoiceDetail: SupplierInvoiceDetail[];
-};
 
 export const getPDFText = async (pdf: PDFDocumentProxy) => {
   const pageTextPromises = [];
@@ -100,10 +86,9 @@ export const loadFilename = async (
 
 export const parseData = (pdfContent: string) => {
   const emptyData = {
-    projectId: "",
+    id: "",
     invoiceNo: "",
-    invoiceDate: null,
-    budgetId: "",
+    invoiceDate: new Date(),
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
@@ -119,39 +104,43 @@ export const parseData = (pdfContent: string) => {
     shipmentTerm: "",
     totalDiscount: 0,
     description: "",
-    grandAmount: 0,
+    amount: 0,
     taxAmount: 0,
-    netAmount: 0,
-    supplierInvoiceDetail: [],
+    totalAmount: 0,
+    fileId: "",
+    projectId: "",
+    budgetId: "",
+    supplierInvoiceDetails: [],
   };
 
   let supplier = false;
   let vendor = false;
   let start_line = false;
 
-  const data: SupplierInvoiceWithDetail = Object.assign({}, emptyData);
+  const data: SupplierInvoiceWithDetails = Object.assign({}, emptyData);
+
   const pageTexts: string[] = pdfContent.split("\n");
   for (const pageText of pageTexts) {
     const pageTextLines = pageText.split(/\r?\n/);
     pageTextLines.forEach((pageTextLine) => {
       if (pageTextLine.toLowerCase().includes("invoice number")) {
-        data.invoiceNo = pageTextLine.match(/\d/g)?.join("");
+        data.invoiceNo = pageTextLine.match(/\d/g)?.join("") || "";
       }
       if (pageTextLine.includes("Supplier")) {
         supplier = true;
         vendor = false;
         const result = /Supplier (.*)/g.exec(pageTextLine);
-        data.supplierName = result == null ? "" : result[1];
+        data.supplierName = result && result[1] ? result[1] : "";
       }
       if (pageTextLine.includes("Recipient")) {
         vendor = true;
         supplier = false;
         const result = /Recipient (.*)/g.exec(pageTextLine);
-        data.vendorName = result == null ? "" : result[1];
+        data.vendorName = result && result[1] ? result[1] : "";
       }
       if (pageTextLine.includes("Address")) {
         const result = /Address (.*)/g.exec(pageTextLine);
-        const address = result == null ? "" : result[1];
+        const address = result && result[1] ? result[1] : "";
         if (supplier) {
           data.supplierAddress = address;
         } else if (vendor) {
@@ -160,48 +149,12 @@ export const parseData = (pdfContent: string) => {
       }
       if (pageTextLine.includes("Phone")) {
         const result = /Phone (.*)/g.exec(pageTextLine);
-        const phone = result == null ? "" : result[1];
+        const phone = result && result[1] ? result[1] : "";
         if (supplier) {
           data.supplierPhone = phone;
         } else if (vendor) {
           data.vendorPhone = phone;
         }
-      }
-      if (pageTextLine.includes("Payment Due")) {
-        const result = /Payment Due (.*)/g.exec(pageTextLine);
-        const paymentDue = result == null ? "" : result[1];
-        if (paymentDue != "" && paymentDue != undefined)
-          data.paymentDueDate = parse(paymentDue, "MMMM dd, yyyy", new Date());
-      }
-      if (pageTextLine.includes("Salesperson")) {
-        const result = /Salesperson (.*)/g.exec(pageTextLine);
-        const salesperson = result == null ? "" : result[1];
-        if (salesperson != "" && salesperson != undefined)
-          data.salePerson = salesperson;
-      }
-      if (pageTextLine.includes("Payment Terms")) {
-        const result = /Payment Terms (.*)/g.exec(pageTextLine);
-        const paymentTerms = result == null ? "" : result[1];
-        if (paymentTerms != "" && paymentTerms != undefined)
-          data.paymentTerm = paymentTerms;
-      }
-      if (pageTextLine.includes("Delivery Date")) {
-        const result = /Delivery Date (.*)/g.exec(pageTextLine);
-        const deliveryDate = result == null ? "" : result[1];
-        if (deliveryDate != "" && deliveryDate != undefined)
-          data.deliveryDate = parse(deliveryDate, "MMMM dd, yyyy", new Date());
-      }
-      if (pageTextLine.includes("Shipping Method")) {
-        const result = /Shipping Method (.*)/g.exec(pageTextLine);
-        const shippingMethod = result == null ? "" : result[1];
-        if (shippingMethod != "" && shippingMethod != undefined)
-          data.shipmentMethod = shippingMethod;
-      }
-      if (pageTextLine.includes("Shipping Terms")) {
-        const result = /Shipping Terms (.*)/g.exec(pageTextLine);
-        const shipmentTerm = result == null ? "" : result[1];
-        if (shipmentTerm != "" && shipmentTerm != undefined)
-          data.shipmentTerm = shipmentTerm;
       }
 
       if (pageTextLine == "(RM)") {
@@ -218,8 +171,8 @@ export const parseData = (pdfContent: string) => {
             pageTextLine
           );
         if (result) {
-          data.supplierInvoiceDetail.push({
-            item: result[1] || "",
+          data.supplierInvoiceDetails.push({
+            id: nanoid(),
             quantity: parseFloat(result[2] || ""),
             uom: result[3] || "",
             description: result[4] || "",
@@ -250,7 +203,7 @@ export const parseData = (pdfContent: string) => {
       ) {
         if (pageTextLine.match(/\d/g)) {
           const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
-          data.grandAmount = val == undefined ? 0 : parseFloat(val);
+          data.amount = val == undefined ? 0 : parseFloat(val);
         }
       }
       if (
@@ -259,7 +212,7 @@ export const parseData = (pdfContent: string) => {
       ) {
         if (pageTextLine.match(/\d/g)) {
           const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
-          data.grandAmount = val == undefined ? 0 : parseFloat(val);
+          data.amount = val == undefined ? 0 : parseFloat(val);
         }
       }
       if (
@@ -268,7 +221,7 @@ export const parseData = (pdfContent: string) => {
       ) {
         if (pageTextLine.match(/\d/g)) {
           const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
-          data.netAmount = val == undefined ? 0 : parseFloat(val);
+          data.totalAmount = val == undefined ? 0 : parseFloat(val);
         }
       }
     });

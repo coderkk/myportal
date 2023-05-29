@@ -85,7 +85,7 @@ export const gptRouter = createTRPCRouter({
           const formatInstructions = parser.getFormatInstructions();
 
           const prompt = new PromptTemplate({
-            template: `Ensure that all fields in the JSON headings are filled, and any missing input is represented as 0.\nTreat synonymous terms like total, total cost, final cost, total payable, etc., as total_sum.\n Ensure to thoroughly check the extracted information before finalising the output.\n Take your time and avoid confusion between "quantity" and "unit_price". Determine which one is closest to having a monetary value or being a currency.\n Lastly, MAKE SURE all inputs ARE DETECTED, DO NOT MISS any.\n Please RUN the prompt TWICE before providing the output.\n {format_instructions}\n{user_input}`,
+            template: `Ensure that all fields in the JSON headings are filled, and any missing input is represented as 0.\nTreat synonymous terms like total, total cost, final cost, total payable, etc., as total_sum.\n Ensure to thoroughly check the extracted information before finalising the output.\n Take your time and avoid confusion between "quantity" and "unit_price". Determine which one is closest to having a monetary value or being a currency.\n Lastly, MAKE SURE all inputs ARE DETECTED, DO NOT MISS any.\n Please RUN the prompt TWICE before providing the output.\n {format_instructions}\nUser input: \n{user_input}`,
             inputVariables: ["user_input"],
             partialVariables: { format_instructions: formatInstructions },
           });
@@ -101,12 +101,11 @@ export const gptRouter = createTRPCRouter({
             user_input: input.inputText,
           });
           const response = await model.call(promptInput);
-          let output;
 
           // Bad response - this will fail on await parser.parse(response); This is only here to test the fixParser code block.
           //   const response = `{ "vendor_name": "Global Wholesaler Azure Interior" "invoice_no": "INV/2023/03/0008", "invoice_date": "03/20/2023", "items": [ { "description": "Beeswax XL Acme beeswax", "unit": "kg", "quantity": 1, "unit_price": 42.00, "element_cost": 42.00 }, { "description": "Office Chair", "unit": "Units", "quantity": 1, "unit_price": 70.00, "element_cost": 70.00 }, { "description": "Olive Oil", "unit": "L", "quantity": 1, "unit_price": 10.00, "element_cost": 10.00 }, { "description": "Luxury Truffles", "unit": "g", "quantity": 15, "unit_price": 10.00, "element_cost": 150.00 } ], "subtotal": 262.90, "tax": 16.94, "discount": 0, "total_sum": 279.84 }`;
           try {
-            output = await parser.parse(response);
+            return await parser.parse(response);
           } catch (e) {
             const fixParser = OutputFixingParser.fromLLM(
               new OpenAI({
@@ -117,9 +116,8 @@ export const gptRouter = createTRPCRouter({
               }),
               parser
             );
-            output = await fixParser.parse(response);
+            return await fixParser.parse(response);
           }
-          return JSON.stringify(output);
         },
         errorMessages: ["Failed to extract information"],
       })();

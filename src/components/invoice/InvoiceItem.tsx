@@ -3,35 +3,44 @@ import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 
 type FormValues = {
-  item?: string;
+  id: string;
   description: string;
   quantity: number;
   uom: string;
   unitPrice: number;
-  discount?: number;
+  discount: number;
   amount: number;
 };
 
-type AddInvoiceItemProps = {
-  title: string | undefined;
-  index: number;
-  invoiceItem: FormValues,
-  onUpdate: (data: FormValues, index: number) => void;
-}
+type InvoiceItemProps = {
+  title?: string;
+  index?: number;
+  invoiceItem: FormValues;
+  addNew?: (data: FormValues) => void;
+  onUpdate?: (data: FormValues, index: number) => void;
+};
 
-const AddInvoiceItem = ( {title, index, invoiceItem, onUpdate} : AddInvoiceItemProps ) => {
+const InvoiceItem = ({
+  title,
+  index,
+  invoiceItem,
+  addNew,
+  onUpdate,
+}: InvoiceItemProps) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    values : {
+    values: {
+      id: invoiceItem.id,
       description: invoiceItem.description,
       quantity: invoiceItem.quantity,
       uom: invoiceItem.uom,
       unitPrice: invoiceItem.unitPrice,
-      amount: invoiceItem.amount
+      amount: invoiceItem.amount,
+      discount: invoiceItem.discount,
     },
   });
 
@@ -42,14 +51,31 @@ const AddInvoiceItem = ( {title, index, invoiceItem, onUpdate} : AddInvoiceItemP
     e?.preventDefault();
     setOpen(false);
     reset();
-    onUpdate({
-      description: data.description,
-      quantity: data.quantity,
-      uom: data.uom,
-      unitPrice: data.unitPrice,
-      amount: data.amount
-    }, index);
-    setOpen(false);
+    console.log(index);
+    if (addNew) {
+      addNew({
+        id: invoiceItem.id,
+        description: data.description,
+        quantity: data.quantity,
+        uom: data.uom,
+        unitPrice: data.unitPrice,
+        amount: data.amount,
+        discount: data.discount,
+      });
+    } else if (onUpdate && index != undefined && index >= 0) {
+      onUpdate(
+        {
+          id: invoiceItem.id,
+          description: data.description,
+          quantity: data.quantity,
+          uom: data.uom,
+          unitPrice: data.unitPrice,
+          amount: data.amount,
+          discount: data.discount,
+        },
+        index
+      );
+    }
   };
   const [open, setOpen] = useState(false);
   return (
@@ -57,13 +83,13 @@ const AddInvoiceItem = ( {title, index, invoiceItem, onUpdate} : AddInvoiceItemP
       <Dialog.Trigger asChild>
         <button
           type="button"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
         >
-          {(title) ? title : "Add Invoice Item"}
+          {title ? title : "Add Invoice Item"}
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-      <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
+        <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
         <Dialog.Content
           className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
           aria-describedby="Create a task and assign it to a user."
@@ -94,13 +120,14 @@ const AddInvoiceItem = ( {title, index, invoiceItem, onUpdate} : AddInvoiceItemP
                   step="0.01"
                   id="quantity"
                   placeholder="Quantity"
-                  {...register("quantity", { required: true, valueAsNumber: true })}
+                  {...register("quantity", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
                 />
                 <input
                   className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.uom
-                      ? "border-red-400  focus:border-red-400 "
-                      : ""
+                    errors.uom ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="uom"
                   placeholder="UOM"
@@ -116,22 +143,40 @@ const AddInvoiceItem = ( {title, index, invoiceItem, onUpdate} : AddInvoiceItemP
                   id="unitPrice"
                   step="0.01"
                   placeholder="Unit price"
-                  {...register("unitPrice", { required: true, valueAsNumber: true })}
+                  {...register("unitPrice", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
                 />
                 <input
                   type="number"
                   className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.amount
-                      ? "border-red-400  focus:border-red-400 "
-                      : ""
+                    errors.amount ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="amount"
                   step="0.01"
                   placeholder="Amount"
-                  {...register("amount", { required: true, valueAsNumber: true })}
+                  {...register("amount", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
+                />
+                <input
+                  type="number"
+                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
+                    errors.discount
+                      ? "border-red-400  focus:border-red-400 "
+                      : ""
+                  }`}
+                  id="discount"
+                  step="0.01"
+                  placeholder="Discount"
+                  {...register("discount", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
                 />
               </div>
-
             </fieldset>
             {errors.description && (
               <span className="flex justify-center text-xs italic text-red-400">
@@ -158,13 +203,27 @@ const AddInvoiceItem = ( {title, index, invoiceItem, onUpdate} : AddInvoiceItemP
                 Amount is required
               </span>
             )}
+            {errors.discount && (
+              <span className="flex justify-center text-xs italic text-red-400">
+                Discount is required
+              </span>
+            )}
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
               <button
                 className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-blue-50 disabled:text-blue-200 sm:col-start-2"
                 type="button"
-                disabled={!!(errors.description || errors.quantity || errors.unitPrice || errors.amount)}
+                disabled={
+                  !!(
+                    errors.description ||
+                    errors.quantity ||
+                    errors.unitPrice ||
+                    errors.amount ||
+                    errors.discount ||
+                    errors.uom
+                  )
+                }
                 onClick={(e) => {
-                  void handleSubmit(onSubmit)(e)
+                  void handleSubmit(onSubmit)(e);
                 }}
               >
                 Save
@@ -187,4 +246,4 @@ const AddInvoiceItem = ( {title, index, invoiceItem, onUpdate} : AddInvoiceItemP
   );
 };
 
-export default AddInvoiceItem;
+export default InvoiceItem;

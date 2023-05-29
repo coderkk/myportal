@@ -3,47 +3,69 @@ import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createSupplierInvoiceSchema = z.object({
+  description: z.string(),
   invoiceNo: z.string(),
   invoiceDate: z.date(),
-  budgetId: z.string(),
-  description: z.string(),
   vendorName: z.string(),
   vendorAddress: z.string(),
   vendorPhone: z.string(),
   supplierName: z.string(),
   supplierAddress: z.string(),
   supplierPhone: z.string(),
-  grandAmount: z.number(),
+  amount: z.number(),
   taxAmount: z.number(),
-  netAmount: z.number(),
+  totalAmount: z.number(),
+  fileId: z.string(),
   projectId: z.string(),
-  fileId: z.string()
+  budgetId: z.string(),
+  supplierInvoiceDetails: z.array(
+    z.object({
+      description: z.string(),
+      quantity: z.number(),
+      uom: z.string(),
+      unitPrice: z.number(),
+      discount: z.number(),
+      amount: z.number(),
+    })
+  ),
 });
 
 export const getSupplierInvoicesSchema = z.object({
   projectId: z.string(),
 });
 
-export const getSupplierInvoiceInfoSchema = z.object({
+export const getSupplierInvoiceSchema = z.object({
   supplierInvoiceId: z.string(),
 });
 
 export const updateSupplierInvoiceSchema = z.object({
-  supplierInvoiceId: z.string(),
+  id: z.string(),
+  description: z.string(),
   invoiceNo: z.string(),
   invoiceDate: z.date(),
-  budgetId: z.string(),
-  description: z.string(),
   vendorName: z.string(),
   vendorAddress: z.string(),
   vendorPhone: z.string(),
   supplierName: z.string(),
   supplierAddress: z.string(),
   supplierPhone: z.string(),
-  grandAmount: z.number(),
+  amount: z.number(),
   taxAmount: z.number(),
-  netAmount: z.number(),
+  totalAmount: z.number(),
+  fileId: z.string(),
   projectId: z.string(),
+  budgetId: z.string(),
+  supplierInvoiceDetails: z.array(
+    z.object({
+      id: z.string(),
+      description: z.string(),
+      quantity: z.number(),
+      uom: z.string(),
+      unitPrice: z.number(),
+      discount: z.number(),
+      amount: z.number(),
+    })
+  ),
 });
 
 export const deleteSupplierInvoiceSchema = z.object({
@@ -56,29 +78,23 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: () => {
-          return ctx.prisma.supplierInvoice.create({
-            data: {
-              invoiceNo: input.invoiceNo,
-              invoiceDate: input.invoiceDate,
-              budgetId: input.budgetId,
-              vendorName: input.vendorName,
-              vendorAddress: input.vendorAddress,
-              vendorPhone: input.vendorPhone,
-              supplierName: input.supplierName,
-              supplierAddress: input.supplierAddress,
-              supplierPhone: input.supplierPhone,
-              grandAmount: input.grandAmount,
-              taxAmount: input.taxAmount,
-              netAmount: input.netAmount,
-              createdById: ctx.session.user.id,
-              projectId: input.projectId,
-              paymentDue: new Date(),
-              description: "",
-              salePerson: "",
-              deliveryMethod: "",
-              deliveryTerm: "",
-              fileId: input.fileId,
-            },
+          const { supplierInvoiceDetails, ...rest } = input;
+          return ctx.prisma.$transaction(async (tx) => {
+            const newSupplierInvoice = await tx.supplierInvoice.create({
+              data: {
+                ...rest,
+                createdById: ctx.session.user.id,
+              },
+            });
+            await tx.supplierInvoiceDetail.createMany({
+              data: supplierInvoiceDetails.map((supplierInvoiceDetail) => {
+                return {
+                  createdById: ctx.session.user.id,
+                  supplierInvoiceId: newSupplierInvoice.id,
+                  ...supplierInvoiceDetail,
+                };
+              }),
+            });
           });
         },
         errorMessages: ["Failed to create supplier invoice"],
@@ -88,71 +104,50 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .input(getSupplierInvoicesSchema)
     .query(async ({ ctx, input }) => {
       return await trycatch({
-        fn: async () => {
-          const project = await ctx.prisma.project.findUniqueOrThrow({
+        fn: () => {
+          return ctx.prisma.supplierInvoice.findMany({
             where: {
-              id: input.projectId,
+              projectId: input.projectId,
             },
-            include: {
-              supplierInvoices: {
-                include: {
-                  createdBy: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                },
-              },
+            orderBy: {
+              createdAt: "desc",
             },
           });
-          return project.supplierInvoices.map((supplierInvoice) => ({
-            id: supplierInvoice.id,
-            invoiceNo: supplierInvoice.invoiceNo,
-            invoiceDate: supplierInvoice.invoiceDate,
-            budgetId: supplierInvoice.budgetId,
-            description: supplierInvoice.description,
-            vendorName: supplierInvoice.vendorName,
-            vendorAddress: supplierInvoice.vendorAddress,
-            vendorPhone: supplierInvoice.vendorPhone,
-            supplierName: supplierInvoice.supplierName,
-            supplierAddress: supplierInvoice.supplierAddress,
-            supplierPhone: supplierInvoice.supplierPhone,
-            grandAmount: supplierInvoice.grandAmount,
-            taxAmount: supplierInvoice.taxAmount,
-            netAmount: supplierInvoice.netAmount,
-            projectId: supplierInvoice.projectId,
-            createdBy: supplierInvoice.createdBy,
-          }));
         },
         errorMessages: ["Failed to get supplier invoices"],
       })();
     }),
   getSupplierInvoice: protectedProcedure
-    .input(getSupplierInvoiceInfoSchema)
+    .input(getSupplierInvoiceSchema)
     .query(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
-          return ctx.prisma.supplierInvoice.findUniqueOrThrow({
-            where: {
-              id: input.supplierInvoiceId,
-            },
-            include: {
-              createdBy: {
-                select: {
-                  name: true,
-                },
+        fn: async () => {
+          const supplierInvoice =
+            await ctx.prisma.supplierInvoice.findUniqueOrThrow({
+              where: {
+                id: input.supplierInvoiceId,
               },
-              supplierInvoiceDetails: {
-                include: {
-                  createdBy: {
-                    select: {
-                      name: true,
-                    },
+              include: {
+                supplierInvoiceDetails: {
+                  select: {
+                    id: true,
+                    description: true,
+                    discount: true,
+                    quantity: true,
+                    uom: true,
+                    unitPrice: true,
+                    amount: true,
+                  },
+                  orderBy: {
+                    createdAt: "desc",
                   },
                 },
               },
-            },
-          });
+            });
+          return {
+            ...supplierInvoice,
+            budgetId: supplierInvoice.budgetId || "", // PLANETSCALE FIX
+          };
         },
         errorMessages: ["Failed to get supplier invoice"],
       })();
@@ -162,23 +157,34 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { supplierInvoiceDetails, ...other } = input;
+          // https://github.com/prisma/prisma/issues/2255#issuecomment-683811551
           return ctx.prisma.supplierInvoice.update({
             where: {
-              id: input.supplierInvoiceId,
+              id: other.id,
             },
             data: {
-              invoiceNo: input.invoiceNo,
-              invoiceDate: input.invoiceDate,
-              budgetId: input.budgetId,
-              vendorName: input.vendorName,
-              vendorAddress: input.vendorAddress,
-              vendorPhone: input.vendorPhone,
-              supplierName: input.supplierName,
-              supplierAddress: input.supplierAddress,
-              supplierPhone: input.supplierPhone,
-              grandAmount: input.grandAmount,
-              taxAmount: input.taxAmount,
-              netAmount: input.netAmount,
+              ...other,
+              supplierInvoiceDetails: {
+                deleteMany: {
+                  supplierInvoiceId: other.id,
+                  NOT: input.supplierInvoiceDetails.map(({ id }) => ({ id })),
+                },
+                upsert: input.supplierInvoiceDetails.map(
+                  (supplierInvoiceDetail) => {
+                    const { id, ...rest } = supplierInvoiceDetail;
+                    return {
+                      where: { id: id },
+                      update: { ...rest },
+                      create: {
+                        createdById: ctx.session.user.id,
+                        ...rest,
+                      },
+                    };
+                  }
+                ),
+              },
             },
           });
         },
