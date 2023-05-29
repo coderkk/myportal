@@ -1,18 +1,21 @@
+import { format } from "date-fns";
+import { useAtom } from "jotai";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
-import PermissionToProject from "../../../../components/auth/PermissionToProject";
-import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetSupplierInvoicesFilter, useDeleteSupplierInvoice } from "../../../../hooks/supplierInvoice";
-import { format } from "date-fns";
-import dynamic from "next/dynamic";
-import { useAtom } from "jotai";
 import {
   activeDateFiltersAtom,
   activeSearchFiltersAtom,
 } from "../../../../atoms/supplierInvoiceAtoms";
-import { getDateFromActiveFilter } from "../../../../components/invoice/DateFilter";
+import PermissionToProject from "../../../../components/auth/PermissionToProject";
+import SessionAuth from "../../../../components/auth/SessionAuth";
 import Spinner from "../../../../components/common/Spinner";
+import { getDateFromActiveFilter } from "../../../../components/invoice/DateFilter";
 import FilterBar from "../../../../components/invoice/FilterBar";
+import {
+  useDeleteSupplierInvoice,
+  useGetSupplierInvoices,
+} from "../../../../hooks/supplierInvoice";
 
 const DeleteButton = dynamic(
   () => import("../../../../components/common/DeleteButton")
@@ -24,7 +27,7 @@ const Invoices = () => {
   const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
   const [activeDateFilters] = useAtom(activeDateFiltersAtom);
 
-  const { supplierInvoices, isLoading } = useGetSupplierInvoicesFilter({
+  const { supplierInvoices, isLoading } = useGetSupplierInvoices({
     projectId: projectId,
     budgetId: activeSearchFilters.map(
       (activeSearchFilter) => activeSearchFilter.value
@@ -145,17 +148,18 @@ const Invoices = () => {
                                 {supplierInvoice.invoiceNo}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                { format(supplierInvoice.invoiceDate, "dd MMM Y") }
+                                {format(
+                                  supplierInvoice.invoiceDate,
+                                  "dd MMM Y"
+                                )}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                { supplierInvoice.budgetId }
+                                {supplierInvoice.budgetId}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.totalAmount}
                               </td>
-                              <td 
-                                className="flex whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
-                              >
+                              <td className="flex whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                 <button
                                   type="button"
                                   onClick={() => {

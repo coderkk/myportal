@@ -89,8 +89,8 @@ export const useCreateSupplierInvoice = () => {
         }
       },
       async onSettled() {
-        await utils.supplierInvoice.getSupplierInvoices.invalidate();
         setMutationCount((prev) => prev - 1);
+        await utils.supplierInvoice.getSupplierInvoices.invalidate();
       },
     });
   return {
@@ -100,15 +100,24 @@ export const useCreateSupplierInvoice = () => {
 
 export const useGetSupplierInvoices = ({
   projectId,
+  budgetId,
+  startDate,
+  endDate,
 }: {
   projectId: string;
+  budgetId?: string;
+  startDate?: Date;
+  endDate?: Date;
 }) => {
   const [mutationCount] = useAtom(mutationCountAtom);
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoices.useQuery(
     {
       projectId: projectId,
+      budgetId: budgetId,
+      startDate: startDate,
+      endDate: endDate,
     },
-    { enabled: mutationCount === 0 }
+    { enabled: mutationCount === 0, keepPreviousData: true }
   );
   return {
     supplierInvoices: data,
@@ -121,44 +130,18 @@ export const useGetSupplierInvoice = ({
   onSucess,
 }: {
   supplierInvoiceId: string;
-  onSucess: (supplierInvoiceItem: supplierInvoiceItem[]) => void;
+  onSucess: (supplierInvoiceItems: supplierInvoiceItem[]) => void;
 }) => {
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoice.useQuery(
     {
       supplierInvoiceId: supplierInvoiceId,
     },
     {
-      onSuccess: (data) => onSucess(data.supplierInvoiceItem),
+      onSuccess: (data) => onSucess(data.supplierInvoiceItems),
     }
   );
   return {
     supplierInvoiceData: data,
-    isLoading: isLoading,
-  };
-};
-
-export const useGetSupplierInvoicesFilter = ({
-  projectId,
-  budgetId,
-  startDate,
-  endDate,
-}: {
-  projectId: string;
-  budgetId?: string;
-  startDate?: Date;
-  endDate?: Date;
-}) => {
-  const { data, isLoading } = api.supplierInvoice.getSupplierInvoicesFilter.useQuery({
-    projectId: projectId,
-    budgetId: budgetId,
-    startDate: startDate,
-    endDate: endDate,
-  },
-  {
-    keepPreviousData: true,
-  });
-  return {
-    supplierInvoices: data,
     isLoading: isLoading,
   };
 };
@@ -272,8 +255,8 @@ export const useUpdateSupplierInvoice = ({
         );
       },
       async onSettled() {
-        await utils.supplierInvoice.getSupplierInvoices.invalidate();
         setMutationCount((prev) => prev - 1);
+        await utils.supplierInvoice.getSupplierInvoices.invalidate();
       },
     });
   return {

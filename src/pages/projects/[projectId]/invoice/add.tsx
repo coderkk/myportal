@@ -37,10 +37,10 @@ const AddInvoicePage = ({}) => {
     totalAmount: 0,
     fileId: "",
     budgetId: "",
-    supplierInvoiceItem: [],
+    supplierInvoiceItems: [],
   });
 
-  const [supplierInvoiceItem, setSupplierInvoiceItem] = useState<
+  const [supplierInvoiceItems, setSupplierInvoiceItems] = useState<
     supplierInvoiceItem[]
   >([]);
 
@@ -53,12 +53,12 @@ const AddInvoicePage = ({}) => {
     searchKey: "",
   });
 
-  const { 
-    handleSubmit, 
-    control, 
-    register, 
-    reset, 
-    formState: { errors }, 
+  const {
+    handleSubmit,
+    control,
+    register,
+    reset,
+    formState: { errors },
   } = useForm<supplierInvoice>({
     values: invoiceData,
   });
@@ -72,24 +72,21 @@ const AddInvoicePage = ({}) => {
     createSupplierInvoice({
       ...data,
       projectId: projectId,
-      supplierInvoiceItem: supplierInvoiceItem,
+      supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");
   };
 
-  const onInvoiceUpdate = (
-    invoiceItem: supplierInvoiceItem,
-    index: number
-  ) => {
-    const newSupplierInvoiceItem = [...supplierInvoiceItem];
-    newSupplierInvoiceItem[index] = invoiceItem;
-    setSupplierInvoiceItem(newSupplierInvoiceItem);
+  const onInvoiceUpdate = (invoiceItem: supplierInvoiceItem, index: number) => {
+    const newSupplierInvoiceItems = [...supplierInvoiceItems];
+    newSupplierInvoiceItems[index] = invoiceItem;
+    setSupplierInvoiceItems(newSupplierInvoiceItems);
   };
 
   const removeInvoiceItem = (index: number) => {
-    const newSupplierInvoiceItem = [...supplierInvoiceItem];
-    newSupplierInvoiceItem.splice(index, 1);
-    setSupplierInvoiceItem(newSupplierInvoiceItem);
+    const newSupplierInvoiceItems = [...supplierInvoiceItems];
+    newSupplierInvoiceItems.splice(index, 1);
+    setSupplierInvoiceItems(newSupplierInvoiceItems);
   };
 
   return (
@@ -226,7 +223,7 @@ const AddInvoicePage = ({}) => {
                                     budgets={budgets || []}
                                     defaultValue={value || null}
                                     onCostCodeChange={(v) => onChange(v)}
-                                    error={(errors.budgetId) ? true : false}
+                                    error={errors.budgetId ? true : false}
                                   />
                                 );
                               }}
@@ -380,7 +377,7 @@ const AddInvoicePage = ({}) => {
 
                       <div className="w-40 px-1 text-center"></div>
                     </div>
-                    {supplierInvoiceItem.map((row, i) => {
+                    {supplierInvoiceItems.map((supplierInvoiceItem, i) => {
                       return (
                         <div
                           key={i}
@@ -388,19 +385,19 @@ const AddInvoicePage = ({}) => {
                         >
                           <div className="flex-1 px-1">
                             <p className="text-sm tracking-wide text-gray-800">
-                              {row?.description}
+                              {supplierInvoiceItem?.description}
                             </p>
                           </div>
                           <div className="w-20 px-1 text-right">
                             <p className="text-sm tracking-wide text-gray-800">
-                              {row?.uom}
+                              {supplierInvoiceItem?.uom}
                             </p>
                           </div>
 
                           <div className="w-32 px-1 text-right">
                             <p className="leading-none">
                               <span className="block text-sm tracking-wide text-gray-800">
-                                {row?.unitPrice}
+                                {supplierInvoiceItem?.unitPrice}
                               </span>
                             </p>
                           </div>
@@ -408,7 +405,7 @@ const AddInvoicePage = ({}) => {
                           <div className="w-32 px-1 text-right">
                             <p className="leading-none">
                               <span className="block text-sm tracking-wide text-gray-800">
-                                {row?.amount}
+                                {supplierInvoiceItem?.amount}
                               </span>
                             </p>
                           </div>
@@ -416,7 +413,7 @@ const AddInvoicePage = ({}) => {
                             <InvoiceItem
                               title="Edit"
                               index={i}
-                              invoiceItem={row}
+                              invoiceItem={supplierInvoiceItem}
                               onUpdate={(data) => {
                                 onInvoiceUpdate(data, i);
                               }}
@@ -446,11 +443,11 @@ const AddInvoicePage = ({}) => {
                           amount: 0,
                         }}
                         addNew={(newInvoiceItem) => {
-                          const newSupplierInvoiceItem = [
+                          const newSupplierInvoiceItems = [
                             newInvoiceItem,
-                            ...supplierInvoiceItem,
+                            ...supplierInvoiceItems,
                           ];
-                          setSupplierInvoiceItem(newSupplierInvoiceItem);
+                          setSupplierInvoiceItems(newSupplierInvoiceItems);
                         }}
                       />
                     </div>

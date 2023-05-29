@@ -18,13 +18,8 @@ export const getPDFText = async (pdf: PDFDocumentProxy) => {
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
     pageTextPromises.push(getPageText(pdf, pageNumber));
   }
-  return await Promise.all(pageTextPromises)
-    .then((res) => {
-      return res.join("\n");
-    })
-    .catch((error) => {
-      throw error;
-    });
+  const pageTexts = await Promise.all(pageTextPromises);
+  return pageTexts.join("\n");
 };
 
 const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
@@ -42,7 +37,7 @@ const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
     .join("");
 };
 
-export const loadFileObject = async (source: File) => {
+export const loadFileObject = (source: File) => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
     fileReader.onload = async () => {
@@ -51,13 +46,12 @@ export const loadFileObject = async (source: File) => {
         resolve("");
       } else {
         const typedarray = new Uint8Array(result);
-        await loadFilename(typedarray)
-          .then((text) => {
-            resolve(text);
-          })
-          .catch((error) => {
-            reject(error);
-          });
+        try {
+          const text = await loadFilename(typedarray);
+          resolve(text);
+        } catch (error) {
+          reject(error);
+        }
       }
     };
     fileReader.onerror = reject;
@@ -69,19 +63,13 @@ export const loadFilename = async (
   source: string | URL | TypedArray | ArrayBuffer | DocumentInitParameters
 ) => {
   const loadingTask = pdfjsLib.getDocument(source);
-  return await loadingTask.promise
-    .then(async (pdf) => {
-      return await getPDFText(pdf)
-        .then((res) => {
-          return res;
-        })
-        .catch((error) => {
-          throw error;
-        });
-    })
-    .catch((error: Error) => {
-      throw error;
-    });
+  try {
+    const pdfDocumentProxy = await loadingTask.promise;
+    const pdfText = getPDFText(pdfDocumentProxy);
+    return pdfText;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const parseData = (pdfContent: string) => {
@@ -105,7 +93,7 @@ export const parseData = (pdfContent: string) => {
     totalAmount: 0,
     fileId: "",
     budgetId: "",
-    supplierInvoiceItem: [],
+    supplierInvoiceItems: [],
   };
 
   const pageTexts: string[] = pdfContent.split("\n");
@@ -160,7 +148,7 @@ export const parseData = (pdfContent: string) => {
             pageTextLine
           );
         if (result) {
-          data.supplierInvoiceItem.push({
+          data.supplierInvoiceItems.push({
             id: nanoid(),
             quantity: parseFloat(result[2] || ""),
             uom: result[3] || "",

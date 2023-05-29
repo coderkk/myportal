@@ -28,13 +28,13 @@ const SupplierInvoiceView = () => {
   const projectId = router.query.projectId as string;
   const supplierInvoiceId = router.query.supplierInvoiceId as string;
 
-  const [supplierInvoiceItem, setSupplierInvoiceItem] = useState<
+  const [supplierInvoiceItems, setSupplierInvoiceItems] = useState<
     supplierInvoiceItem[]
   >([]);
   const { supplierInvoiceData, isLoading } = useGetSupplierInvoice({
     supplierInvoiceId: supplierInvoiceId,
-    onSucess: (supplierInvoiceItem: supplierInvoiceItem[]) =>
-      setSupplierInvoiceItem(supplierInvoiceItem),
+    onSucess: (supplierInvoiceItems: supplierInvoiceItem[]) =>
+      setSupplierInvoiceItems(supplierInvoiceItems),
   });
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
@@ -47,28 +47,24 @@ const SupplierInvoiceView = () => {
   });
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
 
-  const onInvoiceUpdate = (
-    invoiceItem: supplierInvoiceItem,
-    index: number
-  ) => {
-    const newSupplierInvoiceItem = [...supplierInvoiceItem];
-    newSupplierInvoiceItem[index] = invoiceItem;
-    setSupplierInvoiceItem(newSupplierInvoiceItem);
+  const onInvoiceUpdate = (invoiceItem: supplierInvoiceItem, index: number) => {
+    const newSupplierInvoiceItems = [...supplierInvoiceItems];
+    newSupplierInvoiceItems[index] = invoiceItem;
+    setSupplierInvoiceItems(newSupplierInvoiceItems);
   };
 
   const removeInvoiceItem = (index: number) => {
-    const newSupplierInvoiceItem = [...supplierInvoiceItem];
-    newSupplierInvoiceItem.splice(index, 1);
-    console.log(newSupplierInvoiceItem);
-    setSupplierInvoiceItem(newSupplierInvoiceItem);
+    const newSupplierInvoiceItems = [...supplierInvoiceItems];
+    newSupplierInvoiceItems.splice(index, 1);
+    setSupplierInvoiceItems(newSupplierInvoiceItems);
   };
 
-  const { 
-    handleSubmit, 
-    control, 
-    register, 
-    reset, 
-    formState: { errors }, 
+  const {
+    handleSubmit,
+    control,
+    register,
+    reset,
+    formState: { errors },
   } = useForm<supplierInvoice>({
     values: supplierInvoiceData,
   });
@@ -82,7 +78,7 @@ const SupplierInvoiceView = () => {
     updateSupplierInvoice({
       ...data,
       projectId: projectId,
-      supplierInvoiceItem: supplierInvoiceItem,
+      supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");
   };
@@ -118,7 +114,7 @@ const SupplierInvoiceView = () => {
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
-        {isLoading || !supplierInvoiceItem ? (
+        {isLoading || !supplierInvoiceItems ? (
           <div>Loading...</div>
         ) : (
           supplierInvoiceData && (
@@ -150,7 +146,7 @@ const SupplierInvoiceView = () => {
                               >
                                 <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
                               </svg>
-                              Download Document
+                              Download Invoice
                             </button>
                           </div>
                         )}
@@ -283,7 +279,7 @@ const SupplierInvoiceView = () => {
                                         budgets={budgets || []}
                                         defaultValue={value || null}
                                         onCostCodeChange={(v) => onChange(v)}
-                                        error={(errors.budgetId) ? true : false}
+                                        error={errors.budgetId ? true : false}
                                       />
                                     );
                                   }}
@@ -449,62 +445,60 @@ const SupplierInvoiceView = () => {
 
                           <div className="w-40 px-1 text-center"></div>
                         </div>
-                        {supplierInvoiceItem &&
-                          supplierInvoiceItem.map(
-                            (supplierInvoiceItem, i) => {
-                              return (
-                                <div
-                                  key={i}
-                                  className="mx-1 flex items-center border-b py-2"
-                                >
-                                  <div className="flex-1 px-1">
-                                    <p className="text-sm tracking-wide text-gray-800">
-                                      {supplierInvoiceItem?.description}
-                                    </p>
-                                  </div>
-
-                                  <div className="w-20 px-1 text-right">
-                                    <p className="text-sm tracking-wide text-gray-800">
-                                      {supplierInvoiceItem?.uom}
-                                    </p>
-                                  </div>
-
-                                  <div className="w-32 px-1 text-right">
-                                    <p className="leading-none">
-                                      <span className="block text-sm tracking-wide text-gray-800">
-                                        {supplierInvoiceItem?.unitPrice}
-                                      </span>
-                                    </p>
-                                  </div>
-
-                                  <div className="w-32 px-1 text-right">
-                                    <p className="leading-none">
-                                      <span className="block text-sm tracking-wide text-gray-800">
-                                        {supplierInvoiceItem?.amount}
-                                      </span>
-                                    </p>
-                                  </div>
-                                  <div className="w-40 px-1 text-center">
-                                    <InvoiceItem
-                                      title="Edit"
-                                      index={i}
-                                      invoiceItem={supplierInvoiceItem}
-                                      onUpdate={(data) => {
-                                        onInvoiceUpdate(data, i);
-                                      }}
-                                    />
-                                    <button
-                                      type="button"
-                                      className="focus:shadow-outline mx-1 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
-                                      onClick={() => removeInvoiceItem(i)}
-                                    >
-                                      Delete
-                                    </button>
-                                  </div>
+                        {supplierInvoiceItems &&
+                          supplierInvoiceItems.map((supplierInvoiceItem, i) => {
+                            return (
+                              <div
+                                key={i}
+                                className="mx-1 flex items-center border-b py-2"
+                              >
+                                <div className="flex-1 px-1">
+                                  <p className="text-sm tracking-wide text-gray-800">
+                                    {supplierInvoiceItem?.description}
+                                  </p>
                                 </div>
-                              );
-                            }
-                          )}
+
+                                <div className="w-20 px-1 text-right">
+                                  <p className="text-sm tracking-wide text-gray-800">
+                                    {supplierInvoiceItem?.uom}
+                                  </p>
+                                </div>
+
+                                <div className="w-32 px-1 text-right">
+                                  <p className="leading-none">
+                                    <span className="block text-sm tracking-wide text-gray-800">
+                                      {supplierInvoiceItem?.unitPrice}
+                                    </span>
+                                  </p>
+                                </div>
+
+                                <div className="w-32 px-1 text-right">
+                                  <p className="leading-none">
+                                    <span className="block text-sm tracking-wide text-gray-800">
+                                      {supplierInvoiceItem?.amount}
+                                    </span>
+                                  </p>
+                                </div>
+                                <div className="w-40 px-1 text-center">
+                                  <InvoiceItem
+                                    title="Edit"
+                                    index={i}
+                                    invoiceItem={supplierInvoiceItem}
+                                    onUpdate={(data) => {
+                                      onInvoiceUpdate(data, i);
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="focus:shadow-outline mx-1 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
+                                    onClick={() => removeInvoiceItem(i)}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
                         <div className="mt-5">
                           <InvoiceItem
                             title="Add new item"
@@ -518,13 +512,11 @@ const SupplierInvoiceView = () => {
                               amount: 0,
                             }}
                             addNew={(newInvoiceItem) => {
-                              const newSupplierInvoiceItem = [
+                              const newSupplierInvoiceItems = [
                                 newInvoiceItem,
-                                ...supplierInvoiceItem,
+                                ...supplierInvoiceItems,
                               ];
-                              setSupplierInvoiceItem(
-                                newSupplierInvoiceItem
-                              );
+                              setSupplierInvoiceItems(newSupplierInvoiceItems);
                             }}
                           />
                         </div>

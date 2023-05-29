@@ -26,7 +26,7 @@ export type activeSearchFilter = {
 };
 
 type state = {
-  name: string;
+  costCode: string;
 };
 
 type action = {
@@ -52,8 +52,8 @@ const handleSearch = (
   const newActiveSearchFilterCandidates = [
     {
       filterID: filterIDs[1],
-      value: state.name,
-      label: "Name",
+      value: state.costCode,
+      label: "Cost code",
     },
   ];
   const newActiveSearchFilters = [];
@@ -66,15 +66,15 @@ const handleSearch = (
     }
   }
   setActiveSearchFilters([...activeSearchFilters, ...newActiveSearchFilters]);
-  dispatch({ type: "name", payload: "" });
+  dispatch({ type: "costCode", payload: "" });
 };
 
 const reducer = (state: state, action: action): state => {
   switch (action.type) {
-    case "name":
+    case "costCode":
       return {
         ...state,
-        name: action.payload,
+        costCode: action.payload,
       };
     default:
       throw new Error(`Unhandled action type`);
@@ -93,7 +93,7 @@ export const MobileSearchFilter = ({
   );
 
   const [state, dispatch] = useReducer(reducer, {
-    name: "",
+    costCode: "",
   });
 
   return (
@@ -137,11 +137,11 @@ export const MobileSearchFilter = ({
                     transition-all placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300 focus:border-2
                     focus:border-blue-500 focus:border-t-transparent focus:outline-0"
                   placeholder="Name"
-                  value={option.label === "Name" ? state.name : ""}
+                  value={option.label === "Cost code" ? state.costCode : ""}
                   onChange={(e) =>
-                    option.label === "Name"
+                    option.label === "Cost code"
                       ? dispatch({
-                          type: "name",
+                          type: "costCode",
                           payload: e.target.value,
                         })
                       : null
@@ -184,7 +184,7 @@ export const DesktopSearchFilter = ({
     activeSearchFiltersAtom
   );
   const [state, dispatch] = useReducer(reducer, {
-    name: "",
+    costCode: "",
   });
 
   return (
@@ -239,11 +239,11 @@ export const DesktopSearchFilter = ({
                     transition-all placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300 focus:border-2
                     focus:border-blue-500 focus:border-t-transparent focus:outline-0"
                     placeholder="Name"
-                    value={option.label === "Name" ? state.name : ""}
+                    value={option.label === "Cost code" ? state.costCode : ""}
                     onChange={(e) =>
-                      option.label === "Name"
+                      option.label === "Cost code"
                         ? dispatch({
-                            type: "name",
+                            type: "costCode",
                             payload: e.target.value,
                           })
                         : null

@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { useRouter } from "next/router";
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
@@ -20,7 +20,7 @@ import PdfLoad from "../../../../components/invoice/PdfLoad";
 import type { supplierInvoiceItem } from "../../../../hooks/supplierInvoice";
 
 export type SupplierInvoiceWithDetails = supplierInvoice & {
-  supplierInvoiceItem: supplierInvoiceItem[];
+  supplierInvoiceItems: supplierInvoiceItem[];
 };
 
 type LoadPDFHandle = {
@@ -32,7 +32,7 @@ const InvoiceImportPage = () => {
   const utils = api.useContext();
   const projectId = router.query.projectId as string;
   const [showDocument, setShowDocument] = useState(false);
-  const PdfLoadRef = useRef<LoadPDFHandle>(null);
+  const pdfLoadRef = useRef<LoadPDFHandle>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [fileId, setFileId] = useState("");
@@ -40,25 +40,24 @@ const InvoiceImportPage = () => {
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
   const { createSupplierInvoice } = useCreateSupplierInvoice();
 
-  const [invoiceData, setInvoiceData] =
-    useState<SupplierInvoiceWithDetails>({
-      id: "",
-      description: "",
-      invoiceNo: "",
-      invoiceDate: new Date(),
-      vendorName: "",
-      vendorAddress: "",
-      vendorPhone: "",
-      supplierName: "",
-      supplierAddress: "",
-      supplierPhone: "",
-      amount: 0,
-      taxAmount: 0,
-      totalAmount: 0,
-      fileId: "",
-      budgetId: "",
-      supplierInvoiceItem: [],
-    });
+  const [invoiceData, setInvoiceData] = useState<SupplierInvoiceWithDetails>({
+    id: "",
+    description: "",
+    invoiceNo: "",
+    invoiceDate: new Date(),
+    vendorName: "",
+    vendorAddress: "",
+    vendorPhone: "",
+    supplierName: "",
+    supplierAddress: "",
+    supplierPhone: "",
+    amount: 0,
+    taxAmount: 0,
+    totalAmount: 0,
+    fileId: "",
+    budgetId: "",
+    supplierInvoiceItems: [],
+  });
 
   const { budgets } = useGetBudgets({
     projectId: projectId,
@@ -103,14 +102,12 @@ const InvoiceImportPage = () => {
     }
   };
 
-  const InvoiceLoadClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-    if (PdfLoadRef && PdfLoadRef.current) {
-      PdfLoadRef.current.handleLoadClick();
+  const invoiceLoadClick = () => {
+    if (pdfLoadRef && pdfLoadRef.current) {
+      pdfLoadRef.current.handleLoadClick();
     }
   };
+
   const uploadDocument = async () => {
     if (file == null) {
       toast.error("No file detected.");
@@ -163,7 +160,7 @@ const InvoiceImportPage = () => {
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
               <div className="flex">
-                <div className="mb-6 grow flex items-center">
+                <div className="mb-6 flex grow items-center">
                   <button
                     type="button"
                     onClick={() => {
@@ -192,12 +189,34 @@ const InvoiceImportPage = () => {
                   </h2>
                 </div>
                 <div>
-                  <button type="button" onClick={InvoiceLoadClick} className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">Extract PDF</button>
-                  <button type="button" onClick={() => {setShowDocument(!showDocument)}} className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">Show/Hide PDF</button>
+                  <button
+                    type="button"
+                    onClick={invoiceLoadClick}
+                    className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800"
+                  >
+                    Extract PDF
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDocument(!showDocument);
+                    }}
+                    className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800"
+                  >
+                    Show/Hide PDF
+                  </button>
                 </div>
               </div>
-              <div className={`grid grid-cols-1 gap-y-10 lg:gap-x-16 ${(showDocument) ? 'lg:grid-cols-3' : ''}`}>
-                <div className={`mx-auto text-left lg:mx-0 lg:text-left  ${(showDocument) ? 'col-span-2' : ''}`}>
+              <div
+                className={`grid grid-cols-1 gap-y-10 lg:gap-x-16 ${
+                  showDocument ? "lg:grid-cols-3" : ""
+                }`}
+              >
+                <div
+                  className={`mx-auto text-left lg:mx-0 lg:text-left  ${
+                    showDocument ? "col-span-2" : ""
+                  }`}
+                >
                   <div className="mb-8 flex justify-between">
                     <div className="w-2/4">
                       <div className="mb-2 items-center md:mb-1 md:flex">
@@ -285,55 +304,61 @@ const InvoiceImportPage = () => {
                       </p>
                     </div>
                   </div>
-                  {invoiceData?.supplierInvoiceItem.map((row, i) => {
-                    return (
-                      <div
-                        key={i}
-                        className="-mx-1 flex items-start border-b py-2"
-                      >
-                        <div className="flex-1 px-1">
-                          <p className="text-sm tracking-wide text-gray-800">
-                            {row?.description}
-                          </p>
-                        </div>
+                  {invoiceData?.supplierInvoiceItems.map(
+                    (supplierInvoiceItem, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="-mx-1 flex items-start border-b py-2"
+                        >
+                          <div className="flex-1 px-1">
+                            <p className="text-sm tracking-wide text-gray-800">
+                              {supplierInvoiceItem?.description}
+                            </p>
+                          </div>
 
-                        <div className="w-20 px-1 text-right">
-                          <p className="text-sm tracking-wide text-gray-800">
-                            {row?.uom}
-                          </p>
-                        </div>
+                          <div className="w-20 px-1 text-right">
+                            <p className="text-sm tracking-wide text-gray-800">
+                              {supplierInvoiceItem?.uom}
+                            </p>
+                          </div>
 
-                        <div className="w-32 px-1 text-right">
-                          <p className="leading-none">
-                            <span className="block text-sm tracking-wide text-gray-800">
-                              {row?.unitPrice}
-                            </span>
-                          </p>
-                        </div>
+                          <div className="w-32 px-1 text-right">
+                            <p className="leading-none">
+                              <span className="block text-sm tracking-wide text-gray-800">
+                                {supplierInvoiceItem?.unitPrice}
+                              </span>
+                            </p>
+                          </div>
 
-                        <div className="w-32 px-1 text-right">
-                          <p className="leading-none">
-                            <span className="block text-sm tracking-wide text-gray-800">
-                              {row?.amount}
-                            </span>
-                          </p>
+                          <div className="w-32 px-1 text-right">
+                            <p className="leading-none">
+                              <span className="block text-sm tracking-wide text-gray-800">
+                                {supplierInvoiceItem?.amount}
+                              </span>
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    }
+                  )}
 
                   <div className="ml-auto mt-5 w-full py-2 sm:w-2/4 lg:w-1/2">
                     <div className="mb-3 flex justify-between">
                       <div className="mr-2 flex-1 text-right text-gray-800">
                         Subtotal
                       </div>
-                      <div className="w-40 text-right">{invoiceData.amount}</div>
+                      <div className="w-40 text-right">
+                        {invoiceData.amount}
+                      </div>
                     </div>
                     <div className="mb-4 flex justify-between">
                       <div className="mr-2 flex-1 text-right text-gray-800">
                         Sale Tax
                       </div>
-                      <div className="w-40 text-right">{invoiceData.taxAmount}</div>
+                      <div className="w-40 text-right">
+                        {invoiceData.taxAmount}
+                      </div>
                     </div>
 
                     <div className="border-b border-t py-2">
@@ -341,14 +366,16 @@ const InvoiceImportPage = () => {
                         <div className="mr-2 flex-1 text-right text-xl text-gray-800">
                           Total
                         </div>
-                        <div className="w-40 text-right">{invoiceData.totalAmount}</div>
+                        <div className="w-40 text-right">
+                          {invoiceData.totalAmount}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div>
-                <div className={`${(!showDocument) ? 'hidden' : ''}`}>
-                    <PdfLoad onData={handleData} hideLoadButton={true} ref={PdfLoadRef}  />
+                  <div className={`${!showDocument ? "hidden" : ""}`}>
+                    <PdfLoad onData={handleData} ref={pdfLoadRef} />
                   </div>
                 </div>
               </div>

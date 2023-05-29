@@ -16,7 +16,7 @@ export type filterID = (typeof filterIDs)[number];
 export const searchFilter = {
   id: filterIDs[0],
   name: "Search",
-  options: [{ value: "", label: "Name" }],
+  options: [{ value: "", label: "Cost code" }],
 };
 
 export const dateFilter = {

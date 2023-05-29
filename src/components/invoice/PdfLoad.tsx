@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
-import { useRef, useState, forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
 import type { SupplierInvoiceWithDetails } from "../../pages/projects/[projectId]/invoice/import";
@@ -14,12 +14,11 @@ const Document = dynamic(() =>
 
 type PdfLoadProps = {
   onData: (data: SupplierInvoiceWithDetails, file: File | null) => void;
-  hideLoadButton: boolean;
 };
 
 const Page = dynamic(() => import("react-pdf").then((module) => module.Page));
 
-const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
+const PdfLoad = forwardRef(({ onData }: PdfLoadProps, ref) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pdfDocRef = useRef<HTMLInputElement | null>(null);
 
@@ -27,9 +26,6 @@ const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
-  const [uploadFile, setUploadFile] = useState<File | undefined | null>(
-    undefined
-  );
 
   const onDocumentLoadSuccess = (pdf: PDFDocumentProxy) => {
     setNumPages(pdf.numPages);
@@ -62,13 +58,8 @@ const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
   useImperativeHandle(ref, () => ({
     handleLoadClick() {
       inputRef.current?.click();
-    }
+    },
   }));
-
-  const handleLoadClick = () => {
-    // 👇 We redirect the click event onto the hidden input element
-    inputRef.current?.click();
-  };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -77,13 +68,11 @@ const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
     if (files && files[0]) {
       try {
         await validatePdfFile(files[0]);
-        setUploadFile(files[0]);
         setFile(files[0]);
       } catch {
         toast.error("An error occured while handling the pdf file.");
       } finally {
         event.target.value = ""; // clear the input
-        setUploadFile(null);
       }
     }
     // 🚩 do the file upload here normally...
@@ -91,17 +80,25 @@ const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
 
   const validatePdfFile = async (file: File) => {
     try {
-      if (["application/pdf", "application/x-pdf", "application/acrobat", "applications/vnd.pdf", "text/pdf", "text/x-pdf"].indexOf(file['type']) == -1) {
+      if (
+        [
+          "application/pdf",
+          "application/x-pdf",
+          "application/acrobat",
+          "applications/vnd.pdf",
+          "text/pdf",
+          "text/x-pdf",
+        ].indexOf(file["type"]) === -1
+      ) {
         throw new Error("Invalid document type");
       } else {
-        await loadFileObject(file).then((text) => {
-          if (typeof text == "string") {
-            const data = parseData(text);
-            if (!data) {
-              throw new Error();
-            }
+        const text = await loadFileObject(file);
+        if (typeof text == "string") {
+          const data = parseData(text);
+          if (!data) {
+            throw new Error();
           }
-        });
+        }
       }
     } catch {
       toast.error("An error occured while validating the pdf file.");
@@ -111,13 +108,6 @@ const PdfLoad = forwardRef(({ onData, hideLoadButton }: PdfLoadProps, ref) => {
   return (
     <>
       <div className="mb-5 text-right">
-        <button
-          type="button"
-          className={`rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 ${hideLoadButton ? 'hidden' : ''}`}
-          onClick={handleLoadClick}
-        >
-          {uploadFile ? `${uploadFile.name}` : "Load file"}
-        </button>
         <input
           type="file"
           accept="application/pdf, application/x-pdf,application/acrobat, applications/vnd.pdf, text/pdf, text/x-pdf"
