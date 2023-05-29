@@ -1,21 +1,43 @@
 import { useRouter } from "next/router";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import { useGetSupplierInvoices } from "../../../../hooks/supplierInvoice";
+import { useGetSupplierInvoicesFilter } from "../../../../hooks/supplierInvoice";
 import { format } from "date-fns";
+import { useAtom } from "jotai";
+import {
+  activeDateFiltersAtom,
+  activeSearchFiltersAtom,
+} from "../../../../atoms/supplierInvoiceAtoms";
+import { getDateFromActiveFilter } from "../../../../components/invoice/DateFilter";
+import Spinner from "../../../../components/common/Spinner";
+import FilterBar from "../../../../components/invoice/FilterBar";
 
 const Invoices = () => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
-  const { supplierInvoices, isLoading } = useGetSupplierInvoices({
+  const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+  const [activeDateFilters] = useAtom(activeDateFiltersAtom);
+
+  const { supplierInvoices, isLoading } = useGetSupplierInvoicesFilter({
     projectId: projectId,
+    budgetId: activeSearchFilters.map(
+      (activeSearchFilter) => activeSearchFilter.value
+    )[0],
+    startDate: getDateFromActiveFilter(true, activeDateFilters),
+    endDate: getDateFromActiveFilter(false, activeDateFilters),
   });
 
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
         {isLoading ? (
-          <div>Loading...</div>
+          <div className="flex h-screen">
+            <div className="m-auto">
+              <div className="flex justify-between">
+                <Spinner />
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="pt-5">
             <div className="px-4 sm:px-6 lg:px-8">
@@ -53,7 +75,10 @@ const Invoices = () => {
                   </button>
                 </div>
               </div>
-              <div className="mt-8 flow-root">
+              <div className="mt-3 flow-root">
+                <div className="mb-3">
+                  <FilterBar />
+                </div>
                 <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
@@ -82,6 +107,12 @@ const Invoices = () => {
                               scope="col"
                               className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                             >
+                              Cost Code
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
                               Total Amount
                             </th>
                             <th
@@ -102,10 +133,13 @@ const Invoices = () => {
                                 {supplierInvoice.invoiceNo}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {format(supplierInvoice.invoiceDate, "dd MMM Y") }
+                                { format(supplierInvoice.invoiceDate, "dd MMM Y") }
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {supplierInvoice.netAmount}
+                                { supplierInvoice.budgetId }
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.totalAmount}
                               </td>
                               <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                 <button

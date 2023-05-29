@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { TRPCError } from "@trpc/server";
 
 export const createSupplierInvoiceSchema = z.object({
   description: z.string(),
@@ -32,6 +33,13 @@ export const createSupplierInvoiceSchema = z.object({
 
 export const getSupplierInvoicesSchema = z.object({
   projectId: z.string(),
+});
+
+export const getSupplierInvoicesFilterSchema = z.object({
+  projectId: z.string(),
+  budgetId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
 });
 
 export const getSupplierInvoiceSchema = z.object({
@@ -113,6 +121,51 @@ export const supplierInvoiceRouter = createTRPCRouter({
               createdAt: "desc",
             },
           });
+        },
+        errorMessages: ["Failed to get supplier invoices"],
+      })();
+    }),
+    getSupplierInvoicesFilter: protectedProcedure
+    .input(getSupplierInvoicesFilterSchema)
+    .query(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: async () => {
+          if (
+            input.startDate &&
+            input.endDate &&
+            input.startDate > input.endDate
+          ) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+            });
+          }
+          const supplerInvoices = await ctx.prisma.supplierInvoice.findMany({
+            where: {
+              projectId: input.projectId,
+              budgetId: input.budgetId,
+              invoiceDate: {
+                gte: input.startDate,
+                lte: input.endDate,
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            select: {
+              id: true,
+              invoiceNo: true,
+              invoiceDate: true,
+              supplierName: true,
+              budgetId: true,
+              totalAmount: true,
+              createdBy: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          });
+          return supplerInvoices;
         },
         errorMessages: ["Failed to get supplier invoices"],
       })();

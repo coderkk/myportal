@@ -122,6 +122,32 @@ export const useGetSupplierInvoice = ({
   };
 };
 
+export const useGetSupplierInvoicesFilter = ({
+  projectId,
+  budgetId,
+  startDate,
+  endDate,
+}: {
+  projectId: string;
+  budgetId?: string;
+  startDate?: Date;
+  endDate?: Date;
+}) => {
+  const { data, isLoading } = api.supplierInvoice.getSupplierInvoicesFilter.useQuery({
+    projectId: projectId,
+    budgetId: budgetId,
+    startDate: startDate,
+    endDate: endDate,
+  },
+  {
+    keepPreviousData: true,
+  });
+  return {
+    supplierInvoices: data,
+    isLoading: isLoading,
+  };
+};
+
 export const useUpdateSupplierInvoice = ({
   projectId,
 }: {
