@@ -51,7 +51,6 @@ const InvoiceItem = ({
     e?.preventDefault();
     setOpen(false);
     reset();
-    console.log(index);
     if (addNew) {
       addNew({
         id: invoiceItem.id,
