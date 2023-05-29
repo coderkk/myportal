@@ -1,5 +1,6 @@
 import { Edit } from "@styled-icons/boxicons-solid/";
-import { ReactNode, useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 type tenderData = {
   id: number;

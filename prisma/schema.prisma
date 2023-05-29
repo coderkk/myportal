@@ -310,24 +310,19 @@ model Budget {
 }
 
 model SupplierInvoice {
-    id String @id @default(cuid())
-
+    id                     String                  @id @default(cuid())
     description            String
     invoiceNo              String
     invoiceDate            DateTime
     vendorName             String
     vendorAddress          String
     vendorPhone            String
-    paymentDue             DateTime
-    salePerson             String
     supplierName           String
     supplierAddress        String
     supplierPhone          String
-    deliveryMethod         String
-    deliveryTerm           String
-    grandAmount            Float
-    taxAmount              Float
-    netAmount              Float
+    amount                 Float                   @default(0)
+    taxAmount              Float                   @default(0)
+    totalAmount            Float                   @default(0)
     fileId                 String                  @default("")
     supplierInvoiceDetails SupplierInvoiceDetail[]
     projectId              String
@@ -346,14 +341,14 @@ model SupplierInvoice {
 
 model SupplierInvoiceDetail {
     id                String          @id @default(cuid())
-    supplierInvoice   SupplierInvoice @relation(fields: [supplierInvoiceId], references: [id], onDelete: Cascade)
-    supplierInvoiceId String
     description       String
     unitPrice         Float
     quantity          Float
     amount            Float
     discount          Float
     uom               String
+    supplierInvoice   SupplierInvoice @relation(fields: [supplierInvoiceId], references: [id], onDelete: Cascade)
+    supplierInvoiceId String
     createdBy         User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById       String
     createdAt         DateTime        @default(now())

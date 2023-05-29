@@ -92,7 +92,8 @@ const GPT = () => {
           {isLoading ? (
             <Spinner />
           ) : (
-            JSON.stringify(validateResponse(data || ""))
+            // JSON.stringify(validateResponse(data || ""))
+            JSON.stringify(data || "")
           )}
         </div>
       </div>

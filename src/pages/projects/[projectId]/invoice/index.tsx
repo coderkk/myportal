@@ -27,7 +27,7 @@ const Invoices = () => {
                     User will upload and enter the supplier invoice
                   </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex inline">
+                <div className="mt-4 inline sm:ml-16 sm:mt-0 sm:flex">
                   <button
                     type="button"
                     onClick={() => {
@@ -35,7 +35,7 @@ const Invoices = () => {
                         "/projects/" + projectId + "/invoice/add"
                       );
                     }}
-                    className="block rounded-md bg-indigo-600 px-3 py-2 mx-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className="mx-2 block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
                     Add Supplier Invoice
                   </button>
@@ -46,7 +46,7 @@ const Invoices = () => {
                         "/projects/" + projectId + "/invoice/import"
                       );
                     }}
-                    className="block rounded-md bg-indigo-600 px-3 py-2 mx-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className="mx-2 block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
                     Import Supplier Invoice
                   </button>
@@ -81,7 +81,7 @@ const Invoices = () => {
                               scope="col"
                               className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                             >
-                              Total Price
+                              Total Amount
                             </th>
                             <th
                               scope="col"
@@ -92,35 +92,38 @@ const Invoices = () => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white">
-                        {supplierInvoices?.map((supplierInvoice) => (
-                          <tr key={supplierInvoice.id}>
-                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                              {supplierInvoice.supplierName}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                              {supplierInvoice.invoiceNo}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                              {supplierInvoice.invoiceDate.toString()}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                              {supplierInvoice.netAmount}
-                            </td>
-                            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  void router.push(
-                                    "/projects/" + projectId + "/invoice/" + supplierInvoice.id
-                                  );
-                                }}
-                                className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                              >
-                                Edit
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                          {supplierInvoices?.map((supplierInvoice) => (
+                            <tr key={supplierInvoice.id}>
+                              <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                {supplierInvoice.supplierName}
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.invoiceNo}
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.invoiceDate.toString()}
+                              </td>
+                              <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.totalAmount}
+                              </td>
+                              <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    void router.push(
+                                      "/projects/" +
+                                        projectId +
+                                        "/invoice/" +
+                                        supplierInvoice.id
+                                    );
+                                  }}
+                                  className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                >
+                                  Edit
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>

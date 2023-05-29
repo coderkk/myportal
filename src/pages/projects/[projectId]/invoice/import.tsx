@@ -5,7 +5,6 @@ import PermissionToProject from "../../../../components/auth/PermissionToProject
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
-import { useCreateSupplierInvoiceDetail } from "../../../../hooks/supplierInvoiceDetail";
 
 import { nanoid } from "nanoid";
 import toast from "react-hot-toast";
@@ -18,18 +17,10 @@ import { useGetBudgets } from "../../../../hooks/budget";
 
 import InvoiceLoad from "../../../../components/invoice/InvoiceLoad";
 
-type SupplierInvoiceDetail = {
-  item: string;
-  description: string;
-  quantity: number;
-  uom: string;
-  unitPrice: number;
-  discount: number;
-  amount: number;
-};
+import type { supplierInvoiceDetail } from "../../../../hooks/supplierInvoice";
 
-type SupplierInvoiceWithDetail = supplierInvoice & {
-  supplierInvoiceDetail: SupplierInvoiceDetail[];
+export type SupplierInvoiceWithDetails = supplierInvoice & {
+  supplierInvoiceDetails: supplierInvoiceDetail[];
 };
 
 const InvoiceImportPage = () => {
@@ -42,38 +33,30 @@ const InvoiceImportPage = () => {
   const [folderPrefix] = useState("/");
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
   const { createSupplierInvoice } = useCreateSupplierInvoice();
-  const { createSupplierInvoiceDetail } = useCreateSupplierInvoiceDetail();
 
   const emptyData = {
-    supplierInvoiceId: "",
-    projectId: projectId,
+    id: "",
+    description: "",
     invoiceNo: "",
-    invoiceDate: null,
-    budgetId: "",
+    invoiceDate: new Date(),
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
     supplierName: "",
-    supplierId: "",
     supplierAddress: "",
     supplierPhone: "",
-    paymentDueDate: null,
-    salePerson: "",
-    paymentTerm: "",
-    deliveryDate: null,
-    shipmentMethod: "",
-    shipmentTerm: "",
-    totalDiscount: 0,
-    description: "",
-    grandAmount: 0,
+    amount: 0,
     taxAmount: 0,
-    netAmount: 0,
+    totalAmount: 0,
     fileId: "",
-    supplierInvoiceDetail: [],
+    projectId: projectId,
+    budgetId: "",
+    supplierInvoiceDetails: [],
   };
 
   const [invoiceData, setInvoiceData] =
-    useState<SupplierInvoiceWithDetail>(emptyData);
+    useState<SupplierInvoiceWithDetails>(emptyData);
+
   const { budgets } = useGetBudgets({
     projectId: projectId,
     pageSize: 100,
@@ -81,7 +64,7 @@ const InvoiceImportPage = () => {
     searchKey: "",
   });
 
-  const handleData = (data: SupplierInvoiceWithDetail, file: File | null) => {
+  const handleData = (data: SupplierInvoiceWithDetails, file: File | null) => {
     setInvoiceData(data);
     setFile(file);
 
@@ -106,7 +89,10 @@ const InvoiceImportPage = () => {
       await uploadDocument();
       if (fileId != "") {
         invoiceData.fileId = fileId;
-        await saveRecord(invoiceData);
+        createSupplierInvoice({
+          ...invoiceData,
+          projectId: projectId,
+        });
         void router.push("/projects/" + projectId + "/invoice");
       }
     } catch (e) {
@@ -159,46 +145,6 @@ const InvoiceImportPage = () => {
     }
   };
 
-  const saveRecord = async (data: SupplierInvoiceWithDetail) => {
-    data.projectId = projectId;
-    try {
-      const supplierInvoiceId = await createSupplierInvoice({
-        projectId: projectId,
-        description: "",
-        budgetId: data.budgetId as string,
-        invoiceNo: data.invoiceNo as string,
-        invoiceDate: data.invoiceDate as Date,
-        vendorName: data.vendorName as string,
-        vendorAddress: data.vendorAddress as string,
-        vendorPhone: data.vendorPhone as string,
-        supplierName: data.supplierName as string,
-        supplierAddress: data.supplierAddress as string,
-        supplierPhone: data.supplierPhone as string,
-        grandAmount: data.grandAmount as number,
-        taxAmount: data.taxAmount as number,
-        netAmount: data.netAmount as number,
-        fileId: data.fileId as string,
-      }).then((res) => res.id);
-
-      for (let i = 0; i < data.supplierInvoiceDetail.length; i++) {
-        const detail = data.supplierInvoiceDetail[i];
-        if (detail) {
-          createSupplierInvoiceDetail({
-            supplierInvoiceId: supplierInvoiceId,
-            description: detail.description,
-            uom: detail.uom,
-            quantity: detail.quantity,
-            unitPrice: detail.unitPrice,
-            amount: detail.amount,
-            discount: 0,
-          });
-        }
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -220,13 +166,13 @@ const InvoiceImportPage = () => {
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                         stroke="currentColor"
                         className="h-6 w-6"
                       >
                         <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
                         />
                       </svg>
@@ -325,7 +271,7 @@ const InvoiceImportPage = () => {
 
                     <div className="w-20 px-1 text-center"></div>
                   </div>
-                  {invoiceData?.supplierInvoiceDetail.map((row, i) => {
+                  {invoiceData?.supplierInvoiceDetails.map((row, i) => {
                     return (
                       <div
                         key={i}
@@ -368,7 +314,7 @@ const InvoiceImportPage = () => {
                       <div className="mr-2 flex-1 text-right text-gray-800">
                         Subtotal
                       </div>
-                      <div className="w-40">{invoiceData.grandAmount}</div>
+                      <div className="w-40">{invoiceData.amount}</div>
                     </div>
                     <div className="mb-4 flex justify-between">
                       <div className="mr-2 flex-1 text-right text-sm text-gray-600">
@@ -382,7 +328,7 @@ const InvoiceImportPage = () => {
                         <div className="mr-2 flex-1 text-right text-xl text-gray-600">
                           Total
                         </div>
-                        <div className="w-40">{invoiceData.netAmount}</div>
+                        <div className="w-40">{invoiceData.totalAmount}</div>
                       </div>
                     </div>
                   </div>

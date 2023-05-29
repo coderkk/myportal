@@ -1,63 +1,54 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { parse } from "date-fns";
+import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
-import React, { useState, type BaseSyntheticEvent } from "react";
+import { useState, type BaseSyntheticEvent } from "react";
 import ReactDatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
+import InvoiceItem from "../../../../components/invoice/InvoiceItem";
 import { useGetBudgets } from "../../../../hooks/budget";
-import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
+import type {
+  supplierInvoice,
+  supplierInvoiceDetail,
+} from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
-import { useCreateSupplierInvoiceDetail } from "../../../../hooks/supplierInvoiceDetail";
-import InvoiceItem from "../../../../components/invoice/InvoiceItem"
+import type { SupplierInvoiceWithDetails } from "./import";
 
 const AddInvoicePage = ({}) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
-  type SupplierInvoiceDetail = {
-    item: string;
-    description: string;
-    quantity: number;
-    uom: string;
-    unitPrice: number;
-    discount: number;
-    amount: number;
-  };
-
-  const [invoiceData] = useState<supplierInvoice>({
-    supplierInvoiceId: "",
-    projectId: projectId,
+  const emptyData = {
+    id: "",
+    description: "",
     invoiceNo: "",
-    invoiceDate: null,
-    budgetId: "",
+    invoiceDate: new Date(),
     vendorName: "",
     vendorAddress: "",
     vendorPhone: "",
     supplierName: "",
-    supplierId: "",
     supplierAddress: "",
     supplierPhone: "",
-    paymentDueDate: null,
-    salePerson: "",
-    paymentTerm: "",
-    deliveryDate: null,
-    shipmentMethod: "",
-    shipmentTerm: "",
-    totalDiscount: 0,
-    description: "",
-    grandAmount: 0,
+    amount: 0,
     taxAmount: 0,
-    netAmount: 0,
+    totalAmount: 0,
     fileId: "",
-  });
+    projectId: projectId,
+    budgetId: "",
+    supplierInvoiceDetails: [],
+  };
 
-  const [supplierInvoiceDetail, setSupplierInvoiceDetail] = useState<SupplierInvoiceDetail[]>([]);
+  const [invoiceData] = useState<SupplierInvoiceWithDetails>(emptyData);
+
+  const [supplierInvoiceDetails, setSupplierInvoiceDetails] = useState<
+    supplierInvoiceDetail[]
+  >([]);
 
   const { createSupplierInvoice } = useCreateSupplierInvoice();
-  const { createSupplierInvoiceDetail } = useCreateSupplierInvoiceDetail();
+
   const { budgets } = useGetBudgets({
     projectId: projectId,
     pageSize: 100,
@@ -67,73 +58,35 @@ const AddInvoicePage = ({}) => {
 
   const { handleSubmit, control, register, reset } = useForm<supplierInvoice>({
     values: invoiceData,
-    // resetOptions: {
-    //   keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
-    // }
   });
-  const onSubmit = async (
+
+  const onSubmit = (
     data: supplierInvoice,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
     reset();
-    await saveRecord(data);
+    createSupplierInvoice({
+      ...data,
+      projectId: projectId,
+      supplierInvoiceDetails: supplierInvoiceDetails,
+    });
+    void router.push("/projects/" + projectId + "/invoice/");
   };
 
-  const invoiceItemUpdateHandler = (InvoiceItem: SupplierInvoiceDetail, index: number) => {
-    if (index == -1)
-      supplierInvoiceDetail.push(InvoiceItem);
-    else
-      supplierInvoiceDetail[index] = InvoiceItem;
-    setSupplierInvoiceDetail([...supplierInvoiceDetail]);
-  }
+  const onInvoiceUpdate = (
+    invoiceItem: supplierInvoiceDetail,
+    index: number
+  ) => {
+    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
+    newSupplierInvoiceDetails[index] = invoiceItem;
+    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+  };
 
-  const removeInvoiceItemHandler = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
-    e?.preventDefault();
-    supplierInvoiceDetail.splice(index, 1);
-    setSupplierInvoiceDetail([...supplierInvoiceDetail]);
-  }
-
-  const saveRecord = async (data: supplierInvoice) => {
-    data.projectId = projectId;
-    try {
-      const supplierInvoiceId = await createSupplierInvoice({
-        projectId: projectId,
-        description: "",
-        budgetId: "",
-        invoiceNo: data.invoiceNo as string,
-        invoiceDate: data.invoiceDate as Date,
-        vendorName: data.vendorName as string,
-        vendorAddress: data.vendorAddress as string,
-        vendorPhone: data.vendorPhone as string,
-        supplierName: data.supplierName as string,
-        supplierAddress: data.supplierAddress as string,
-        supplierPhone: data.supplierPhone as string,
-        grandAmount: data.grandAmount as number,
-        taxAmount: data.taxAmount as number,
-        netAmount: data.netAmount as number,
-        fileId: data.fileId as string,
-      }).then((res) => res.id);
-
-      for (let i = 0; i < supplierInvoiceDetail.length; i++) {
-        const detail = supplierInvoiceDetail[i];
-        if (detail) {
-          createSupplierInvoiceDetail({
-            supplierInvoiceId: supplierInvoiceId,
-            description: detail.description,
-            uom: detail.uom,
-            quantity: detail.quantity,
-            unitPrice: detail.unitPrice,
-            amount: detail.amount,
-            discount: 0,
-          });
-        }
-      }
-
-      void router.push("/projects/" + projectId + "/invoice/");
-    } catch (error) {
-      throw error;
-    }
+  const removeInvoiceItem = (index: number) => {
+    const newSupplierInvoiceDetails = [...supplierInvoiceDetails];
+    newSupplierInvoiceDetails.splice(index, 1);
+    setSupplierInvoiceDetails(newSupplierInvoiceDetails);
   };
 
   return (
@@ -163,13 +116,13 @@ const AddInvoicePage = ({}) => {
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
-                          stroke-width="1.5"
+                          strokeWidth="1.5"
                           stroke="currentColor"
                           className="h-6 w-6"
                         >
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
                           />
                         </svg>
@@ -260,9 +213,7 @@ const AddInvoicePage = ({}) => {
                                   <CostCodeDropdown
                                     budgets={budgets || []}
                                     defaultValue={value || null}
-                                    onCostCodeChange={(v) =>
-                                      onChange(v)
-                                    }
+                                    onCostCodeChange={(v) => onChange(v)}
                                   />
                                 );
                               }}
@@ -408,7 +359,7 @@ const AddInvoicePage = ({}) => {
 
                       <div className="w-40 px-1 text-center"></div>
                     </div>
-                    {supplierInvoiceDetail.map((row, i) => {
+                    {supplierInvoiceDetails.map((row, i) => {
                       return (
                         <div
                           key={i}
@@ -441,41 +392,46 @@ const AddInvoicePage = ({}) => {
                             </p>
                           </div>
                           <div className="w-50 px-1 text-center">
-                            <InvoiceItem 
+                            <InvoiceItem
                               title="Edit"
                               index={i}
-                              invoiceItem={row} 
-                              onUpdate={(data, index) => {
-                                  invoiceItemUpdateHandler(data as SupplierInvoiceDetail, index)
-                                }
-                              }
-                              />
-                              <button
-                                type="button"
-                                className="mx-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                onClick={(e) => removeInvoiceItemHandler(e, i)}
-                              >
-                                Delete
-                              </button>
+                              invoiceItem={row}
+                              onUpdate={(data) => {
+                                onInvoiceUpdate(data, i);
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="focus:shadow-outline mx-1 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700 focus:outline-none"
+                              onClick={() => removeInvoiceItem(i)}
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       );
                     })}
 
                     <div className="mt-5">
-                      <InvoiceItem 
+                      <InvoiceItem
                         title="Add new item"
-                        index={-1}
                         invoiceItem={{
-                        description: "",
-                        quantity: 0,
-                        uom: "",
-                        unitPrice: 0,
-                        amount: 0
-                      }} onUpdate={(data, index) => {
-                          invoiceItemUpdateHandler(data as SupplierInvoiceDetail, index)
-                        }
-                      }  />
+                          id: nanoid(),
+                          description: "",
+                          quantity: 0,
+                          uom: "",
+                          unitPrice: 0,
+                          discount: 0,
+                          amount: 0,
+                        }}
+                        addNew={(newInvoiceItem) => {
+                          const newSupplierInvoiceDetails = [
+                            newInvoiceItem,
+                            ...supplierInvoiceDetails,
+                          ];
+                          setSupplierInvoiceDetails(newSupplierInvoiceDetails);
+                        }}
+                      />
                     </div>
 
                     <div className="ml-auto mt-5 w-full py-2 sm:w-2/4 lg:w-1/2">
@@ -485,7 +441,7 @@ const AddInvoicePage = ({}) => {
                         </div>
                         <div className="w-40">
                           <Controller
-                            name="grandAmount"
+                            name="amount"
                             control={control}
                             rules={{ required: true }}
                             render={() => {
@@ -495,8 +451,10 @@ const AddInvoicePage = ({}) => {
                                   type="number"
                                   step="0.01"
                                   placeholder="Amount"
-                                  defaultValue={invoiceData.grandAmount}
-                                  {...register("grandAmount", { valueAsNumber: true })}
+                                  defaultValue={invoiceData.amount}
+                                  {...register("amount", {
+                                    valueAsNumber: true,
+                                  })}
                                 />
                               );
                             }}
@@ -520,7 +478,9 @@ const AddInvoicePage = ({}) => {
                                   step="0.01"
                                   placeholder="Tax Amount"
                                   defaultValue={invoiceData.taxAmount}
-                                  {...register("taxAmount", { valueAsNumber: true })}
+                                  {...register("taxAmount", {
+                                    valueAsNumber: true,
+                                  })}
                                 />
                               );
                             }}
@@ -535,7 +495,7 @@ const AddInvoicePage = ({}) => {
                           </div>
                           <div className="w-40">
                             <Controller
-                              name="netAmount"
+                              name="totalAmount"
                               control={control}
                               rules={{ required: true }}
                               render={() => {
@@ -545,8 +505,10 @@ const AddInvoicePage = ({}) => {
                                     type="number"
                                     step="0.01"
                                     placeholder="Total Amount"
-                                    defaultValue={invoiceData.netAmount}
-                                    {...register("netAmount", { valueAsNumber: true })}
+                                    defaultValue={invoiceData.totalAmount}
+                                    {...register("totalAmount", {
+                                      valueAsNumber: true,
+                                    })}
                                   />
                                 );
                               }}
@@ -556,7 +518,7 @@ const AddInvoicePage = ({}) => {
                       </div>
                     </div>
                     <button
-                      className="bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-blue-700 disabled:bg-blue-50 disabled:text-blue-200"
+                      className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none disabled:bg-blue-50 disabled:text-blue-200"
                       type="submit"
                     >
                       Submit

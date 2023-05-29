@@ -12,7 +12,6 @@ import { s3Router } from "./routers/s3";
 import { siteDiaryRouter } from "./routers/siteDiary";
 import { siteProblemRouter } from "./routers/siteProblem";
 import { supplierInvoiceRouter } from "./routers/supplierInvoice";
-import { supplierInvoiceDetailRouter } from "./routers/supplierInvoiceDetail";
 import { taskRouter } from "./routers/task";
 import { userRouter } from "./routers/user";
 import { weatherRouter } from "./routers/weather";
@@ -42,7 +41,6 @@ export const appRouter = createTRPCRouter({
   s3: s3Router,
   budget: budgetRouter,
   supplierInvoice: supplierInvoiceRouter,
-  supplierInvoiceDetail: supplierInvoiceDetailRouter,
   gpt: gptRouter,
 });
 
