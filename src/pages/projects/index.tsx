@@ -76,12 +76,12 @@ const Projects = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     <AnimatePresence>
-                      {projects?.map((i: project) => (
+                      {projects?.map((project) => (
                         <MotionTR
-                          key={i.id}
-                          project={i}
+                          key={project.id}
+                          project={project}
                           deleteProject={() =>
-                            deleteProject({ projectId: i.id })
+                            deleteProject({ projectId: project.id })
                           }
                         />
                       ))}
@@ -112,11 +112,11 @@ const MotionTR = ({
   deleteProject: () => void;
 }) => {
   const [isHovering, setIsHovering] = useState(false);
-  const [isDescriptionHovering, setIsDescriptionHovering] = useState(true);
+  const [isDescriptionHovering, setIsDescriptionHovering] = useState(false);
   const router = useRouter();
   const utils = api.useContext();
 
-  const onEnterCb = () => {
+  const onEnterCallback = () => {
     setIsHovering(true);
     void utils.me.hasPermissionToProject.prefetch(
       { projectId: project.id },
@@ -135,7 +135,7 @@ const MotionTR = ({
       }}
       transition={{ opacity: { duration: 0.2 } }}
       className={isHovering ? "w-full bg-slate-100" : "w-full"}
-      onMouseEnter={onEnterCb}
+      onMouseEnter={onEnterCallback}
       onMouseLeave={() => setIsHovering(false)}
     >
       <td
