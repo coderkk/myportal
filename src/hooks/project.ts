@@ -7,13 +7,12 @@ export const useCreateProject = () => {
   const utils = api.useContext();
   const session = useSession();
   const { mutate: createProject } = api.project.createProject.useMutation({
-    async onMutate(values) {
-      await utils.project.getProjects.cancel();
+    onSuccess(values) {
       const previousData = utils.project.getProjects.getData();
       utils.project.getProjects.setData(undefined, (oldProjects) => {
         const optimisticUpdateObject = {
-          id: Date.now().toString(),
-          name: values.projectName,
+          id: values.project.id,
+          name: values.project.name,
           createdBy: {
             name: session.data?.user?.name || "You",
             image: session.data?.user?.image || null,
@@ -27,11 +26,6 @@ export const useCreateProject = () => {
         }
       });
       return () => utils.project.getProjects.setData(undefined, previousData);
-    },
-    onError(error, values, rollback) {
-      if (rollback) {
-        rollback();
-      }
     },
     async onSettled() {
       await utils.project.getProjects.invalidate();
