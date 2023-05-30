@@ -3,9 +3,8 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
-import { EnterIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { Header } from "../../components/common/Header";
 import Spinner from "../../components/common/Spinner";
@@ -50,7 +49,7 @@ const Projects = () => {
                     <tr>
                       <th
                         scope="col"
-                        className=" max-w-col max-w-xs px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:px-2"
+                        className="w-32 max-w-[8rem] px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:w-96 sm:max-w-[24rem] sm:px-2"
                       >
                         Description
                       </th>
@@ -111,13 +110,10 @@ const MotionTR = ({
   project: project;
   deleteProject: () => void;
 }) => {
-  const [isHovering, setIsHovering] = useState(false);
-  const [isDescriptionHovering, setIsDescriptionHovering] = useState(false);
   const router = useRouter();
   const utils = api.useContext();
 
   const onEnterCallback = () => {
-    setIsHovering(true);
     void utils.me.hasPermissionToProject.prefetch(
       { projectId: project.id },
       {
@@ -134,24 +130,16 @@ const MotionTR = ({
         opacity: 0,
       }}
       transition={{ opacity: { duration: 0.2 } }}
-      className={isHovering ? "w-full bg-slate-100" : "w-full"}
+      className={"w-full hover:bg-slate-100"}
       onMouseEnter={onEnterCallback}
-      onMouseLeave={() => setIsHovering(false)}
     >
       <td
-        className="w-col-s sm:w-col-l relative px-3 py-5 text-sm text-gray-500 hover:cursor-pointer"
+        className=" relative w-32 max-w-[8rem] px-3 py-5 text-sm text-gray-500 hover:cursor-pointer sm:w-96 sm:max-w-[24rem]"
         onClick={() =>
           void router.push(`/projects/${project.id}/financial-dashboard`)
         }
-        onMouseEnter={() => setIsDescriptionHovering(true)}
-        onMouseLeave={() => setIsDescriptionHovering(false)}
       >
-        <div className="text-gray-900">{project.name}</div>
-        {isDescriptionHovering && (
-          <div className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black transition duration-300 hover:scale-125  hover:shadow-xl">
-            <EnterIcon className="h-5 w-5 text-white" />
-          </div>
-        )}
+        <div className="text-blue-500 hover:underline">{project.name}</div>
       </td>
       <td className="px-3 py-5 text-sm text-gray-500">
         <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-start lg:gap-3">

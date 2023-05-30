@@ -84,15 +84,3 @@
 .chonky-iconWithText + span {
   @apply hidden lg:inline-block;
 }
-
-/* Custom CSS file or Tailwind CSS @layer directive */
-@layer utilities {
-  .w-col-s {
-    width: 8rem;
-    max-width: 8rem; /* Set your desired maximum width */
-  }
-  .w-col-l {
-    width: 25rem;
-    max-width: 25rem; /* Set your desired maximum width */
-  }
-}
