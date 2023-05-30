@@ -14,7 +14,10 @@ export const useCreateProject = () => {
         const optimisticUpdateObject = {
           id: Date.now().toString(),
           name: values.projectName,
-          createdBy: { name: session.data?.user?.name || "You" },
+          createdBy: {
+            name: session.data?.user?.name || "You",
+            image: session.data?.user?.image || null,
+          },
           createdAt: new Date(Date.now()).toLocaleDateString(),
         };
         if (oldProjects) {

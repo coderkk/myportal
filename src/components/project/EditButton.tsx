@@ -7,10 +7,10 @@ import { useUpdateProject } from "../../hooks/project";
 type FormValues = {
   name: string;
 };
-type project = {
+export type project = {
   id: string;
   name: string;
-  createdBy: { name: string | null };
+  createdBy: { name: string | null; image: string | null };
   createdAt: string;
 };
 
@@ -42,7 +42,7 @@ const EditButton = ({ project }: { project: project }) => {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <Edit className="h-6 w-6  text-green-500" />
+        <Edit className="h-6 w-6 cursor-pointer text-green-500" />
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 animate-fade-in bg-gray-500 bg-opacity-75 transition-opacity" />
