@@ -1,11 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createProjectSchema } from "../../../schema/project";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-
-export const createProjectSchema = z.object({
-  projectName: z.string(),
-});
 
 export const getProjectSchema = z.object({
   projectId: z.string(),
