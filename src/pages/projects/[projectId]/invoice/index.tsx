@@ -132,8 +132,15 @@ const Invoices = () => {
                             </th>
                             <th
                               scope="col"
+                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
+                              Status
+                            </th>
+                            <th
+                              scope="col"
                               className="relative py-3.5 pl-3 pr-4 sm:pr-6"
                             >
+                              Actions
                               <span className="sr-only">Edit</span>
                             </th>
                           </tr>
@@ -155,6 +162,26 @@ const Invoices = () => {
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.budgetId}
+                              </td>
+                              <td className="flex gap-2 whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                {supplierInvoice.paid ? (
+                                  <div className="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                    Paid
+                                  </div>
+                                ) : (
+                                  <div className="rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-red-600/20">
+                                    Unpaid
+                                  </div>
+                                )}
+                                {supplierInvoice.approved ? (
+                                  <div className="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                    Approved
+                                  </div>
+                                ) : (
+                                  <div className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-blue-600/20">
+                                    Pending
+                                  </div>
+                                )}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.totalAmount}

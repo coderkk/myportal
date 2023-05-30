@@ -62,10 +62,12 @@ export const useCreateSupplierInvoice = () => {
               amount: values.amount,
               taxAmount: values.taxAmount,
               totalAmount: values.totalAmount,
+              fileId: "",
+              paid: false, // OU FIX
+              approved: false, // OU FIX
               budgetId: values.budgetId,
               projectId: values.projectId,
               createdBy: { name: session.data?.user?.name || "You" },
-              fileId: "",
               createdById: session.data?.user?.id || nanoid(),
               createdAt: new Date(),
               updatedAt: new Date(),
@@ -100,11 +102,13 @@ export const useCreateSupplierInvoice = () => {
 
 export const useGetSupplierInvoices = ({
   projectId,
+  approved,
   budgetId,
   startDate,
   endDate,
 }: {
   projectId: string;
+  approved?: boolean;
   budgetId?: string;
   startDate?: Date;
   endDate?: Date;
@@ -113,6 +117,7 @@ export const useGetSupplierInvoices = ({
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoices.useQuery(
     {
       projectId: projectId,
+      approved: approved,
       budgetId: budgetId,
       startDate: startDate,
       endDate: endDate,
@@ -192,6 +197,8 @@ export const useUpdateSupplierInvoice = ({
                 updatedSupplierInvoice.budgetId = values.budgetId;
                 updatedSupplierInvoice.fileId = values.fileId;
                 updatedSupplierInvoice.updatedAt = new Date();
+                updatedSupplierInvoice.paid = false; // OU FIX
+                updatedSupplierInvoice.approved = false; // OU FIX
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =
                   updatedSupplierInvoice;
               }
@@ -243,6 +250,8 @@ export const useUpdateSupplierInvoice = ({
                 updatedSupplierInvoice.totalAmount = values.totalAmount;
                 updatedSupplierInvoice.budgetId = values.budgetId;
                 updatedSupplierInvoice.fileId = values.fileId;
+                updatedSupplierInvoice.paid = false; // OU FIX
+                updatedSupplierInvoice.approved = false; // OU FIX
                 updatedSupplierInvoice.updatedAt = new Date();
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =
                   updatedSupplierInvoice;

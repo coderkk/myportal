@@ -30,6 +30,10 @@ export const deleteBudgetSchema = z.object({
   budgetId: z.string(),
 });
 
+export const getExpectedBudgetSumAndCostsIncurredSumSchema = z.object({
+  projectId: z.string(),
+});
+
 export const budgetRouter = createTRPCRouter({
   createBudget: protectedProcedure
     .input(createBudgetSchema)
@@ -177,6 +181,28 @@ export const budgetRouter = createTRPCRouter({
           });
         },
         errorMessages: ["Failed to delete budget"],
+      })();
+    }),
+  getExpectedBudgetSumAndCostsIncurredSum: protectedProcedure
+    .input(getExpectedBudgetSumAndCostsIncurredSumSchema)
+    .query(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: async () => {
+          const budgets = await ctx.prisma.budget.findMany({
+            where: {
+              projectId: input.projectId,
+            },
+          });
+          return {
+            expectedBudgetSum: budgets.reduce((acc, budget) => {
+              return acc + budget.expectedBudget;
+            }, 0),
+            costsIncurredSum: budgets.reduce((acc, budget) => {
+              return acc + budget.costsIncurred;
+            }, 0),
+          };
+        },
+        errorMessages: ["Failed to get budgets"],
       })();
     }),
 });

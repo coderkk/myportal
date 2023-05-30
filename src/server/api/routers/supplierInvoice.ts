@@ -33,6 +33,7 @@ export const createSupplierInvoiceSchema = z.object({
 
 export const getSupplierInvoicesSchema = z.object({
   projectId: z.string(),
+  approved: z.boolean().optional(),
   budgetId: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
@@ -125,6 +126,8 @@ export const supplierInvoiceRouter = createTRPCRouter({
                 gte: input.startDate,
                 lte: input.endDate,
               },
+              approved:
+                input.approved !== undefined ? input.approved : undefined,
             },
             orderBy: {
               createdAt: "desc",

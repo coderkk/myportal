@@ -80,6 +80,7 @@ export const useCreateBudget = ({
     },
     async onSettled() {
       await utils.budget.getBudgets.invalidate();
+      await utils.budget.getExpectedBudgetSumAndCostsIncurredSum.invalidate();
     },
   });
   return {
@@ -215,6 +216,9 @@ export const useUpdateBudget = ({
     },
     async onSettled() {
       await utils.budget.getBudgets.invalidate();
+      await utils.budget.getExpectedBudgetSumAndCostsIncurredSum.invalidate({
+        projectId: projectId,
+      });
     },
   });
   return {
@@ -227,9 +231,24 @@ export const useDeleteBudget = () => {
   const { mutate: deleteBudget } = api.budget.deleteBudget.useMutation({
     async onSettled() {
       await utils.budget.getBudgets.invalidate();
+      await utils.budget.getExpectedBudgetSumAndCostsIncurredSum.invalidate();
     },
   });
   return {
     deleteBudget,
+  };
+};
+
+export const useGetExpectedBudgetSumAndCostsIncurredSum = ({
+  projectId,
+}: {
+  projectId: string;
+}) => {
+  const { data } = api.budget.getExpectedBudgetSumAndCostsIncurredSum.useQuery({
+    projectId: projectId,
+  });
+  return {
+    expectedBudgetSum: data?.expectedBudgetSum || 0,
+    costsIncurredSum: data?.costsIncurredSum || 0,
   };
 };

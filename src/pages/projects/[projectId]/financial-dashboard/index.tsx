@@ -12,10 +12,6 @@ const TenderInformation = dynamic(
   () => import("../../../../components/financialDashboard/TenderInformation")
 );
 
-const ProjectInformation = dynamic(
-  () => import("../../../../components/financialDashboard/ProjectInformation")
-);
-
 const Table = dynamic(() => import("../../../../components/budget/Table"), {
   ssr: false,
 });
@@ -50,7 +46,6 @@ const Index = () => {
             </span>
           </h1>
           <TenderInformation />
-          <ProjectInformation />
 
           <div className="m-4 rounded-xl border-t border-white/10 bg-blue-100/10 pt-11">
             <h2 className="px-4 text-base font-semibold leading-7 text-black sm:px-6 lg:px-8">

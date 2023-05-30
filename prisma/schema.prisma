@@ -295,8 +295,8 @@ model Budget {
     id               String            @id @default(cuid())
     costCode         String            @default("")
     description      String
-    expectedBudget   Int
-    costsIncurred    Int
+    expectedBudget   Float
+    costsIncurred    Float
     project          Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
     projectId        String
     createdBy        User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
@@ -324,6 +324,8 @@ model SupplierInvoice {
     taxAmount            Float                 @default(0)
     totalAmount          Float                 @default(0)
     fileId               String                @default("")
+    paid                 Boolean               @default(false)
+    approved             Boolean               @default(false)
     supplierInvoiceItems SupplierInvoiceItem[]
     projectId            String
     project              Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
