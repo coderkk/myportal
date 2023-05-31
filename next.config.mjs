@@ -20,7 +20,6 @@ const config = {
       "lh3.googleusercontent.com",
       "static-cdn.jtvnw.net", // Twitch
       "pbs.twimg.com", // Twitter
-      "main.d6oz6n91zv2hr.amplifyapp.com",
     ],
   },
   async redirects() {
