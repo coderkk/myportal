@@ -102,12 +102,10 @@ export const parseData = (pdfContent: string) => {
       }
       if (pageTextLine.includes("Supplier")) {
         supplier = true;
-        vendor = false;
         const result = /Supplier (.*)/g.exec(pageTextLine);
         data.supplierName = result && result[1] ? result[1] : "";
       }
       if (pageTextLine.includes("Recipient")) {
-        vendor = true;
         supplier = false;
         const result = /Recipient (.*)/g.exec(pageTextLine);
         data.vendorName = result && result[1] ? result[1] : "";
