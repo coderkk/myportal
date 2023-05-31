@@ -19,9 +19,9 @@ export const serverSchema = z.object({
     // VERCEL_URL doesn't include `https` so it cant be validated as a URL
     process.env.VERCEL ? z.string() : z.string().url()
   ),
-  _AWS_S3_BUCKET_REGION: z.string(),
-  _AWS_ACCESS_KEY_ID: z.string(),
-  _AWS_SECRET_ACCESS_KEY: z.string(),
+  MY_AWS_S3_BUCKET_REGION: z.string(),
+  MY_AWS_ACCESS_KEY_ID: z.string(),
+  MY_AWS_SECRET_ACCESS_KEY: z.string(),
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
