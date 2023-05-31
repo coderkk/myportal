@@ -20,18 +20,19 @@ const CostCodeDropdown = ({
   onCostCodeChange: (value: string) => void;
   error?: boolean;
 }) => {
-  const budgetValues = budgets.map((budget) => budget.id);
+  const budgetValues = budgets.map((budget) => {
+    return {value: budget.id, label: budget.description}
+  });
   return (
     <SelectList
       value={
         defaultValue
           ? defaultValue
-          : ((budgetValues.length > 0)
-          ? ""
-          : "No cost code")
+          : ""
       }
+      placeholder="Select cost code"
       options={
-        budgetValues.length > 0 ? budgetValues : ["No cost code"]
+        budgetValues
       }
       onChange={(value: string) => {
           onCostCodeChange(value);
