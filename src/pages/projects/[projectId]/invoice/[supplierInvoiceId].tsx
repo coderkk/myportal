@@ -1,3 +1,4 @@
+import type { SupplierInvoice } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import parse from "date-fns/parse";
 import { nanoid } from "nanoid";
@@ -9,14 +10,12 @@ import toast from "react-hot-toast";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
+import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 import InvoiceItem from "../../../../components/invoice/InvoiceItem";
 import { env } from "../../../../env/client.mjs";
 import { useGetBudgets } from "../../../../hooks/budget";
 import { useGetPreSignedURLForDownload } from "../../../../hooks/s3";
-import type {
-  supplierInvoice,
-  supplierInvoiceItem,
-} from "../../../../hooks/supplierInvoice";
+
 import {
   useGetSupplierInvoice,
   useUpdateSupplierInvoice,
@@ -29,11 +28,11 @@ const SupplierInvoiceView = () => {
   const supplierInvoiceId = router.query.supplierInvoiceId as string;
 
   const [supplierInvoiceItems, setSupplierInvoiceItems] = useState<
-    supplierInvoiceItem[]
+    SupplierInvoiceItem[]
   >([]);
   const { supplierInvoiceData, isLoading } = useGetSupplierInvoice({
     supplierInvoiceId: supplierInvoiceId,
-    onSucess: (supplierInvoiceItems: supplierInvoiceItem[]) =>
+    onSucess: (supplierInvoiceItems: SupplierInvoiceItem[]) =>
       setSupplierInvoiceItems(supplierInvoiceItems),
   });
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
@@ -47,7 +46,7 @@ const SupplierInvoiceView = () => {
   });
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
 
-  const onInvoiceUpdate = (invoiceItem: supplierInvoiceItem, index: number) => {
+  const onInvoiceUpdate = (invoiceItem: SupplierInvoiceItem, index: number) => {
     const newSupplierInvoiceItems = [...supplierInvoiceItems];
     newSupplierInvoiceItems[index] = invoiceItem;
     setSupplierInvoiceItems(newSupplierInvoiceItems);
@@ -65,12 +64,12 @@ const SupplierInvoiceView = () => {
     register,
     reset,
     formState: { errors },
-  } = useForm<supplierInvoice>({
+  } = useForm<SupplierInvoice>({
     values: supplierInvoiceData,
   });
 
   const onSubmit = (
-    data: supplierInvoice,
+    data: SupplierInvoice,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -78,6 +77,7 @@ const SupplierInvoiceView = () => {
     updateSupplierInvoice({
       ...data,
       projectId: projectId,
+      budgetId: data?.budgetId || "", // PLANETSCALE FIX
       supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");
@@ -292,7 +292,7 @@ const SupplierInvoiceView = () => {
                         <div className="mb-8 flex flex-wrap justify-between">
                           <div className="mb-2 w-full md:mb-0 md:w-1/3">
                             <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                              Ship to
+                              Vendor name
                             </label>
                             <Controller
                               name="vendorName"
@@ -316,44 +316,10 @@ const SupplierInvoiceView = () => {
                                 );
                               }}
                             />
-                            <Controller
-                              name="vendorAddress"
-                              control={control}
-                              render={() => {
-                                return (
-                                  <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
-                                    type="text"
-                                    placeholder="Vendor Address"
-                                    defaultValue={
-                                      supplierInvoiceData?.vendorAddress
-                                    }
-                                    {...register("vendorAddress")}
-                                  />
-                                );
-                              }}
-                            />
-                            <Controller
-                              name="vendorPhone"
-                              control={control}
-                              render={() => {
-                                return (
-                                  <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
-                                    type="text"
-                                    placeholder="Vendor Phone"
-                                    defaultValue={
-                                      supplierInvoiceData?.vendorPhone
-                                    }
-                                    {...register("vendorPhone")}
-                                  />
-                                );
-                              }}
-                            />
                           </div>
                           <div className="w-full md:w-1/3">
                             <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                              Bill to (Supplier)
+                              Supplier information
                             </label>
                             <Controller
                               name="supplierName"
@@ -423,7 +389,13 @@ const SupplierInvoiceView = () => {
 
                           <div className="w-20 px-1 text-right">
                             <p className="text-sm font-bold uppercase tracking-wide text-gray-800">
-                              Units
+                              Quantity
+                            </p>
+                          </div>
+
+                          <div className="w-20 px-1 text-right">
+                            <p className="text-sm font-bold uppercase tracking-wide text-gray-800">
+                              Unit
                             </p>
                           </div>
 
@@ -438,7 +410,7 @@ const SupplierInvoiceView = () => {
                           <div className="w-32 px-1 text-right">
                             <p className="leading-none">
                               <span className="block text-sm font-bold uppercase tracking-wide text-gray-800">
-                                Amount
+                                Total Price
                               </span>
                             </p>
                           </div>
@@ -460,7 +432,13 @@ const SupplierInvoiceView = () => {
 
                                 <div className="w-20 px-1 text-right">
                                   <p className="text-sm tracking-wide text-gray-800">
-                                    {supplierInvoiceItem?.uom}
+                                    {supplierInvoiceItem?.quantity}
+                                  </p>
+                                </div>
+
+                                <div className="w-20 px-1 text-right">
+                                  <p className="text-sm tracking-wide text-gray-800">
+                                    {supplierInvoiceItem?.unit}
                                   </p>
                                 </div>
 
@@ -475,7 +453,7 @@ const SupplierInvoiceView = () => {
                                 <div className="w-32 px-1 text-right">
                                   <p className="leading-none">
                                     <span className="block text-sm tracking-wide text-gray-800">
-                                      {supplierInvoiceItem?.amount}
+                                      {supplierInvoiceItem?.totalPrice}
                                     </span>
                                   </p>
                                 </div>
@@ -506,10 +484,9 @@ const SupplierInvoiceView = () => {
                               id: nanoid(),
                               description: "",
                               quantity: 0,
-                              uom: "",
+                              unit: "",
                               unitPrice: 0,
-                              discount: 0,
-                              amount: 0,
+                              totalPrice: 0,
                             }}
                             addNew={(newInvoiceItem) => {
                               const newSupplierInvoiceItems = [
@@ -528,22 +505,24 @@ const SupplierInvoiceView = () => {
                             </div>
                             <div className="w-40">
                               <Controller
-                                name="amount"
+                                name="subtotal"
                                 control={control}
                                 rules={{ required: true }}
                                 render={() => {
                                   return (
                                     <input
                                       className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
-                                        errors.amount
+                                        errors.subtotal
                                           ? "border-red-400  focus:border-red-400 "
                                           : ""
                                       }`}
                                       type="number"
                                       step="0.01"
-                                      placeholder="Amount"
-                                      defaultValue={supplierInvoiceData?.amount}
-                                      {...register("amount", {
+                                      placeholder="Subtotal"
+                                      defaultValue={
+                                        supplierInvoiceData?.subtotal
+                                      }
+                                      {...register("subtotal", {
                                         valueAsNumber: true,
                                       })}
                                     />
@@ -554,28 +533,58 @@ const SupplierInvoiceView = () => {
                           </div>
                           <div className="mb-3 flex justify-between">
                             <div className="mr-2 flex-1 text-right text-gray-800">
-                              Sale Tax
+                              Discount
                             </div>
                             <div className="w-40">
                               <Controller
-                                name="taxAmount"
+                                name="discount"
                                 control={control}
                                 rules={{ required: true }}
                                 render={() => {
                                   return (
                                     <input
                                       className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
-                                        errors.taxAmount
+                                        errors.discount
                                           ? "border-red-400  focus:border-red-400 "
                                           : ""
                                       }`}
                                       type="number"
                                       step="0.01"
-                                      placeholder="Tax Amount"
+                                      placeholder="Discount"
                                       defaultValue={
-                                        supplierInvoiceData?.taxAmount
+                                        supplierInvoiceData?.discount
                                       }
-                                      {...register("taxAmount", {
+                                      {...register("discount", {
+                                        valueAsNumber: true,
+                                      })}
+                                    />
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3 flex justify-between">
+                            <div className="mr-2 flex-1 text-right text-gray-800">
+                              Taxes
+                            </div>
+                            <div className="w-40">
+                              <Controller
+                                name="taxes"
+                                control={control}
+                                rules={{ required: true }}
+                                render={() => {
+                                  return (
+                                    <input
+                                      className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                        errors.taxes
+                                          ? "border-red-400  focus:border-red-400 "
+                                          : ""
+                                      }`}
+                                      type="number"
+                                      step="0.01"
+                                      placeholder="Taxes"
+                                      defaultValue={supplierInvoiceData?.taxes}
+                                      {...register("taxes", {
                                         valueAsNumber: true,
                                       })}
                                     />
@@ -592,24 +601,24 @@ const SupplierInvoiceView = () => {
                               </div>
                               <div className="w-40">
                                 <Controller
-                                  name="totalAmount"
+                                  name="grandTotal"
                                   control={control}
                                   rules={{ required: true }}
                                   render={() => {
                                     return (
                                       <input
                                         className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
-                                          errors.totalAmount
+                                          errors.grandTotal
                                             ? "border-red-400  focus:border-red-400 "
                                             : ""
                                         }`}
                                         type="number"
                                         step="0.01"
-                                        placeholder="Total Amount"
+                                        placeholder="Grand Amount"
                                         defaultValue={
-                                          supplierInvoiceData?.totalAmount
+                                          supplierInvoiceData?.grandTotal
                                         }
-                                        {...register("totalAmount", {
+                                        {...register("grandTotal", {
                                           valueAsNumber: true,
                                         })}
                                       />

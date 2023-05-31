@@ -42,10 +42,10 @@ const features = [
     },
   },
   {
-    name: "RFIs Management",
-    summary: "Manage and monitor RFIs with your consultants.",
+    name: "File Sharing",
+    summary: "Your project's own Google Drive.",
     description:
-      "Send Requests for Information (RFIs) to consultants who can answer them seamlessly in a single portal, and keep track of them easily.",
+      "Ensure everyone is working on the same file version at anytime, anywhere.",
     image: "/images/screenshots/inventory.png",
     icon: function InventoryIcon() {
       return (
@@ -69,10 +69,10 @@ const features = [
     },
   },
   {
-    name: "Photos Gallery",
-    summary: "Store all project photos in one central hub.",
+    name: "Tasks allocation",
+    summary: "Your central hub to track tasks.",
     description:
-      "Centralise all your site photos in one place, providing easy access to your team to use as proof of records.",
+      "Track all your tasks and easily find who is doing what and how far along are they.",
     image: "/images/screenshots/contacts.png",
     icon: function ContactsIcon() {
       return (

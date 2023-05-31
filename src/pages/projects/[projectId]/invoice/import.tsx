@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import type { supplierInvoice } from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 
 import { nanoid } from "nanoid";
@@ -17,11 +16,17 @@ import { useGetBudgets } from "../../../../hooks/budget";
 
 import PdfLoad from "../../../../components/invoice/PdfLoad";
 
-import type { supplierInvoiceItem } from "../../../../hooks/supplierInvoice";
+import type { SupplierInvoice } from "@prisma/client";
+import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 
-export type SupplierInvoiceWithItems = supplierInvoice & {
-  supplierInvoiceItems: supplierInvoiceItem[];
+type _SupplierInvoiceWithItems = SupplierInvoice & {
+  supplierInvoiceItems: SupplierInvoiceItem[];
 };
+
+export type SupplierInvoiceWithItems = Omit<
+  _SupplierInvoiceWithItems,
+  "paid" | "approved" | "createdById" | "createdAt" | "updatedAt" | "projectId"
+>;
 
 type LoadPDFHandle = {
   handleLoadClick: () => void;
@@ -42,18 +47,16 @@ const InvoiceImportPage = () => {
 
   const [invoiceData, setInvoiceData] = useState<SupplierInvoiceWithItems>({
     id: "",
-    description: "",
     invoiceNo: "",
     invoiceDate: new Date(),
     vendorName: "",
-    vendorAddress: "",
-    vendorPhone: "",
     supplierName: "",
     supplierAddress: "",
     supplierPhone: "",
-    amount: 0,
-    taxAmount: 0,
-    totalAmount: 0,
+    subtotal: 0,
+    taxes: 0,
+    discount: 0,
+    grandTotal: 0,
     fileId: "",
     budgetId: "",
     supplierInvoiceItems: [],
@@ -93,6 +96,7 @@ const InvoiceImportPage = () => {
         invoiceData.fileId = fileId;
         createSupplierInvoice({
           ...invoiceData,
+          budgetId: invoiceData?.budgetId || "", // PLANETSCALE FIX
           projectId: projectId,
         });
         void router.push("/projects/" + projectId + "/invoice");
@@ -259,15 +263,13 @@ const InvoiceImportPage = () => {
                   <div className="mb-8 flex flex-wrap justify-between">
                     <div className="mb-2 w-full md:mb-0 md:w-1/3">
                       <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                        Ship to
+                        Vendor name
                       </label>
                       <div>{invoiceData.vendorName}</div>
-                      <div>{invoiceData.vendorAddress}</div>
-                      <div>{invoiceData.vendorPhone}</div>
                     </div>
                     <div className="w-full md:w-1/3">
                       <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                        Bill to (Supplier)
+                        Supplier information
                       </label>
                       <div>{invoiceData.supplierName}</div>
                       <div>{invoiceData.supplierAddress}</div>
@@ -282,9 +284,15 @@ const InvoiceImportPage = () => {
                       </p>
                     </div>
 
+                    <div className="flex-1 px-1">
+                      <p className="text-sm font-bold uppercase tracking-wide text-gray-800">
+                        Quantity
+                      </p>
+                    </div>
+
                     <div className="w-20 px-1 text-right">
                       <p className="text-sm font-bold uppercase tracking-wide text-gray-800">
-                        Units
+                        Unit
                       </p>
                     </div>
 
@@ -299,7 +307,7 @@ const InvoiceImportPage = () => {
                     <div className="w-32 px-1 text-right">
                       <p className="leading-none">
                         <span className="block text-sm font-bold uppercase tracking-wide text-gray-800">
-                          Amount
+                          Total Price
                         </span>
                       </p>
                     </div>
@@ -319,7 +327,13 @@ const InvoiceImportPage = () => {
 
                           <div className="w-20 px-1 text-right">
                             <p className="text-sm tracking-wide text-gray-800">
-                              {supplierInvoiceItem?.uom}
+                              {supplierInvoiceItem?.quantity}
+                            </p>
+                          </div>
+
+                          <div className="w-20 px-1 text-right">
+                            <p className="text-sm tracking-wide text-gray-800">
+                              {supplierInvoiceItem?.unit}
                             </p>
                           </div>
 
@@ -334,7 +348,7 @@ const InvoiceImportPage = () => {
                           <div className="w-32 px-1 text-right">
                             <p className="leading-none">
                               <span className="block text-sm tracking-wide text-gray-800">
-                                {supplierInvoiceItem?.amount}
+                                {supplierInvoiceItem?.totalPrice}
                               </span>
                             </p>
                           </div>
@@ -349,25 +363,23 @@ const InvoiceImportPage = () => {
                         Subtotal
                       </div>
                       <div className="w-40 text-right">
-                        {invoiceData.amount}
+                        {invoiceData.subtotal}
                       </div>
                     </div>
                     <div className="mb-4 flex justify-between">
                       <div className="mr-2 flex-1 text-right text-gray-800">
-                        Sale Tax
+                        Taxes
                       </div>
-                      <div className="w-40 text-right">
-                        {invoiceData.taxAmount}
-                      </div>
+                      <div className="w-40 text-right">{invoiceData.taxes}</div>
                     </div>
 
                     <div className="border-b border-t py-2">
                       <div className="flex justify-between">
                         <div className="mr-2 flex-1 text-right text-xl text-gray-800">
-                          Total
+                          Grand total
                         </div>
                         <div className="w-40 text-right">
-                          {invoiceData.totalAmount}
+                          {invoiceData.grandTotal}
                         </div>
                       </div>
                     </div>

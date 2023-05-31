@@ -31,7 +31,6 @@ const CreateButton = ({ description }: { description: string }) => {
       projectName: data.projectName,
     });
   };
-  console.log(errors.projectName);
   const [open, setOpen] = useState(false);
 
   return (

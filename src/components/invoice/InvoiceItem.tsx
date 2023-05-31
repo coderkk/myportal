@@ -1,23 +1,19 @@
+import type { SupplierInvoiceItem as PrismaSupplierInvoiceItem } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 
-type FormValues = {
-  id: string;
-  description: string;
-  quantity: number;
-  uom: string;
-  unitPrice: number;
-  discount: number;
-  amount: number;
-};
+export type SupplierInvoiceItem = Omit<
+  PrismaSupplierInvoiceItem,
+  "createdBy" | "supplierInvoiceId" | "createdById" | "createdAt" | "updatedAt"
+>;
 
 type InvoiceItemProps = {
   title?: string;
   index?: number;
-  invoiceItem: FormValues;
-  addNew?: (data: FormValues) => void;
-  onUpdate?: (data: FormValues, index: number) => void;
+  invoiceItem: SupplierInvoiceItem;
+  addNew?: (data: SupplierInvoiceItem) => void;
+  onUpdate?: (data: SupplierInvoiceItem, index: number) => void;
 };
 
 const InvoiceItem = ({
@@ -32,20 +28,19 @@ const InvoiceItem = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<SupplierInvoiceItem>({
     values: {
       id: invoiceItem.id,
       description: invoiceItem.description,
       quantity: invoiceItem.quantity,
-      uom: invoiceItem.uom,
+      unit: invoiceItem.unit,
       unitPrice: invoiceItem.unitPrice,
-      amount: invoiceItem.amount,
-      discount: invoiceItem.discount,
+      totalPrice: invoiceItem.totalPrice,
     },
   });
 
   const onSubmit = (
-    data: FormValues,
+    data: SupplierInvoiceItem,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -56,10 +51,9 @@ const InvoiceItem = ({
         id: invoiceItem.id,
         description: data.description,
         quantity: data.quantity,
-        uom: data.uom,
+        unit: data.unit,
         unitPrice: data.unitPrice,
-        amount: data.amount,
-        discount: data.discount,
+        totalPrice: data.totalPrice,
       });
     } else if (onUpdate && index != undefined && index >= 0) {
       onUpdate(
@@ -67,10 +61,9 @@ const InvoiceItem = ({
           id: invoiceItem.id,
           description: data.description,
           quantity: data.quantity,
-          uom: data.uom,
+          unit: data.unit,
           unitPrice: data.unitPrice,
-          amount: data.amount,
-          discount: data.discount,
+          totalPrice: data.totalPrice,
         },
         index
       );
@@ -126,11 +119,11 @@ const InvoiceItem = ({
                 />
                 <input
                   className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.uom ? "border-red-400  focus:border-red-400 " : ""
+                    errors.unit ? "border-red-400  focus:border-red-400 " : ""
                   }`}
-                  id="uom"
-                  placeholder="UOM"
-                  {...register("uom", { required: true })}
+                  id="unit"
+                  placeholder="Unit"
+                  {...register("unit", { required: true })}
                 />
                 <input
                   type="number"
@@ -150,27 +143,14 @@ const InvoiceItem = ({
                 <input
                   type="number"
                   className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.amount ? "border-red-400  focus:border-red-400 " : ""
-                  }`}
-                  id="amount"
-                  step="0.01"
-                  placeholder="Amount"
-                  {...register("amount", {
-                    required: true,
-                    valueAsNumber: true,
-                  })}
-                />
-                <input
-                  type="number"
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.discount
+                    errors.totalPrice
                       ? "border-red-400  focus:border-red-400 "
                       : ""
                   }`}
-                  id="discount"
+                  id="totalPrice"
                   step="0.01"
-                  placeholder="Discount"
-                  {...register("discount", {
+                  placeholder="Total price"
+                  {...register("totalPrice", {
                     required: true,
                     valueAsNumber: true,
                   })}
@@ -187,9 +167,9 @@ const InvoiceItem = ({
                 Quantity is required
               </span>
             )}
-            {errors.uom && (
+            {errors.unit && (
               <span className="flex justify-center text-xs italic text-red-400">
-                UOM is required
+                Unit is required
               </span>
             )}
             {errors.unitPrice && (
@@ -197,14 +177,9 @@ const InvoiceItem = ({
                 Unit price is required
               </span>
             )}
-            {errors.amount && (
+            {errors.totalPrice && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Amount is required
-              </span>
-            )}
-            {errors.discount && (
-              <span className="flex justify-center text-xs italic text-red-400">
-                Discount is required
+                Total Price is required
               </span>
             )}
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
@@ -215,10 +190,9 @@ const InvoiceItem = ({
                   !!(
                     errors.description ||
                     errors.quantity ||
+                    errors.unit ||
                     errors.unitPrice ||
-                    errors.amount ||
-                    errors.discount ||
-                    errors.uom
+                    errors.totalPrice
                   )
                 }
                 onClick={(e) => {

@@ -16,19 +16,19 @@ const features = [
   {
     title: "Real time financial dashboard",
     description:
-      "Project’s profit margin and budget will be updated automatically along with the newly processed invoices.",
+      "Assign each processed invoice to a cost code and the project's budget will be updated automatically.",
     image: "/images/screenshots/expenses.png",
   },
   {
-    title: "File sharing",
+    title: "Invoice approval and payment status",
     description:
-      "Your project's Google Drive. Centralize your files in one location, ensuring easy access to all team members.",
+      "Review each invoice before making any payments to avoid any over-payments. Track payment status of each invoice to avoid any penalty charges due to late payment.",
     image: "/images/screenshots/vat-returns.png",
   },
   {
-    title: "Tasks allocation",
+    title: "Data utilization",
     description:
-      "Eliminate the risk of overlooked tasks by effortlessly tracking all delegated responsibilities.",
+      "Export extracted invoice data to an excel file for other financial management use such as cost reconciliation and accounting preparation. No more wasted time as all data have been prepared for you through our automation technology powered by AI.",
     image: "/images/screenshots/reporting.png",
   },
 ];

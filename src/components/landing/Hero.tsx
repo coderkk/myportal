@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { Button } from "../common/Button";
 import { Container } from "../common/Container";
 
@@ -22,7 +20,8 @@ export const Hero = () => {
         for Construction Contractors.
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
-        Spend time building your construction projects, not processing documents
+        Your new personal assistant to speed up your invoice recording process
+        and manage your accounts payable better.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
         <Button href="sign-in">Get 6 months free</Button>
@@ -45,42 +44,6 @@ export const Hero = () => {
           start automating your financial recording process
         </p>
         {/* TODO: Add download link and remove companies*/}
-        <ul
-          role="list"
-          className="mt-8 flex items-center justify-center gap-x-8 sm:flex-col sm:gap-x-0 sm:gap-y-10 xl:flex-row xl:gap-x-12 xl:gap-y-0"
-        >
-          {[
-            [
-              { name: "Transistor", logo: "/images/logos/transistor.svg" },
-              { name: "Tuple", logo: "/images/logos/tuple.svg" },
-              { name: "StaticKit", logo: "/images/logos/statickit.svg" },
-            ],
-            [
-              { name: "Mirage", logo: "/images/logos/mirage.svg" },
-              { name: "Laravel", logo: "/images/logos/laravel.svg" },
-              { name: "Statamic", logo: "/images/logos/statamic.svg" },
-            ],
-          ].map((group, groupIndex) => (
-            <li key={groupIndex}>
-              <ul
-                role="list"
-                className="flex flex-col items-center gap-y-8 sm:flex-row sm:gap-x-12 sm:gap-y-0"
-              >
-                {group.map((company) => (
-                  <li key={company.name} className="flex">
-                    <Image
-                      src={company.logo}
-                      alt={company.name}
-                      unoptimized
-                      width={500}
-                      height={500}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
       </div>
     </Container>
   );

@@ -8,12 +8,9 @@ import { Controller, useForm } from "react-hook-form";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
+import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 import InvoiceItem from "../../../../components/invoice/InvoiceItem";
 import { useGetBudgets } from "../../../../hooks/budget";
-import type {
-  supplierInvoice,
-  supplierInvoiceItem,
-} from "../../../../hooks/supplierInvoice";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import type { SupplierInvoiceWithItems } from "./import";
 
@@ -23,25 +20,23 @@ const AddInvoicePage = ({}) => {
 
   const [invoiceData] = useState<SupplierInvoiceWithItems>({
     id: "",
-    description: "",
     invoiceNo: "",
     invoiceDate: new Date(),
     vendorName: "",
-    vendorAddress: "",
-    vendorPhone: "",
     supplierName: "",
     supplierAddress: "",
     supplierPhone: "",
-    amount: 0,
-    taxAmount: 0,
-    totalAmount: 0,
+    subtotal: 0,
+    taxes: 0,
+    discount: 0,
+    grandTotal: 0,
     fileId: "",
     budgetId: "",
     supplierInvoiceItems: [],
   });
 
   const [supplierInvoiceItems, setSupplierInvoiceItems] = useState<
-    supplierInvoiceItem[]
+    SupplierInvoiceItem[]
   >([]);
 
   const { createSupplierInvoice } = useCreateSupplierInvoice();
@@ -59,12 +54,12 @@ const AddInvoicePage = ({}) => {
     register,
     reset,
     formState: { errors },
-  } = useForm<supplierInvoice>({
+  } = useForm<SupplierInvoiceWithItems>({
     values: invoiceData,
   });
 
   const onSubmit = (
-    data: supplierInvoice,
+    data: SupplierInvoiceWithItems,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
@@ -72,12 +67,13 @@ const AddInvoicePage = ({}) => {
     createSupplierInvoice({
       ...data,
       projectId: projectId,
+      budgetId: invoiceData?.budgetId || "", // PLANETSCALE FIX
       supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");
   };
 
-  const onInvoiceUpdate = (invoiceItem: supplierInvoiceItem, index: number) => {
+  const onInvoiceUpdate = (invoiceItem: SupplierInvoiceItem, index: number) => {
     const newSupplierInvoiceItems = [...supplierInvoiceItems];
     newSupplierInvoiceItems[index] = invoiceItem;
     setSupplierInvoiceItems(newSupplierInvoiceItems);
@@ -236,7 +232,7 @@ const AddInvoicePage = ({}) => {
                     <div className="mb-8 flex flex-wrap justify-between">
                       <div className="mb-2 w-full md:mb-0 md:w-1/3">
                         <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                          Ship to
+                          Vendor name
                         </label>
                         <Controller
                           name="vendorName"
@@ -258,40 +254,10 @@ const AddInvoicePage = ({}) => {
                             );
                           }}
                         />
-                        <Controller
-                          name="vendorAddress"
-                          control={control}
-                          render={() => {
-                            return (
-                              <input
-                                className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
-                                type="text"
-                                placeholder="Vendor Address"
-                                defaultValue={invoiceData.vendorAddress}
-                                {...register("vendorAddress")}
-                              />
-                            );
-                          }}
-                        />
-                        <Controller
-                          name="vendorPhone"
-                          control={control}
-                          render={() => {
-                            return (
-                              <input
-                                className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
-                                type="text"
-                                placeholder="Vendor Phone"
-                                defaultValue={invoiceData.vendorPhone}
-                                {...register("vendorPhone")}
-                              />
-                            );
-                          }}
-                        />
                       </div>
                       <div className="w-full md:w-1/3">
                         <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                          Bill to (Supplier)
+                          Supplier information
                         </label>
                         <Controller
                           name="supplierName"
@@ -390,7 +356,13 @@ const AddInvoicePage = ({}) => {
                           </div>
                           <div className="w-20 px-1 text-right">
                             <p className="text-sm tracking-wide text-gray-800">
-                              {supplierInvoiceItem?.uom}
+                              {supplierInvoiceItem?.quantity}
+                            </p>
+                          </div>
+
+                          <div className="w-20 px-1 text-right">
+                            <p className="text-sm tracking-wide text-gray-800">
+                              {supplierInvoiceItem?.unit}
                             </p>
                           </div>
 
@@ -405,7 +377,7 @@ const AddInvoicePage = ({}) => {
                           <div className="w-32 px-1 text-right">
                             <p className="leading-none">
                               <span className="block text-sm tracking-wide text-gray-800">
-                                {supplierInvoiceItem?.amount}
+                                {supplierInvoiceItem?.totalPrice}
                               </span>
                             </p>
                           </div>
@@ -437,10 +409,9 @@ const AddInvoicePage = ({}) => {
                           id: nanoid(),
                           description: "",
                           quantity: 0,
-                          uom: "",
+                          unit: "",
                           unitPrice: 0,
-                          discount: 0,
-                          amount: 0,
+                          totalPrice: 0,
                         }}
                         addNew={(newInvoiceItem) => {
                           const newSupplierInvoiceItems = [
@@ -459,22 +430,52 @@ const AddInvoicePage = ({}) => {
                         </div>
                         <div className="w-40">
                           <Controller
-                            name="amount"
+                            name="subtotal"
                             control={control}
                             rules={{ required: true }}
                             render={() => {
                               return (
                                 <input
                                   className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
-                                    errors.amount
+                                    errors.subtotal
                                       ? "border-red-400  focus:border-red-400 "
                                       : ""
                                   }`}
                                   type="number"
                                   step="0.01"
-                                  placeholder="Amount"
-                                  defaultValue={invoiceData.amount}
-                                  {...register("amount", {
+                                  placeholder="Subtotal"
+                                  defaultValue={invoiceData.subtotal}
+                                  {...register("subtotal", {
+                                    valueAsNumber: true,
+                                  })}
+                                />
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-3 flex justify-between">
+                        <div className="mr-2 flex-1 text-right text-gray-800">
+                          Discount
+                        </div>
+                        <div className="w-40">
+                          <Controller
+                            name="discount"
+                            control={control}
+                            rules={{ required: true }}
+                            render={() => {
+                              return (
+                                <input
+                                  className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
+                                    errors.discount
+                                      ? "border-red-400  focus:border-red-400 "
+                                      : ""
+                                  }`}
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="Discount"
+                                  defaultValue={invoiceData?.discount}
+                                  {...register("discount", {
                                     valueAsNumber: true,
                                   })}
                                 />
@@ -489,22 +490,22 @@ const AddInvoicePage = ({}) => {
                         </div>
                         <div className="w-40">
                           <Controller
-                            name="taxAmount"
+                            name="taxes"
                             control={control}
                             rules={{ required: true }}
                             render={() => {
                               return (
                                 <input
                                   className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
-                                    errors.taxAmount
+                                    errors.taxes
                                       ? "border-red-400  focus:border-red-400 "
                                       : ""
                                   }`}
                                   type="number"
                                   step="0.01"
                                   placeholder="Tax Amount"
-                                  defaultValue={invoiceData.taxAmount}
-                                  {...register("taxAmount", {
+                                  defaultValue={invoiceData.taxes}
+                                  {...register("taxes", {
                                     valueAsNumber: true,
                                   })}
                                 />
@@ -521,22 +522,22 @@ const AddInvoicePage = ({}) => {
                           </div>
                           <div className="w-40">
                             <Controller
-                              name="totalAmount"
+                              name="grandTotal"
                               control={control}
                               rules={{ required: true }}
                               render={() => {
                                 return (
                                   <input
                                     className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 text-right leading-tight focus:border-blue-500 focus:outline-none ${
-                                      errors.totalAmount
+                                      errors.grandTotal
                                         ? "border-red-400  focus:border-red-400 "
                                         : ""
                                     }`}
                                     type="number"
                                     step="0.01"
                                     placeholder="Total Amount"
-                                    defaultValue={invoiceData.totalAmount}
-                                    {...register("totalAmount", {
+                                    defaultValue={invoiceData.grandTotal}
+                                    {...register("grandTotal", {
                                       valueAsNumber: true,
                                     })}
                                   />

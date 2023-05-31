@@ -1,4 +1,3 @@
-import { Transition } from "@headlessui/react";
 import type {
   Laborer,
   Material,
@@ -9,6 +8,7 @@ import type {
   WorkProgress,
 } from "@prisma/client";
 import classNames from "classnames";
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -205,48 +205,35 @@ const SiteDiary = () => {
               <header className="border-b border-white/5">
                 {/* Secondary navigation */}
                 <nav className="flex justify-between overflow-x-auto border-b-2 border-gray-200 py-3">
-                  <Transition
-                    show={true}
-                    enter="transition-opacity duration-75"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="transition-opacity duration-150"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <ul
-                      role="list"
-                      className="flex min-w-full flex-none gap-x-2 px-4 text-sm font-semibold leading-6 text-gray-400 sm:px-6 lg:px-8"
-                    >
-                      {secondaryNavigation.map((item, i) => (
-                        <li key={item.name} className="relative flex">
-                          <span
-                            key={item.name}
-                            tabIndex={i}
-                            className={classNames(
-                              currentTab === item.name
-                                ? "text-gray-800"
-                                : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
-                              " text-md whitespace-nowrap rounded-md px-2 py-2 font-normal transition-colors duration-500 ease-out hover:bg-gray-800/10"
-                            )}
-                            aria-current={
-                              currentTab === item.name ? "page" : undefined
-                            }
-                            onClick={() => setCurrentTab(item.name)}
-                          >
-                            {item.name}
-                            <span
-                              className={classNames(
-                                currentTab === item.name ? "bg-gray-600" : "",
-                                "absolute inset-x-0 -bottom-2 h-0.5 transition-colors duration-200 ease-out sm:mt-5 sm:translate-y-px sm:transform"
-                              )}
-                              aria-hidden="true"
-                            />
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </Transition>
+                  <div className="flex space-x-1 px-4">
+                    {secondaryNavigation.map((tab, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentTab(tab.name)}
+                        className={classNames(
+                          "relative rounded-md px-3 py-1.5 text-sm font-medium text-gray-300 outline-gray-800 transition focus-visible:outline-2",
+                          currentTab === tab.name
+                            ? "text-blue-100"
+                            : "hover:bg-gray-100/100 "
+                        )}
+                      >
+                        {currentTab === tab.name && (
+                          <motion.span
+                            layoutId="bubble"
+                            className="absolute inset-0 rounded-md bg-gray-100"
+                            transition={{
+                              type: "spring",
+                              bounce: 0.2,
+                              duration: 0.6,
+                            }}
+                          />
+                        )}
+                        <span className="relative z-10 mix-blend-exclusion">
+                          {tab.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                   <div className="mr-4 flex items-center text-xs text-gray-400">
                     <div className="mr-2 hidden md:flex">
                       <span className="mr-2 flex flex-col">

@@ -10,10 +10,8 @@ const faqs = [
         "Without such a tool, you would have to manually enter costs from the invoices you receive, which can be a time-consuming process.",
     },
     {
-      question:
-        "How do I know if I want to subscribe for the paid packages or not?",
-      answer:
-        "There is a free version where you can try out before paying for an upgraded version. No hidden fees.",
+      question: "How does the financial automation process work? ",
+      answer: "You upload an invoice and our tech takes care of the rest.",
     },
   ],
   [
@@ -24,20 +22,9 @@ const faqs = [
     },
     {
       question:
-        "Some of the project costs do not have an invoice. How do I record them so that the budget and profit margin can reflect it too?",
+        "How do I know if I want to subscribe for the paid packages or not?",
       answer:
-        "You can enter cost data manually aside from costs captured from an invoice.",
-    },
-  ],
-  [
-    {
-      question: "Does hyperbolt read my email?",
-      answer:
-        "No, your privacy is important to us, and the email connection is only used to import any invoices that have been sent automatically. Our platform never reads or stores your email data, besides attached documents.",
-    },
-    {
-      question: "How does the financial automation process work? ",
-      answer: "You upload an invoice and our tech takes care of the rest.",
+        "There is a free version where you can try out before paying for an upgraded version. No hidden fees.",
     },
   ],
 ];
@@ -72,7 +59,7 @@ export function Faqs() {
         </div>
         <ul
           role="list"
-          className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3"
+          className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-2"
         >
           {faqs.map((column, columnIndex) => (
             <li key={columnIndex}>

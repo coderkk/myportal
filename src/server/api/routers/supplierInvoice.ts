@@ -4,18 +4,16 @@ import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const createSupplierInvoiceSchema = z.object({
-  description: z.string(),
   invoiceNo: z.string(),
   invoiceDate: z.date(),
   vendorName: z.string(),
-  vendorAddress: z.string(),
-  vendorPhone: z.string(),
   supplierName: z.string(),
   supplierAddress: z.string(),
   supplierPhone: z.string(),
-  amount: z.number(),
-  taxAmount: z.number(),
-  totalAmount: z.number(),
+  subtotal: z.number(),
+  taxes: z.number(),
+  discount: z.number(),
+  grandTotal: z.number(),
   fileId: z.string(),
   projectId: z.string(),
   budgetId: z.string(),
@@ -23,10 +21,9 @@ export const createSupplierInvoiceSchema = z.object({
     z.object({
       description: z.string(),
       quantity: z.number(),
-      uom: z.string(),
+      unit: z.string(),
       unitPrice: z.number(),
-      discount: z.number(),
-      amount: z.number(),
+      totalPrice: z.number(),
     })
   ),
 });
@@ -45,18 +42,16 @@ export const getSupplierInvoiceSchema = z.object({
 
 export const updateSupplierInvoiceSchema = z.object({
   id: z.string(),
-  description: z.string(),
   invoiceNo: z.string(),
   invoiceDate: z.date(),
   vendorName: z.string(),
-  vendorAddress: z.string(),
-  vendorPhone: z.string(),
   supplierName: z.string(),
   supplierAddress: z.string(),
   supplierPhone: z.string(),
-  amount: z.number(),
-  taxAmount: z.number(),
-  totalAmount: z.number(),
+  subtotal: z.number(),
+  taxes: z.number(),
+  discount: z.number(),
+  grandTotal: z.number(),
   fileId: z.string(),
   projectId: z.string(),
   budgetId: z.string(),
@@ -65,10 +60,9 @@ export const updateSupplierInvoiceSchema = z.object({
       id: z.string(),
       description: z.string(),
       quantity: z.number(),
-      uom: z.string(),
+      unit: z.string(),
       unitPrice: z.number(),
-      discount: z.number(),
-      amount: z.number(),
+      totalPrice: z.number(),
     })
   ),
 });
@@ -149,15 +143,6 @@ export const supplierInvoiceRouter = createTRPCRouter({
               },
               include: {
                 supplierInvoiceItems: {
-                  select: {
-                    id: true,
-                    description: true,
-                    discount: true,
-                    quantity: true,
-                    uom: true,
-                    unitPrice: true,
-                    amount: true,
-                  },
                   orderBy: {
                     createdAt: "desc",
                   },

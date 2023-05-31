@@ -1,37 +1,10 @@
+import type { SupplierInvoiceItem } from "@prisma/client";
 import { useAtom } from "jotai";
 import { nanoid } from "nanoid";
 import { useSession } from "next-auth/react";
 import type { MutableRefObject } from "react";
 import { mutationCountAtom } from "../atoms/supplierInvoiceAtoms";
 import { api } from "../utils/api";
-
-export type supplierInvoice = {
-  id: string;
-  description: string;
-  invoiceNo: string;
-  invoiceDate: Date;
-  vendorName: string;
-  vendorAddress: string;
-  vendorPhone: string;
-  supplierName: string;
-  supplierAddress: string;
-  supplierPhone: string;
-  amount: number;
-  taxAmount: number;
-  totalAmount: number;
-  fileId: string;
-  budgetId: string;
-};
-
-export type supplierInvoiceItem = {
-  id: string;
-  description: string;
-  quantity: number;
-  uom: string;
-  unitPrice: number;
-  discount: number;
-  amount: number;
-};
 
 export const useCreateSupplierInvoice = () => {
   const utils = api.useContext();
@@ -52,17 +25,15 @@ export const useCreateSupplierInvoice = () => {
               id: nanoid(),
               invoiceNo: values.invoiceNo,
               invoiceDate: values.invoiceDate,
-              description: values.description,
               vendorName: values.vendorName,
-              vendorAddress: values.vendorAddress,
-              vendorPhone: values.vendorPhone,
               supplierName: values.supplierName,
               supplierAddress: values.supplierAddress,
               supplierPhone: values.supplierPhone,
-              amount: values.amount,
-              taxAmount: values.taxAmount,
-              totalAmount: values.totalAmount,
-              fileId: "",
+              subtotal: values.subtotal,
+              taxes: values.taxes,
+              discount: values.discount,
+              grandTotal: values.grandTotal,
+              fileId: values.fileId,
               paid: false, // OU FIX
               approved: false, // OU FIX
               budgetId: values.budgetId,
@@ -124,6 +95,7 @@ export const useGetSupplierInvoices = ({
     },
     { enabled: mutationCount === 0, keepPreviousData: true }
   );
+
   return {
     supplierInvoices: data,
     isLoading: isLoading,
@@ -135,7 +107,7 @@ export const useGetSupplierInvoice = ({
   onSucess,
 }: {
   supplierInvoiceId: string;
-  onSucess: (supplierInvoiceItems: supplierInvoiceItem[]) => void;
+  onSucess: (supplierInvoiceItems: SupplierInvoiceItem[]) => void;
 }) => {
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoice.useQuery(
     {
@@ -184,21 +156,19 @@ export const useUpdateSupplierInvoice = ({
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = values.invoiceNo;
                 updatedSupplierInvoice.invoiceDate = values.invoiceDate;
-                updatedSupplierInvoice.description = values.description;
                 updatedSupplierInvoice.vendorName = values.vendorName;
-                updatedSupplierInvoice.vendorAddress = values.vendorAddress;
                 updatedSupplierInvoice.supplierName = values.supplierName;
                 updatedSupplierInvoice.supplierAddress = values.supplierAddress;
-                updatedSupplierInvoice.vendorPhone = values.vendorPhone;
                 updatedSupplierInvoice.supplierPhone = values.supplierPhone;
-                updatedSupplierInvoice.amount = values.amount;
-                updatedSupplierInvoice.taxAmount = values.taxAmount;
-                updatedSupplierInvoice.totalAmount = values.totalAmount;
-                updatedSupplierInvoice.budgetId = values.budgetId;
+                updatedSupplierInvoice.subtotal = values.subtotal;
+                updatedSupplierInvoice.taxes = values.taxes;
+                updatedSupplierInvoice.discount = values.discount;
+                updatedSupplierInvoice.grandTotal = values.grandTotal;
                 updatedSupplierInvoice.fileId = values.fileId;
-                updatedSupplierInvoice.updatedAt = new Date();
                 updatedSupplierInvoice.paid = false; // OU FIX
                 updatedSupplierInvoice.approved = false; // OU FIX
+                updatedSupplierInvoice.budgetId = values.budgetId;
+                updatedSupplierInvoice.updatedAt = new Date();
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =
                   updatedSupplierInvoice;
               }
@@ -238,20 +208,18 @@ export const useUpdateSupplierInvoice = ({
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = values.invoiceNo;
                 updatedSupplierInvoice.invoiceDate = values.invoiceDate;
-                updatedSupplierInvoice.description = values.description;
                 updatedSupplierInvoice.vendorName = values.vendorName;
-                updatedSupplierInvoice.vendorAddress = values.vendorAddress;
                 updatedSupplierInvoice.supplierName = values.supplierName;
                 updatedSupplierInvoice.supplierAddress = values.supplierAddress;
-                updatedSupplierInvoice.vendorPhone = values.vendorPhone;
                 updatedSupplierInvoice.supplierPhone = values.supplierPhone;
-                updatedSupplierInvoice.amount = values.amount;
-                updatedSupplierInvoice.taxAmount = values.taxAmount;
-                updatedSupplierInvoice.totalAmount = values.totalAmount;
-                updatedSupplierInvoice.budgetId = values.budgetId;
+                updatedSupplierInvoice.subtotal = values.subtotal;
+                updatedSupplierInvoice.taxes = values.taxes;
+                updatedSupplierInvoice.discount = values.discount;
+                updatedSupplierInvoice.grandTotal = values.grandTotal;
                 updatedSupplierInvoice.fileId = values.fileId;
                 updatedSupplierInvoice.paid = false; // OU FIX
                 updatedSupplierInvoice.approved = false; // OU FIX
+                updatedSupplierInvoice.budgetId = values.budgetId;
                 updatedSupplierInvoice.updatedAt = new Date();
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =
                   updatedSupplierInvoice;
