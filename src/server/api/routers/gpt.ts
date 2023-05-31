@@ -85,6 +85,10 @@ const gptOutputSchema = z.object({
 
 export type gptOutputSchema = z.infer<typeof gptOutputSchema>;
 
+export const config = {
+  runtime: "edge",
+};
+
 export const gptRouter = createTRPCRouter({
   extractInvoiceInfo: protectedProcedure
     .input(extractInvoiceInfoSchema)
