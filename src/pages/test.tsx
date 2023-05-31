@@ -1,30 +1,10 @@
 import type { BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import Spinner from "../components/common/Spinner";
 import { api } from "../utils/api";
 
 type FormValues = {
   inputText: string;
-};
-
-type item = {
-  description: string;
-  unit: string;
-  quantity: number;
-  unit_price: number;
-  element_cost: number;
-};
-
-type extractedInvoiceInfo = {
-  vendor_name: string;
-  invoice_no: string;
-  invoice_date: string;
-  subtotal: number;
-  tax: number;
-  discount: number;
-  total_sum: number;
-  items: item[];
 };
 
 const GPT = () => {
@@ -48,20 +28,6 @@ const GPT = () => {
     e?.preventDefault();
     reset();
     extractInvoiceInfo({ inputText: data.inputText });
-  };
-
-  const validateResponse = (response: string) => {
-    let validatedResponse = response.replace(/[^\w\s{}[]]/gi, ""); // replaces not word/space characters with empty string. A word character is a character a-z, A-Z, 0-9, including _ (underscore).
-    console.log(validatedResponse);
-    try {
-      const jsonObject = JSON.parse(validatedResponse) as extractedInvoiceInfo;
-      console.log(jsonObject);
-    } catch (error) {
-      toast.error("Error extracting information");
-      console.error("Error parsing JSON:", error);
-      validatedResponse = "Error";
-    }
-    return validatedResponse;
   };
 
   return (
@@ -88,13 +54,7 @@ const GPT = () => {
           </button>
         </form>
         <div className="textarea">
-          Output:{" "}
-          {isLoading ? (
-            <Spinner />
-          ) : (
-            // JSON.stringify(validateResponse(data || ""))
-            JSON.stringify(data || "")
-          )}
+          Output: {isLoading ? <Spinner /> : JSON.stringify(data || "")}
         </div>
       </div>
     </div>

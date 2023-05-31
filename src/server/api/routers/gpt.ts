@@ -50,7 +50,7 @@ const gptOutputSchema = z.object({
   grandTotal: z
     .number()
     .describe("The subtotal plus taxes less discount. Defaults to 0."),
-  items: z
+  supplierInvoiceItems: z
     .array(
       z.object({
         description: z
