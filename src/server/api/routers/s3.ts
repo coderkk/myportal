@@ -10,9 +10,9 @@ import { userHasPermissionToProjectOrThrow } from "./me";
 
 const s3Config = {
   apiVersion: "latest",
-  region: env.AWS_S3_BUCKET_REGION_,
-  accessKeyId: env.AWS_ACCESS_KEY_ID_,
-  secretAccessKey: env.AWS_SECRET_ACCESS_KEY_,
+  region: env._AWS_S3_BUCKET_REGION,
+  accessKeyId: env._AWS_ACCESS_KEY_ID,
+  secretAccessKey: env._AWS_SECRET_ACCESS_KEY,
   signatureVersion: "v4",
 };
 
