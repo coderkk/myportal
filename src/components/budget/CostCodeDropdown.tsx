@@ -21,7 +21,7 @@ const CostCodeDropdown = ({
   error?: boolean;
 }) => {
   const budgetValues = budgets.map((budget) => {
-    return {value: budget.id, label: budget.description}
+    return {value: budget.id, label: `${budget.costCode} (${budget.description})`}
   });
   return (
     <SelectList
