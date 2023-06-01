@@ -92,16 +92,40 @@ const InvoiceItem = ({
           <form>
             <fieldset className="mb-4 mt-4 gap-3 sm:mb-7 sm:flex ">
               <div className="flex flex-1 flex-col gap-3">
-                <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.description
-                      ? "border-red-400  focus:border-red-400 "
-                      : ""
-                  }`}
-                  id="description"
-                  placeholder="Description"
-                  {...register("description", { required: true })}
-                />
+                <div className="relative mb-2 flex flex-col justify-between gap-5">
+                  <input
+                    autoFocus={true}
+                    autoComplete="off"
+                    type="text"
+                    className={`peer h-full w-full rounded-[6px] border border-slate-300 border-t-transparent bg-transparent px-3 py-2.5
+                    font-sans text-sm font-normal text-slate-700 placeholder-slate-300 placeholder-opacity-0 outline outline-0
+                    transition-all placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300 focus:border-2
+                    focus:border-blue-500 focus:border-t-transparent focus:outline-0 ${
+                      errors.description
+                        ? "border-red-500  focus:border-red-500 "
+                        : ""
+                    }`}
+                    id="description"
+                    placeholder="Description"
+                    {...register("description", { required: true })}
+                  />
+                  <label
+                    className={`before:content[' '] after:content[' '] pointer-events-none absolute -top-1.5 left-0 flex h-full w-full select-none text-[11px] font-normal
+                    leading-tight text-slate-600 transition-all before:pointer-events-none before:mr-1 before:mt-[6.5px] before:box-border before:block
+                    before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-l before:border-t before:border-slate-300 before:transition-all after:pointer-events-none
+                    after:ml-1 after:mt-[6.5px] after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-r after:border-t
+                    after:border-slate-300 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-slate-600
+                    peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:font-medium
+                    peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:before:border-l-2 peer-focus:before:border-t-2 peer-focus:before:border-blue-500
+                    peer-focus:after:border-r-2 peer-focus:after:border-t-2 peer-focus:after:border-blue-500 ${
+                      errors.description
+                        ? "border-red-500  focus:border-red-500 peer-focus:text-red-500 peer-focus:before:border-red-500 peer-focus:after:border-red-500"
+                        : ""
+                    }`}
+                  >
+                    {"Description"}
+                  </label>
+                </div>
                 <input
                   className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
                     errors.quantity
