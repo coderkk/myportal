@@ -3,6 +3,12 @@ import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
 import { Fragment, useState  } from "react";
 
+type optionItem = {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
 export default function SelectList({
   value,
   placeholder = "",
@@ -18,35 +24,32 @@ export default function SelectList({
   placeholder?: string;
   onChange: (arg0: string) => void;
   disabled?: boolean;
-  options: string[] | number[] | object[];
+  options: string[] | number[] | optionItem[];
   buttonClassName?: string;
   extraClassName?: string;
   openClassName?: string;
   error?: boolean;
 }) {
 
-  const [selectedOption, setSelectedOption] = useState({value: "", label: placeholder});
-  const optionValues: { value: string; label: string; }[] = [];
+  const [selectedOption, setSelectedOption] = useState<optionItem>();
+  const optionValues: optionItem[] = [];
 
   if (placeholder != "") {
     optionValues.push({value: "", label: placeholder})
   }
   for(let n = 0; n < options.length; n++) {
     const element = options[n];
-    let optionValue: { value: string; label: string; } = {value: "", label: ""};
+    let optionValue: optionItem = {value: "", label: ""};
     if (typeof element != "object") {
       optionValue = {value: element as string, label: element as string};
     } else {
-      if ("value" in element && "label" in element) {
-        optionValue.value = element.value as string;
-        optionValue.label = element.label as string;
-      }
+      optionValue = element;
     }
     optionValues.push(optionValue)
   }
 
-  if (value !== selectedOption.value) {
-    const selectItem = optionValues.find((option: { value: string; label: string; }) => option.value == value);
+  if (!selectedOption || value !== selectedOption.value) {
+    const selectItem = optionValues.find((option: optionItem) => option.value == value);
     if (selectItem) setSelectedOption(selectItem);
   }
 
@@ -59,8 +62,12 @@ export default function SelectList({
     <Listbox value={selectedOption} by="value" onChange={listboxOnChange} disabled={disabled}>
      {({ open }) => (
        <div className="relative">
-        <Listbox.Button className={`${buttonClassName} ${error ? ' border-red-400 focus:border-red-400' : ''} ${extraClassName} ${open ? openClassName : ''}`}>
-          <span className="block truncate">{selectedOption.label}</span>
+        <Listbox.Button className={`
+            ${buttonClassName}
+            ${error ? ' border-red-400 focus:border-red-400' : ''}
+            ${extraClassName} ${open ? openClassName : ''}`}
+        >
+          <span className="block truncate">{selectedOption?.label}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronDownIcon
               className="h-5 w-5 text-gray-400"
@@ -74,7 +81,9 @@ export default function SelectList({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Listbox.Options 
+              className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+          >
             {optionValues.map((optionValue, idx) => {
               return (
                 <Listbox.Option
@@ -85,6 +94,7 @@ export default function SelectList({
                     }`
                   }
                   value={optionValue}
+                  disabled={optionValue.disabled}
                 >
                   {({ selected, active }) => (
                     <>
