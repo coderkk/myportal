@@ -1,10 +1,14 @@
+import { parse } from "date-fns";
+import { nanoid } from "nanoid";
 import dynamic from "next/dynamic";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
+import { useExtractInvoiceInfo } from "../../hooks/gpt";
 import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/import";
 import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
+import Spinner from "../common/Spinner";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
@@ -24,8 +28,10 @@ const PdfLoad = forwardRef(({ onData }: PdfLoadProps, ref) => {
 
   const [file, setFile] = useState<File | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber] = useState<number>(1);
-  const [scale, setScale] = useState<number>(1.0);
+  const [pageNumber] = useState(1);
+  const [scale, setScale] = useState(1.0);
+
+  const { isLoading, extractInvoiceInfo } = useExtractInvoiceInfo();
 
   const onDocumentLoadSuccess = (pdf: PDFDocumentProxy) => {
     setNumPages(pdf.numPages);
@@ -49,9 +55,27 @@ const PdfLoad = forwardRef(({ onData }: PdfLoadProps, ref) => {
 
   const parseInvoice = async (pdf: PDFDocumentProxy) => {
     const pdfText = await getPDFText(pdf);
-    const data = parseData(pdfText);
-    if (data) {
-      onData(data, file);
+    try {
+      const data = await extractInvoiceInfo({ inputText: pdfText });
+      const supplierInvoiceItems = data.supplierInvoiceItems;
+      const transformedData: SupplierInvoiceWithItems = {
+        ...data,
+        id: "",
+        fileId: "",
+        budgetId: "",
+        invoiceDate: parse(data.invoiceDate, "dd/MM/yyyy", new Date()),
+        supplierInvoiceItems: supplierInvoiceItems.map(
+          (supplierInvoiceItem) => {
+            return {
+              ...supplierInvoiceItem,
+              id: nanoid(),
+            };
+          }
+        ),
+      };
+      onData(transformedData, file);
+    } catch (error) {
+      toast.error("An error occured while handling the pdf file.");
     }
   };
 
@@ -129,9 +153,11 @@ const PdfLoad = forwardRef(({ onData }: PdfLoadProps, ref) => {
             scale={scale}
           />
         </Document>
+
         <p>
           Page {pageNumber} of {numPages}
         </p>
+        {isLoading ? <Spinner /> : null}
       </div>
     </>
   );

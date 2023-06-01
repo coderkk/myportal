@@ -74,7 +74,6 @@ export const loadFilename = async (
 
 export const parseData = (pdfContent: string) => {
   let supplier = false;
-  let vendor = false;
   let start_line = false;
 
   const data: SupplierInvoiceWithItems = {
@@ -82,15 +81,13 @@ export const parseData = (pdfContent: string) => {
     invoiceNo: "",
     invoiceDate: new Date(),
     vendorName: "",
-    vendorAddress: "",
-    vendorPhone: "",
     supplierName: "",
     supplierAddress: "",
     supplierPhone: "",
-    description: "",
-    amount: 0,
-    taxAmount: 0,
-    totalAmount: 0,
+    subtotal: 0,
+    taxes: 0,
+    discount: 0,
+    grandTotal: 0,
     fileId: "",
     budgetId: "",
     supplierInvoiceItems: [],
@@ -105,12 +102,10 @@ export const parseData = (pdfContent: string) => {
       }
       if (pageTextLine.includes("Supplier")) {
         supplier = true;
-        vendor = false;
         const result = /Supplier (.*)/g.exec(pageTextLine);
         data.supplierName = result && result[1] ? result[1] : "";
       }
       if (pageTextLine.includes("Recipient")) {
-        vendor = true;
         supplier = false;
         const result = /Recipient (.*)/g.exec(pageTextLine);
         data.vendorName = result && result[1] ? result[1] : "";
@@ -120,8 +115,6 @@ export const parseData = (pdfContent: string) => {
         const address = result && result[1] ? result[1] : "";
         if (supplier) {
           data.supplierAddress = address;
-        } else if (vendor) {
-          data.vendorAddress = address;
         }
       }
       if (pageTextLine.includes("Phone")) {
@@ -129,8 +122,6 @@ export const parseData = (pdfContent: string) => {
         const phone = result && result[1] ? result[1] : "";
         if (supplier) {
           data.supplierPhone = phone;
-        } else if (vendor) {
-          data.vendorPhone = phone;
         }
       }
 
@@ -150,12 +141,11 @@ export const parseData = (pdfContent: string) => {
         if (result) {
           data.supplierInvoiceItems.push({
             id: nanoid(),
-            quantity: parseFloat(result[2] || ""),
-            uom: result[3] || "",
             description: result[4] || "",
+            quantity: parseFloat(result[2] || ""),
+            unit: result[3] || "",
             unitPrice: parseFloat(result[5] || ""),
-            discount: 0,
-            amount: parseFloat(result[6] || ""),
+            totalPrice: parseFloat(result[6] || ""),
           });
         }
       }
@@ -180,7 +170,7 @@ export const parseData = (pdfContent: string) => {
       ) {
         if (pageTextLine.match(/\d/g)) {
           const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
-          data.amount = val == undefined ? 0 : parseFloat(val);
+          data.subtotal = val == undefined ? 0 : parseFloat(val);
         }
       }
       if (
@@ -189,7 +179,7 @@ export const parseData = (pdfContent: string) => {
       ) {
         if (pageTextLine.match(/\d/g)) {
           const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
-          data.amount = val == undefined ? 0 : parseFloat(val);
+          data.taxes = val == undefined ? 0 : parseFloat(val);
         }
       }
       if (
@@ -198,7 +188,7 @@ export const parseData = (pdfContent: string) => {
       ) {
         if (pageTextLine.match(/\d/g)) {
           const val = pageTextLine.match(/\d+(?:\.\d{2})?/)?.join("");
-          data.totalAmount = val == undefined ? 0 : parseFloat(val);
+          data.grandTotal = val == undefined ? 0 : parseFloat(val);
         }
       }
     });
