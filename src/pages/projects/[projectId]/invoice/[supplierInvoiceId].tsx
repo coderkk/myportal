@@ -9,13 +9,13 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 import InvoiceItem from "../../../../components/invoice/InvoiceItem";
 import { env } from "../../../../env/client.mjs";
 import { useGetBudgets } from "../../../../hooks/budget";
 import { useGetPreSignedURLForDownload } from "../../../../hooks/s3";
 
+import SelectList from "../../../../components/common/SelectList";
 import {
   useGetSupplierInvoice,
   useUpdateSupplierInvoice,
@@ -110,6 +110,8 @@ const SupplierInvoiceView = () => {
       // to do anything here other than catch the error.
     }
   };
+
+  console.log(supplierInvoiceData?.budgetId);
 
   return (
     <SessionAuth>
@@ -274,11 +276,42 @@ const SupplierInvoiceView = () => {
                                   control={control}
                                   render={({ field }) => {
                                     const { onChange, value } = field;
+
+                                    const budgetOptions = budgets.map(
+                                      (budget) => ({
+                                        value: budget.id,
+                                        label: `${budget.costCode} (${budget.description})`,
+                                      })
+                                    );
+                                    const budgetValue = budgetOptions.find(
+                                      (budgetOption) =>
+                                        budgetOption.value == value
+                                    );
+                                    const selected = budgetValue
+                                      ? budgetValue
+                                      : budgetOptions[0];
+
                                     return (
-                                      <CostCodeDropdown
-                                        budgets={budgets || []}
-                                        defaultValue={value || null}
-                                        onCostCodeChange={(v) => onChange(v)}
+                                      <SelectList
+                                        selected={
+                                          selected || {
+                                            value: "No cost code",
+                                            label: "No cost code",
+                                          }
+                                        }
+                                        options={
+                                          budgetOptions.length > 0
+                                            ? budgetOptions
+                                            : [
+                                                {
+                                                  value: "No cost code",
+                                                  label: "No cost code",
+                                                },
+                                              ]
+                                        }
+                                        onChange={(option) =>
+                                          onChange(option.value)
+                                        }
                                         error={errors.budgetId ? true : false}
                                       />
                                     );

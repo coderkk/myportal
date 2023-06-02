@@ -3,26 +3,35 @@ import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
 import { Fragment } from "react";
 
+export type OptionItem = {
+  value: string;
+  label: string;
+};
+
 export default function SelectList({
-  value,
+  selected,
   onChange,
   disabled = false,
   options,
   buttonClassName = "relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-300 sm:text-sm",
-  error = false
+  error = false,
 }: {
-  value: string | number | undefined | null;
-  onChange: (arg0: string) => void;
+  selected: OptionItem;
+  onChange: (value: OptionItem) => void;
   disabled?: boolean;
-  options: string[] | number[];
+  options: OptionItem[];
   buttonClassName?: string;
   error?: boolean;
 }) {
   return (
-    <Listbox value={value} onChange={onChange} disabled={disabled}>
+    <Listbox value={selected} onChange={onChange} disabled={disabled}>
       <div className="relative">
-        <Listbox.Button className={`${buttonClassName} ${error ? 'border-2 border-red-400 focus:border-red-400' : ''}`}>
-          <span className="block truncate">{value}</span>
+        <Listbox.Button
+          className={`${buttonClassName} ${
+            error ? "border-2 border-red-400 focus:border-red-400" : ""
+          }`}
+        >
+          <span className="block truncate">{selected?.label}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronDownIcon
               className="h-5 w-5 text-gray-400"
@@ -37,15 +46,15 @@ export default function SelectList({
           leaveTo="opacity-0"
         >
           <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {options.map((element, idx) => (
+            {options.map((option) => (
               <Listbox.Option
-                key={idx}
+                key={option.value}
                 className={({ active }) =>
                   `relative cursor-default select-none py-2 pl-10 pr-4 ${
                     active ? "bg-blue-600 text-white" : "text-gray-900"
                   }`
                 }
-                value={element}
+                value={option}
               >
                 {({ selected, active }) => (
                   <>
@@ -54,7 +63,7 @@ export default function SelectList({
                         selected ? "font-medium" : "font-normal"
                       }`}
                     >
-                      {element}
+                      {option.label}
                     </span>
                     {selected ? (
                       <span

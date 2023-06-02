@@ -11,12 +11,12 @@ import { env } from "../../../../env/client.mjs";
 import { useGetPreSignedURLForUpload } from "../../../../hooks/s3";
 import { api } from "../../../../utils/api";
 
-import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
 import { useGetBudgets } from "../../../../hooks/budget";
 
 import PdfLoad from "../../../../components/invoice/PdfLoad";
 
 import type { SupplierInvoice } from "@prisma/client";
+import SelectList from "../../../../components/common/SelectList";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 
 type _SupplierInvoiceWithItems = SupplierInvoice & {
@@ -157,6 +157,15 @@ const InvoiceImportPage = () => {
     }
   };
 
+  const budgetOptions = budgets.map((budget) => ({
+    value: budget.id,
+    label: `${budget.costCode} (${budget.description})`,
+  }));
+  const budgetValue = budgetOptions.find(
+    (budgetOption) => budgetOption.value == invoiceData.budgetId
+  );
+  const selected = budgetValue ? budgetValue : budgetOptions[0];
+
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
@@ -245,15 +254,29 @@ const InvoiceImportPage = () => {
                           Cost code
                         </label>
                         <div className="flex-1">
-                          <CostCodeDropdown
-                            budgets={budgets || []}
-                            defaultValue={invoiceData.budgetId}
-                            onCostCodeChange={(v) => {
+                          <SelectList
+                            selected={
+                              selected || {
+                                value: "No cost code",
+                                label: "No cost code",
+                              }
+                            }
+                            options={
+                              budgetOptions.length > 0
+                                ? budgetOptions
+                                : [
+                                    {
+                                      value: "No cost code",
+                                      label: "No cost code",
+                                    },
+                                  ]
+                            }
+                            onChange={(option) =>
                               setInvoiceData({
                                 ...invoiceData,
-                                budgetId: v,
-                              });
-                            }}
+                                budgetId: option.value,
+                              })
+                            }
                           />
                         </div>
                       </div>
