@@ -69,6 +69,15 @@ const InvoiceImportPage = () => {
     searchKey: "",
   });
 
+  const budgetOptions = budgets.map((budget) => ({
+    value: budget.id,
+    label: `${budget.costCode} (${budget.description})`,
+  }));
+
+  const selected = budgetOptions.find(
+    (budgetOption) => budgetOption.value == invoiceData.budgetId
+  );
+
   const handleData = (data: SupplierInvoiceWithItems, file: File | null) => {
     setInvoiceData(data);
     setFile(file);
@@ -90,6 +99,9 @@ const InvoiceImportPage = () => {
   ) => {
     event.preventDefault();
     try {
+      if (!selected) {
+        throw new Error("Please select a budget");
+      }
       setFileId("");
       await uploadDocument();
       if (fileId != "") {
@@ -101,8 +113,12 @@ const InvoiceImportPage = () => {
         });
         void router.push("/projects/" + projectId + "/invoice");
       }
-    } catch (e) {
-      toast.error("An error occured");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        toast.error(e.message);
+      } else {
+        toast.error("An error occured");
+      }
     }
   };
 
@@ -156,15 +172,6 @@ const InvoiceImportPage = () => {
       }
     }
   };
-
-  const budgetOptions = budgets.map((budget) => ({
-    value: budget.id,
-    label: `${budget.costCode} (${budget.description})`,
-  }));
-  const budgetValue = budgetOptions.find(
-    (budgetOption) => budgetOption.value == invoiceData.budgetId
-  );
-  const selected = budgetValue ? budgetValue : budgetOptions[0];
 
   return (
     <SessionAuth>
@@ -255,22 +262,8 @@ const InvoiceImportPage = () => {
                         </label>
                         <div className="flex-1">
                           <SelectList
-                            selected={
-                              selected || {
-                                value: "No cost code",
-                                label: "No cost code",
-                              }
-                            }
-                            options={
-                              budgetOptions.length > 0
-                                ? budgetOptions
-                                : [
-                                    {
-                                      value: "No cost code",
-                                      label: "No cost code",
-                                    },
-                                  ]
-                            }
+                            selected={selected}
+                            options={budgetOptions}
                             onChange={(option) =>
                               setInvoiceData({
                                 ...invoiceData,

@@ -58,6 +58,8 @@ const AddInvoicePage = ({}) => {
     values: invoiceData,
   });
 
+  console.log(errors);
+
   const onSubmit = (
     data: SupplierInvoiceWithItems,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
@@ -214,35 +216,17 @@ const AddInvoicePage = ({}) => {
                               rules={{ required: true }}
                               render={({ field }) => {
                                 const { onChange, value } = field;
-
                                 const budgetOptions = budgets.map((budget) => ({
                                   value: budget.id,
                                   label: `${budget.costCode} (${budget.description})`,
                                 }));
-                                const budgetValue = budgetOptions.find(
+                                const selected = budgetOptions.find(
                                   (budgetOption) => budgetOption.value == value
                                 );
-                                const selected = budgetValue
-                                  ? budgetValue
-                                  : budgetOptions[0];
                                 return (
                                   <SelectList
-                                    selected={
-                                      selected || {
-                                        value: "No cost code",
-                                        label: "No cost code",
-                                      }
-                                    }
-                                    options={
-                                      budgetOptions.length > 0
-                                        ? budgetOptions
-                                        : [
-                                            {
-                                              value: "No cost code",
-                                              label: "No cost code",
-                                            },
-                                          ]
-                                    }
+                                    selected={selected}
+                                    options={budgetOptions}
                                     onChange={(option) =>
                                       onChange(option.value)
                                     }

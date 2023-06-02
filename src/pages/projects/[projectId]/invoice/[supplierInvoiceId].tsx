@@ -77,7 +77,7 @@ const SupplierInvoiceView = () => {
     updateSupplierInvoice({
       ...data,
       projectId: projectId,
-      budgetId: data?.budgetId || "", // PLANETSCALE FIX
+      budgetId: data.budgetId || "", // PLANETSCALE FIX
       supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");
@@ -283,32 +283,14 @@ const SupplierInvoiceView = () => {
                                         label: `${budget.costCode} (${budget.description})`,
                                       })
                                     );
-                                    const budgetValue = budgetOptions.find(
+                                    const selected = budgetOptions.find(
                                       (budgetOption) =>
                                         budgetOption.value == value
                                     );
-                                    const selected = budgetValue
-                                      ? budgetValue
-                                      : budgetOptions[0];
-
                                     return (
                                       <SelectList
-                                        selected={
-                                          selected || {
-                                            value: "No cost code",
-                                            label: "No cost code",
-                                          }
-                                        }
-                                        options={
-                                          budgetOptions.length > 0
-                                            ? budgetOptions
-                                            : [
-                                                {
-                                                  value: "No cost code",
-                                                  label: "No cost code",
-                                                },
-                                              ]
-                                        }
+                                        selected={selected}
+                                        options={budgetOptions}
                                         onChange={(option) =>
                                           onChange(option.value)
                                         }
