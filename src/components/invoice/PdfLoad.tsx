@@ -1,4 +1,4 @@
-import { parse } from "date-fns";
+import { isValid, parse } from "date-fns";
 import { nanoid } from "nanoid";
 import dynamic from "next/dynamic";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
@@ -63,7 +63,9 @@ const PdfLoad = forwardRef(({ onData }: PdfLoadProps, ref) => {
         id: "",
         fileId: "",
         budgetId: "",
-        invoiceDate: parse(data.invoiceDate, "dd/MM/yyyy", new Date()),
+        invoiceDate: isValid(parse(data.invoiceDate, "dd/MM/yyyy", new Date()))
+          ? parse(data.invoiceDate, "dd/MM/yyyy", new Date())
+          : new Date(),
         supplierInvoiceItems: supplierInvoiceItems.map(
           (supplierInvoiceItem) => {
             return {

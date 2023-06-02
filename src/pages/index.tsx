@@ -1,3 +1,4 @@
+import { isValid, parse } from "date-fns";
 import { type NextPage } from "next";
 import Head from "next/head";
 import { Footer } from "../components/common/Footer";
@@ -10,6 +11,8 @@ import { PrimaryFeatures } from "../components/landing/PrimaryFeatures";
 import { SecondaryFeatures } from "../components/landing/SecondaryFeatures";
 
 const Home: NextPage = () => {
+  console.log(isValid(parse("-2/04/1998", "dd/MM/yyyy", new Date())));
+  console.log(parse("-2/04/1998", "dd/MM/yyyy", new Date()));
   return (
     <>
       <Head>
