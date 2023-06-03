@@ -1,14 +1,14 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
+
 import { PlusSquareFill } from "@styled-icons/bootstrap";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
+import type { z } from "zod";
 import { useCreateBudget } from "../../hooks/budget";
+import { createBudgetSchema } from "../../schema/budget";
 
-type FormValues = {
-  description: string;
-  expectedBudget: number;
-  costsIncurred: number;
-};
+type FormValues = z.infer<typeof createBudgetSchema>;
 
 const CreateButton = ({
   pageIndex,
@@ -26,7 +26,9 @@ const CreateButton = ({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    resolver: zodResolver(createBudgetSchema),
+  });
   const { createBudget } = useCreateBudget({
     pageIndex,
     pageSize,
@@ -132,17 +134,17 @@ const CreateButton = ({
             </fieldset>
             {errors.description && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Description is required
+                {errors.description.message}
               </span>
             )}
             {errors.expectedBudget && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Budget is required
+                {errors.expectedBudget.message}
               </span>
             )}
             {errors.costsIncurred && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Costs incurred is required
+                {errors.costsIncurred.message}
               </span>
             )}
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
