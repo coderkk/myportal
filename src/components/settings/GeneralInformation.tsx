@@ -10,6 +10,7 @@ import {
   useUpdateMyProfessionalRole,
 } from "../../hooks/me";
 import { useGetProjectCreator, useUpdateProject } from "../../hooks/project";
+import type { OptionItem } from "../common/SelectList";
 import SelectList from "../common/SelectList";
 import Spinner from "../common/Spinner";
 
@@ -25,22 +26,46 @@ const professionalRoles = [
   { label: "Site Supervisor", value: "SITE_SUPERVISOR" },
   { label: "Site Engineer", value: "SITE_ENGINEER" },
   { label: "Site Administrator", value: "SITE_ADMIN" },
+];
+
+console.log(
+  professionalRoles.map((professionalRole) => professionalRole.value)
+);
+
+const professionalRolesValues = [
+  "ACCOUNTANT",
+  "DOCUMENT_CONTROLLER",
+  "FOREMAN",
+  "PROJECT_ENGINEER",
+  "PROJECT_MEMBER",
+  "PROJECT_MANAGER",
+  "PROJECT_DIRECTOR",
+  "QUANTITY_SURVEYOR",
+  "SITE_SUPERVISOR",
+  "SITE_ENGINEER",
+  "SITE_ADMIN",
 ] as const;
 
 // create a function that maps the value to the label
-const mapProfessionalRoleToLabel = (value: string) => {
+const mapProfessionalRoleToOption = (value: string) => {
   const found = professionalRoles.find((role) => role.value === value);
-  return found ? found.label : "";
+  return found ? found : professionalRoles[0];
 };
 
 // create a function that maps the label to the value
-const mapProfessionalRoleToValue = (label: string) => {
-  const found = professionalRoles.find((role) => role.label === label);
-  return found ? found.value : "PROJECT_MEMBER";
+const mapProfessionalRoleToValue = (role?: OptionItem) => {
+  const found = professionalRolesValues.find(
+    (professionalRolesValue) => professionalRolesValue === role?.value
+  );
+  return found ? found : "PROJECT_MEMBER";
 };
 
 // TODO: add real plans and update callback needs to actually save the plan
-const plans = ["Free", "Basic", "Premium"];
+const plans = [
+  { label: "Free", value: "Free" },
+  { label: "Basic", value: "Basic" },
+  { label: "Premium", value: "Premium" },
+];
 
 type FormValues = {
   projectName: string;
@@ -59,7 +84,7 @@ const GeneralInformation = ({
     projectId: project.id,
   });
   const [selectedProfessionalRole, setSelectedProfessionalRole] = useState(
-    mapProfessionalRoleToLabel(myProfessionalRole || "ACCOUNTANT")
+    mapProfessionalRoleToOption(myProfessionalRole || "ACCOUNTANT")
   );
   const { updateProject } = useUpdateProject();
   const { updateMyProfessionalRole } = useUpdateMyProfessionalRole();
@@ -84,11 +109,14 @@ const GeneralInformation = ({
       projectName: data.projectName,
     });
   };
+
   useEffect(() => {
-    setSelectedProfessionalRole(
-      mapProfessionalRoleToLabel(myProfessionalRole || "ACCOUNTANT")
-    );
+    if (myProfessionalRole)
+      setSelectedProfessionalRole(
+        mapProfessionalRoleToOption(myProfessionalRole)
+      );
   }, [myProfessionalRole]);
+
   return (
     <span className="m-8 flex flex-col ">
       <span className="mb-4 text-xl text-blue-500">
@@ -147,7 +175,9 @@ const GeneralInformation = ({
                 </label>
                 <div className="mt-2">
                   <SelectList
-                    value={selectedPlan}
+                    selected={
+                      selectedPlan || { value: "No plan", label: "No plan" }
+                    }
                     onChange={setSelectedPlan}
                     disabled={!isCreator}
                     options={plans}
@@ -249,10 +279,15 @@ const GeneralInformation = ({
 
                     <div className="mt-2">
                       <SelectList
-                        value={selectedProfessionalRole}
+                        selected={
+                          selectedProfessionalRole || {
+                            value: "ACCOUNTANT",
+                            label: "Accountant",
+                          }
+                        }
                         onChange={setSelectedProfessionalRole}
                         disabled={!isCreator}
-                        options={professionalRoles.map((role) => role.label)}
+                        options={professionalRoles}
                       />
                     </div>
                   </>

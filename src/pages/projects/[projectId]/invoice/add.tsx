@@ -7,7 +7,7 @@ import ReactDatePicker from "react-datepicker";
 import { Controller, useForm } from "react-hook-form";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
+import SelectList from "../../../../components/common/SelectList";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 import InvoiceItem from "../../../../components/invoice/InvoiceItem";
 import { useGetBudgets } from "../../../../hooks/budget";
@@ -58,6 +58,8 @@ const AddInvoicePage = ({}) => {
     values: invoiceData,
   });
 
+  console.log(errors);
+
   const onSubmit = (
     data: SupplierInvoiceWithItems,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
@@ -67,7 +69,7 @@ const AddInvoicePage = ({}) => {
     createSupplierInvoice({
       ...data,
       projectId: projectId,
-      budgetId: invoiceData?.budgetId || "", // PLANETSCALE FIX
+      budgetId: data?.budgetId || "", // PLANETSCALE FIX
       supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");
@@ -214,11 +216,20 @@ const AddInvoicePage = ({}) => {
                               rules={{ required: true }}
                               render={({ field }) => {
                                 const { onChange, value } = field;
+                                const budgetOptions = budgets.map((budget) => ({
+                                  value: budget.id,
+                                  label: `${budget.costCode} (${budget.description})`,
+                                }));
+                                const selected = budgetOptions.find(
+                                  (budgetOption) => budgetOption.value == value
+                                );
                                 return (
-                                  <CostCodeDropdown
-                                    budgets={budgets || []}
-                                    defaultValue={value || null}
-                                    onCostCodeChange={(v) => onChange(v)}
+                                  <SelectList
+                                    selected={selected}
+                                    options={budgetOptions}
+                                    onChange={(option) =>
+                                      onChange(option.value)
+                                    }
                                     error={errors.budgetId ? true : false}
                                   />
                                 );

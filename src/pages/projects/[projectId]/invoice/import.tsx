@@ -11,12 +11,12 @@ import { env } from "../../../../env/client.mjs";
 import { useGetPreSignedURLForUpload } from "../../../../hooks/s3";
 import { api } from "../../../../utils/api";
 
-import CostCodeDropdown from "../../../../components/budget/CostCodeDropdown";
 import { useGetBudgets } from "../../../../hooks/budget";
 
 import PdfLoad from "../../../../components/invoice/PdfLoad";
 
 import type { SupplierInvoice } from "@prisma/client";
+import SelectList from "../../../../components/common/SelectList";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 
 type _SupplierInvoiceWithItems = SupplierInvoice & {
@@ -69,6 +69,15 @@ const InvoiceImportPage = () => {
     searchKey: "",
   });
 
+  const budgetOptions = budgets.map((budget) => ({
+    value: budget.id,
+    label: `${budget.costCode} (${budget.description})`,
+  }));
+
+  const selected = budgetOptions.find(
+    (budgetOption) => budgetOption.value == invoiceData.budgetId
+  );
+
   const handleData = (data: SupplierInvoiceWithItems, file: File | null) => {
     setInvoiceData(data);
     setFile(file);
@@ -90,6 +99,9 @@ const InvoiceImportPage = () => {
   ) => {
     event.preventDefault();
     try {
+      if (!selected) {
+        throw new Error("Please select a budget");
+      }
       setFileId("");
       await uploadDocument();
       if (fileId != "") {
@@ -101,8 +113,12 @@ const InvoiceImportPage = () => {
         });
         void router.push("/projects/" + projectId + "/invoice");
       }
-    } catch (e) {
-      toast.error("An error occured");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        toast.error(e.message);
+      } else {
+        toast.error("An error occured");
+      }
     }
   };
 
@@ -245,15 +261,15 @@ const InvoiceImportPage = () => {
                           Cost code
                         </label>
                         <div className="flex-1">
-                          <CostCodeDropdown
-                            budgets={budgets || []}
-                            defaultValue={invoiceData.budgetId}
-                            onCostCodeChange={(v) => {
+                          <SelectList
+                            selected={selected}
+                            options={budgetOptions}
+                            onChange={(option) =>
                               setInvoiceData({
                                 ...invoiceData,
-                                budgetId: v,
-                              });
-                            }}
+                                budgetId: option.value,
+                              })
+                            }
                           />
                         </div>
                       </div>
