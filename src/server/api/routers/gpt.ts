@@ -129,109 +129,110 @@ export const gptRouter = createTRPCRouter({
           // console.log("===================================================");
           // console.log(res.text);
 
-          // const response = await model.call(promptInput);
+          const response = await model.call(promptInput);
 
           // Bad response - this will fail on await parser.parse(response); This is only here to test the fixParser code block.
           //   const response = `{ "vendor_name": "Global Wholesaler Azure Interior" "invoice_no": "INV/2023/03/0008", "invoice_date": "03/20/2023", "items": [ { "description": "Beeswax XL Acme beeswax", "unit": "kg", "quantity": 1, "unit_price": 42.00, "element_cost": 42.00 }, { "description": "Office Chair", "unit": "Units", "quantity": 1, "unit_price": 70.00, "element_cost": 70.00 }, { "description": "Olive Oil", "unit": "L", "quantity": 1, "unit_price": 10.00, "element_cost": 10.00 }, { "description": "Luxury Truffles", "unit": "g", "quantity": 15, "unit_price": 10.00, "element_cost": 150.00 } ], "subtotal": 262.90, "tax": 16.94, "discount": 0, "total_sum": 279.84 }`;
 
-          const response = JSON.stringify({
-            invoiceNo: "181565",
-            invoiceDate: "15/01/2022",
-            vendorName: "H & K TECHNOLOGY SY STEM(002298433-P)",
-            supplierName: "",
-            supplierAddress: "19-1A ,jalan 10/125D ,tmn desa petaling",
-            supplierPhone: "0198533338",
-            subtotal: 5305,
-            taxes: 0,
-            discount: 0,
-            grandTotal: 5305,
-            supplierInvoiceItems: [
-              {
-                description: "Supply 1.5HP panasonic air cond",
-                quantity: 2,
-                unit: "NR",
-                unitPrice: 1430,
-                totalPrice: 2860,
-              },
-              {
-                description: "Install 1.5HP air cond include 10ft copper paip",
-                quantity: 2,
-                unit: "NR",
-                unitPrice: 300,
-                totalPrice: 600,
-              },
-              {
-                description: 'Supply 2" x 3" pvc casing',
-                quantity: 4,
-                unit: "NR",
-                unitPrice: 25,
-                totalPrice: 100,
-              },
-              {
-                description: "Chemical wash 1HP air cond",
-                quantity: 2,
-                unit: "NR",
-                unitPrice: 130,
-                totalPrice: 260,
-              },
-              {
-                description: "Install light",
-                quantity: 3,
-                unit: "NR",
-                unitPrice: 30,
-                totalPrice: 90,
-              },
-              {
-                description: "Supply & change air cond switch",
-                quantity: 4,
-                unit: "NR",
-                unitPrice: 40,
-                totalPrice: 160,
-              },
-              {
-                description: "Extra copper paip",
-                quantity: 22,
-                unit: "NR",
-                unitPrice: 15,
-                totalPrice: 330,
-              },
-              {
-                description: "Supply & change switches",
-                quantity: 13,
-                unit: "NR",
-                unitPrice: 13,
-                totalPrice: 169,
-              },
-              {
-                description: "Wiring 13A power point",
-                quantity: 3,
-                unit: "NR",
-                unitPrice: 70,
-                totalPrice: 210,
-              },
-              {
-                description: "Supply & change 4FT LED tube",
-                quantity: 22,
-                unit: "NR",
-                unitPrice: 13,
-                totalPrice: 286,
-              },
-              {
-                description: "Supply & change 2pole main switch & ELCB",
-                quantity: 1,
-                unit: "NR",
-                unitPrice: 150,
-                totalPrice: 150,
-              },
-              {
-                description: "Remote control",
-                quantity: 3,
-                unit: "NR",
-                unitPrice: 30,
-                totalPrice: 90,
-              },
-            ],
-          });
+          // const response = JSON.stringify({
+          //   invoiceNo: "181565",
+          //   invoiceDate: "15/01/2022",
+          //   vendorName: "H & K TECHNOLOGY SY STEM(002298433-P)",
+          //   supplierName: "",
+          //   supplierAddress: "19-1A ,jalan 10/125D ,tmn desa petaling",
+          //   supplierPhone: "0198533338",
+          //   subtotal: 5305,
+          //   taxes: 0,
+          //   discount: 0,
+          //   grandTotal: 5305,
+          //   supplierInvoiceItems: [
+          //     {
+          //       description: "Supply 1.5HP panasonic air cond",
+          //       quantity: 2,
+          //       unit: "NR",
+          //       unitPrice: 1430,
+          //       totalPrice: 2860,
+          //     },
+          //     {
+          //       description: "Install 1.5HP air cond include 10ft copper paip",
+          //       quantity: 2,
+          //       unit: "NR",
+          //       unitPrice: 300,
+          //       totalPrice: 600,
+          //     },
+          //     {
+          //       description: 'Supply 2" x 3" pvc casing',
+          //       quantity: 4,
+          //       unit: "NR",
+          //       unitPrice: 25,
+          //       totalPrice: 100,
+          //     },
+          //     {
+          //       description: "Chemical wash 1HP air cond",
+          //       quantity: 2,
+          //       unit: "NR",
+          //       unitPrice: 130,
+          //       totalPrice: 260,
+          //     },
+          //     {
+          //       description: "Install light",
+          //       quantity: 3,
+          //       unit: "NR",
+          //       unitPrice: 30,
+          //       totalPrice: 90,
+          //     },
+          //     {
+          //       description: "Supply & change air cond switch",
+          //       quantity: 4,
+          //       unit: "NR",
+          //       unitPrice: 40,
+          //       totalPrice: 160,
+          //     },
+          //     {
+          //       description: "Extra copper paip",
+          //       quantity: 22,
+          //       unit: "NR",
+          //       unitPrice: 15,
+          //       totalPrice: 330,
+          //     },
+          //     {
+          //       description: "Supply & change switches",
+          //       quantity: 13,
+          //       unit: "NR",
+          //       unitPrice: 13,
+          //       totalPrice: 169,
+          //     },
+          //     {
+          //       description: "Wiring 13A power point",
+          //       quantity: 3,
+          //       unit: "NR",
+          //       unitPrice: 70,
+          //       totalPrice: 210,
+          //     },
+          //     {
+          //       description: "Supply & change 4FT LED tube",
+          //       quantity: 22,
+          //       unit: "NR",
+          //       unitPrice: 13,
+          //       totalPrice: 286,
+          //     },
+          //     {
+          //       description: "Supply & change 2pole main switch & ELCB",
+          //       quantity: 1,
+          //       unit: "NR",
+          //       unitPrice: 150,
+          //       totalPrice: 150,
+          //     },
+          //     {
+          //       description: "Remote control",
+          //       quantity: 3,
+          //       unit: "NR",
+          //       unitPrice: 30,
+          //       totalPrice: 90,
+          //     },
+          //   ],
+          // });
+
           try {
             return await parser.parse(response);
           } catch (e) {
