@@ -109,6 +109,7 @@ export const gptRouter = createTRPCRouter({
             openAIApiKey: env.OPENAI_API_KEY,
             modelName: "gpt-3.5-turbo",
             maxTokens: -1,
+            streaming: true,
           });
 
           const promptInput = await prompt.format({
@@ -129,7 +130,9 @@ export const gptRouter = createTRPCRouter({
           // console.log("===================================================");
           // console.log(res.text);
 
+          console.log("===================================================");
           const response = await model.call(promptInput);
+          console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 
           // Bad response - this will fail on await parser.parse(response); This is only here to test the fixParser code block.
           //   const response = `{ "vendor_name": "Global Wholesaler Azure Interior" "invoice_no": "INV/2023/03/0008", "invoice_date": "03/20/2023", "items": [ { "description": "Beeswax XL Acme beeswax", "unit": "kg", "quantity": 1, "unit_price": 42.00, "element_cost": 42.00 }, { "description": "Office Chair", "unit": "Units", "quantity": 1, "unit_price": 70.00, "element_cost": 70.00 }, { "description": "Olive Oil", "unit": "L", "quantity": 1, "unit_price": 10.00, "element_cost": 10.00 }, { "description": "Luxury Truffles", "unit": "g", "quantity": 15, "unit_price": 10.00, "element_cost": 150.00 } ], "subtotal": 262.90, "tax": 16.94, "discount": 0, "total_sum": 279.84 }`;
