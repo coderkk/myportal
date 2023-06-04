@@ -73,17 +73,13 @@ export const loadFilename = async (
 };
 
 export const parseData = (pdfContent: string) => {
-  let supplier = false;
   let start_line = false;
 
   const data: SupplierInvoiceWithItems = {
     id: "",
     invoiceNo: "",
     invoiceDate: new Date(),
-    vendorName: "",
     supplierName: "",
-    supplierAddress: "",
-    supplierPhone: "",
     subtotal: 0,
     taxes: 0,
     discount: 0,
@@ -101,28 +97,8 @@ export const parseData = (pdfContent: string) => {
         data.invoiceNo = pageTextLine.match(/\d/g)?.join("") || "";
       }
       if (pageTextLine.includes("Supplier")) {
-        supplier = true;
         const result = /Supplier (.*)/g.exec(pageTextLine);
         data.supplierName = result && result[1] ? result[1] : "";
-      }
-      if (pageTextLine.includes("Recipient")) {
-        supplier = false;
-        const result = /Recipient (.*)/g.exec(pageTextLine);
-        data.vendorName = result && result[1] ? result[1] : "";
-      }
-      if (pageTextLine.includes("Address")) {
-        const result = /Address (.*)/g.exec(pageTextLine);
-        const address = result && result[1] ? result[1] : "";
-        if (supplier) {
-          data.supplierAddress = address;
-        }
-      }
-      if (pageTextLine.includes("Phone")) {
-        const result = /Phone (.*)/g.exec(pageTextLine);
-        const phone = result && result[1] ? result[1] : "";
-        if (supplier) {
-          data.supplierPhone = phone;
-        }
       }
 
       if (pageTextLine == "(RM)") {

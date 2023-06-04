@@ -302,33 +302,6 @@ const SupplierInvoiceView = () => {
                         </div>
 
                         <div className="mb-8 flex flex-wrap justify-between">
-                          <div className="mb-2 w-full md:mb-0 md:w-1/3">
-                            <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                              Vendor name
-                            </label>
-                            <Controller
-                              name="vendorName"
-                              control={control}
-                              rules={{ required: true }}
-                              render={() => {
-                                return (
-                                  <input
-                                    className={`mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none ${
-                                      errors.vendorName
-                                        ? "border-red-400  focus:border-red-400 "
-                                        : ""
-                                    }`}
-                                    type="text"
-                                    placeholder="Vendor Name"
-                                    defaultValue={
-                                      supplierInvoiceData?.vendorName
-                                    }
-                                    {...register("vendorName")}
-                                  />
-                                );
-                              }}
-                            />
-                          </div>
                           <div className="w-full md:w-1/3">
                             <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
                               Supplier information
@@ -351,40 +324,6 @@ const SupplierInvoiceView = () => {
                                       supplierInvoiceData?.supplierName
                                     }
                                     {...register("supplierName")}
-                                  />
-                                );
-                              }}
-                            />
-                            <Controller
-                              name="supplierAddress"
-                              control={control}
-                              render={() => {
-                                return (
-                                  <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
-                                    type="text"
-                                    placeholder="Supplier Address"
-                                    defaultValue={
-                                      supplierInvoiceData?.supplierAddress
-                                    }
-                                    {...register("supplierAddress")}
-                                  />
-                                );
-                              }}
-                            />
-                            <Controller
-                              name="supplierPhone"
-                              control={control}
-                              render={() => {
-                                return (
-                                  <input
-                                    className="mb-1 w-full rounded border-2 border-gray-200 px-1 py-2 leading-tight focus:border-blue-500 focus:outline-none"
-                                    type="text"
-                                    placeholder="Supplier Phone"
-                                    defaultValue={
-                                      supplierInvoiceData?.supplierPhone
-                                    }
-                                    {...register("supplierPhone")}
                                   />
                                 );
                               }}

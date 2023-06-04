@@ -98,7 +98,7 @@ const CreateButton = ({
                       : ""
                   }`}
                   id="expectedBudget"
-                  defaultValue={Math.floor(Math.random() * 100000).toString()}
+                  defaultValue={0}
                   {...register("expectedBudget", {
                     required: true,
                     valueAsNumber: true,
@@ -121,7 +121,7 @@ const CreateButton = ({
                       : ""
                   }`}
                   id="costsIncurred"
-                  defaultValue={Math.floor(Math.random() * 100000).toString()}
+                  defaultValue={0}
                   {...register("costsIncurred", {
                     required: true,
                     valueAsNumber: true,

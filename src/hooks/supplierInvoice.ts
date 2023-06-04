@@ -25,10 +25,7 @@ export const useCreateSupplierInvoice = () => {
               id: nanoid(),
               invoiceNo: values.invoiceNo,
               invoiceDate: values.invoiceDate,
-              vendorName: values.vendorName,
               supplierName: values.supplierName,
-              supplierAddress: values.supplierAddress,
-              supplierPhone: values.supplierPhone,
               subtotal: values.subtotal,
               taxes: values.taxes,
               discount: values.discount,
@@ -156,10 +153,7 @@ export const useUpdateSupplierInvoice = ({
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = values.invoiceNo;
                 updatedSupplierInvoice.invoiceDate = values.invoiceDate;
-                updatedSupplierInvoice.vendorName = values.vendorName;
                 updatedSupplierInvoice.supplierName = values.supplierName;
-                updatedSupplierInvoice.supplierAddress = values.supplierAddress;
-                updatedSupplierInvoice.supplierPhone = values.supplierPhone;
                 updatedSupplierInvoice.subtotal = values.subtotal;
                 updatedSupplierInvoice.taxes = values.taxes;
                 updatedSupplierInvoice.discount = values.discount;
@@ -208,10 +202,7 @@ export const useUpdateSupplierInvoice = ({
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = values.invoiceNo;
                 updatedSupplierInvoice.invoiceDate = values.invoiceDate;
-                updatedSupplierInvoice.vendorName = values.vendorName;
                 updatedSupplierInvoice.supplierName = values.supplierName;
-                updatedSupplierInvoice.supplierAddress = values.supplierAddress;
-                updatedSupplierInvoice.supplierPhone = values.supplierPhone;
                 updatedSupplierInvoice.subtotal = values.subtotal;
                 updatedSupplierInvoice.taxes = values.taxes;
                 updatedSupplierInvoice.discount = values.discount;
