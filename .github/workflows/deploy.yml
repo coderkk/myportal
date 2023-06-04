@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Deploy
+      - name: Prisma generate
         run: |
           npx prisma generate
-          npx sst deploy --prod
+          npx sst deploy --stage prod
