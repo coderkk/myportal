@@ -1,7 +1,7 @@
 import type { SupplierInvoiceItem as PrismaSupplierInvoiceItem } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type BaseSyntheticEvent } from "react";
-import { useForm } from "react-hook-form";
+import { FieldError, FieldErrorsImpl, Merge, useForm } from "react-hook-form";
 
 export type SupplierInvoiceItem = Omit<
   PrismaSupplierInvoiceItem,
@@ -70,6 +70,36 @@ const InvoiceItem = ({
     }
   };
   const [open, setOpen] = useState(false);
+
+  const getInputClasses = (
+    isError: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined
+  ) => {
+    return `peer h-full w-full rounded-[6px] border border-slate-300 border-t-transparent bg-transparent px-3 py-2.5
+                    font-sans placeholder-slate-300 placeholder-opacity-0 outline outline-0
+                    transition-all  focus:border-2
+                    focus:border-blue-500 focus:border-t-transparent focus:outline-0 ${
+                      isError
+                        ? "border-red-500  placeholder-shown:border placeholder-shown:border-red-500 placeholder-shown:border-t-red-500 focus:border-red-500 "
+                        : "placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300 "
+                    }`;
+  };
+
+  const getLabelClasses = (
+    isError: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined
+  ) => {
+    return `before:content[' '] after:content[' '] pointer-events-none absolute -top-1.5 left-0 flex h-full w-full select-none text-[11px] font-normal
+                    leading-tight transition-all before:pointer-events-none before:mr-1 before:mt-[6.5px] before:box-border before:block
+                    before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-l before:border-t before:border-slate-300 before:transition-all after:pointer-events-none
+                    after:ml-1 after:mt-[6.5px] after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-r after:border-t
+                    after:border-slate-300 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75]
+                    peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:font-medium
+                    peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:before:border-l-2 peer-focus:before:border-t-2 peer-focus:before:border-blue-500
+                    peer-focus:after:border-r-2 peer-focus:after:border-t-2 peer-focus:after:border-blue-500 ${
+                      isError
+                        ? "border-red-500 text-red-500 peer-placeholder-shown:text-red-500 peer-focus:text-red-500 peer-focus:before:border-red-500 peer-focus:after:border-red-500"
+                        : "text-slate-600 peer-placeholder-shown:text-slate-600"
+                    }`;
+  };
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
@@ -92,69 +122,79 @@ const InvoiceItem = ({
           <form>
             <fieldset className="mb-4 mt-4 gap-3 sm:mb-7 sm:flex ">
               <div className="flex flex-1 flex-col gap-3">
-                <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.description
-                      ? "border-red-400  focus:border-red-400 "
-                      : ""
-                  }`}
-                  id="description"
-                  placeholder="Description"
-                  {...register("description", { required: true })}
-                />
-                <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.quantity
-                      ? "border-red-400  focus:border-red-400 "
-                      : ""
-                  }`}
-                  type="number"
-                  step="0.01"
-                  id="quantity"
-                  placeholder="Quantity"
-                  {...register("quantity", {
-                    required: true,
-                    valueAsNumber: true,
-                  })}
-                />
-                <input
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.unit ? "border-red-400  focus:border-red-400 " : ""
-                  }`}
-                  id="unit"
-                  placeholder="Unit"
-                  {...register("unit", { required: true })}
-                />
-                <input
-                  type="number"
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.unitPrice
-                      ? "border-red-400  focus:border-red-400 "
-                      : ""
-                  }`}
-                  id="unitPrice"
-                  step="0.01"
-                  placeholder="Unit price"
-                  {...register("unitPrice", {
-                    required: true,
-                    valueAsNumber: true,
-                  })}
-                />
-                <input
-                  type="number"
-                  className={`mb-3 h-10 w-full rounded-lg border border-gray-300 px-4 py-0 text-center focus:border-blue-300 focus:outline-none sm:mb-0 ${
-                    errors.totalPrice
-                      ? "border-red-400  focus:border-red-400 "
-                      : ""
-                  }`}
-                  id="totalPrice"
-                  step="0.01"
-                  placeholder="Total price"
-                  {...register("totalPrice", {
-                    required: true,
-                    valueAsNumber: true,
-                  })}
-                />
+                <div className="relative mb-2 flex flex-col justify-between gap-5">
+                  <input
+                    autoFocus={true}
+                    autoComplete="off"
+                    type="text"
+                    className={getInputClasses(errors.description)}
+                    id="description"
+                    placeholder="not used"
+                    {...register("description", { required: true })}
+                  />
+                  <label className={getLabelClasses(errors.description)}>
+                    {"Description"}
+                  </label>
+                </div>
+                <div className="relative mb-2 flex flex-col justify-between gap-5">
+                  <input
+                    className={getInputClasses(errors.quantity)}
+                    type="number"
+                    step="0.01"
+                    id="quantity"
+                    placeholder="Quantity"
+                    {...register("quantity", {
+                      required: true,
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <label className={getLabelClasses(errors.quantity)}>
+                    {"Quantity"}
+                  </label>
+                </div>
+                <div className="relative mb-2 flex flex-col justify-between gap-5">
+                  <input
+                    className={getInputClasses(errors.unit)}
+                    id="unit"
+                    placeholder="Unit"
+                    {...register("unit", { required: true })}
+                  />
+                  <label className={getLabelClasses(errors.unit)}>
+                    {"Unit"}
+                  </label>
+                </div>
+                <div className="relative mb-2 flex flex-col justify-between gap-5">
+                  <input
+                    className={getInputClasses(errors.unitPrice)}
+                    type="number"
+                    id="unitPrice"
+                    step="0.01"
+                    placeholder="Unit price"
+                    {...register("unitPrice", {
+                      required: true,
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <label className={getLabelClasses(errors.unitPrice)}>
+                    {"Unit Price"}
+                  </label>
+                </div>
+                <div className="relative mb-2 flex flex-col justify-between gap-5">
+                  <input
+                    className={getInputClasses(errors.totalPrice)}
+                    type="number"
+                    id="totalPrice"
+                    step="0.01"
+                    placeholder="Total price"
+                    {...register("totalPrice", {
+                      required: true,
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <label className={getLabelClasses(errors.totalPrice)}>
+                    {"Total Price"}
+                  </label>
+                </div>
               </div>
             </fieldset>
             {errors.description && (
