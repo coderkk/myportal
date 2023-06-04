@@ -28,10 +28,6 @@ const professionalRoles = [
   { label: "Site Administrator", value: "SITE_ADMIN" },
 ];
 
-console.log(
-  professionalRoles.map((professionalRole) => professionalRole.value)
-);
-
 const professionalRolesValues = [
   "ACCOUNTANT",
   "DOCUMENT_CONTROLLER",

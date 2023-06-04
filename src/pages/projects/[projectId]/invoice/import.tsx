@@ -108,7 +108,6 @@ const InvoiceImportPage = () => {
         invoiceData.fileId = fileId;
         createSupplierInvoice({
           ...invoiceData,
-          budgetId: invoiceData?.budgetId || "", // PLANETSCALE FIX
           projectId: projectId,
         });
         void router.push("/projects/" + projectId + "/invoice");

@@ -63,7 +63,6 @@ export const PrimaryFeatures = () => {
         alt=""
         width={2245}
         height={1636}
-        unoptimized
       />
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
@@ -137,7 +136,6 @@ export const PrimaryFeatures = () => {
                         width={500}
                         height={500}
                         alt=""
-                        unoptimized
                       />
                     </div>
                   </Tab.Panel>

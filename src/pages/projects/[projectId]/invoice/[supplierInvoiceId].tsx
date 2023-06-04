@@ -77,7 +77,6 @@ const SupplierInvoiceView = () => {
     updateSupplierInvoice({
       ...data,
       projectId: projectId,
-      budgetId: data.budgetId || "", // PLANETSCALE FIX
       supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");
@@ -110,8 +109,6 @@ const SupplierInvoiceView = () => {
       // to do anything here other than catch the error.
     }
   };
-
-  console.log(supplierInvoiceData?.budgetId);
 
   return (
     <SessionAuth>

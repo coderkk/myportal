@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-arm64-openssl-1.0.x"]
 }
 
 datasource db {
@@ -327,8 +328,8 @@ model SupplierInvoice {
     supplierInvoiceItems SupplierInvoiceItem[]
     projectId            String
     project              Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    budget               Budget?               @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-    budgetId             String? // PLANETSCALE FIX
+    budget               Budget                @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+    budgetId             String
     createdBy            User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
     createdById          String
     createdAt            DateTime              @default(now())

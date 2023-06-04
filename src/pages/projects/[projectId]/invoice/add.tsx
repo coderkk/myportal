@@ -58,8 +58,6 @@ const AddInvoicePage = ({}) => {
     values: invoiceData,
   });
 
-  console.log(errors);
-
   const onSubmit = (
     data: SupplierInvoiceWithItems,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
@@ -69,7 +67,6 @@ const AddInvoicePage = ({}) => {
     createSupplierInvoice({
       ...data,
       projectId: projectId,
-      budgetId: data?.budgetId || "", // PLANETSCALE FIX
       supplierInvoiceItems: supplierInvoiceItems,
     });
     void router.push("/projects/" + projectId + "/invoice/");

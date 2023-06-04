@@ -76,39 +76,103 @@ export default function SelectList({
                 {noResultsText}
               </div>
             ) : (
-              filteredOptions.map((option) => (
-                <Combobox.Option
-                  key={option.value}
-                  className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? "bg-blue-600 text-white" : "text-gray-900"
-                    }`
-                  }
-                  value={option}
-                >
-                  {({ selected, active }) => (
-                    <>
-                      <span
-                        className={`block truncate ${
-                          selected ? "font-medium" : "font-normal"
-                        }`}
-                      >
-                        {option.label}
-                      </span>
-                      {selected ? (
-                        <span
-                          className={classNames(
-                            active ? "text-white" : "text-blue-600",
-                            "absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"
-                          )}
-                        >
-                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                        </span>
-                      ) : null}
-                    </>
-                  )}
-                </Combobox.Option>
-              ))
+              filteredOptions
+                // .map((option) => {
+                //   const newOption = structuredClone(option);
+                //   newOption.label = newOption.label.replace(
+                //     new RegExp(query, "gi"),
+                //     (text) => {
+                //       return `<span class="font-semibold">${text}</span>`;
+                //     }
+                //   );
+                //   return newOption;
+                // })
+                .map((option) => (
+                  <Combobox.Option
+                    key={option.value}
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                        active ? "bg-blue-600 text-white" : "text-gray-900"
+                      }`
+                    }
+                    value={option}
+                  >
+                    {({ selected, active }) => {
+                      let node;
+                      if (query !== "") {
+                        const unMatchedParts = option.label.split(
+                          new RegExp(
+                            query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), // Escape regex characters https://stackoverflow.com/a/6969486
+                            "gi"
+                          )
+                        );
+                        const firstPart = unMatchedParts[0];
+                        const remainingParts = unMatchedParts
+                          .slice(1)
+                          .join(query);
+                        console.log(unMatchedParts, firstPart, remainingParts);
+                        node = (
+                          <>
+                            {firstPart && (
+                              <span
+                                className={` ${
+                                  selected ? "font-medium" : "font-normal"
+                                }`}
+                              >
+                                {firstPart}
+                              </span>
+                            )}
+                            <span
+                              className={classNames(
+                                active ? "bg-yellow-600" : "bg-yellow-300",
+                                selected ? "font-medium" : "font-normal"
+                              )}
+                            >
+                              {query}
+                            </span>
+                            {remainingParts && (
+                              <span
+                                className={`truncate ${
+                                  selected ? "font-medium" : "font-normal"
+                                }`}
+                              >
+                                {remainingParts}
+                              </span>
+                            )}
+                          </>
+                        );
+                      } else {
+                        node = (
+                          <span
+                            className={`block truncate ${
+                              selected ? "font-medium" : "font-normal"
+                            }`}
+                          >
+                            {option.label}
+                          </span>
+                        );
+                      }
+                      return (
+                        <>
+                          {node}
+                          {selected ? (
+                            <span
+                              className={classNames(
+                                active ? "text-white" : "text-blue-600",
+                                "absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"
+                              )}
+                            >
+                              <CheckIcon
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
+                            </span>
+                          ) : null}
+                        </>
+                      );
+                    }}
+                  </Combobox.Option>
+                ))
             )}
           </Combobox.Options>
         </Transition>

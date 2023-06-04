@@ -135,24 +135,19 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .input(getSupplierInvoiceSchema)
     .query(async ({ ctx, input }) => {
       return await trycatch({
-        fn: async () => {
-          const supplierInvoice =
-            await ctx.prisma.supplierInvoice.findUniqueOrThrow({
-              where: {
-                id: input.supplierInvoiceId,
-              },
-              include: {
-                supplierInvoiceItems: {
-                  orderBy: {
-                    createdAt: "desc",
-                  },
+        fn: () => {
+          return ctx.prisma.supplierInvoice.findUniqueOrThrow({
+            where: {
+              id: input.supplierInvoiceId,
+            },
+            include: {
+              supplierInvoiceItems: {
+                orderBy: {
+                  createdAt: "desc",
                 },
               },
-            });
-          return {
-            ...supplierInvoice,
-            budgetId: supplierInvoice.budgetId || "", // PLANETSCALE FIX
-          };
+            },
+          });
         },
         errorMessages: ["Failed to get supplier invoice"],
       })();

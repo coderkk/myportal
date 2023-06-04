@@ -356,7 +356,6 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
               alt="Your Company"
               width={32}
               height={32}
-              unoptimized={true}
             />
           </div>
           <nav className="flex flex-1 flex-col">
