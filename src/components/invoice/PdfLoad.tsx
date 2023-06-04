@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
 import { useExtractInvoiceInfo } from "../../hooks/gpt";
 import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/import";
-import { getPDFText, loadFileObject, parseData } from "../../utils/pdfparser";
+import { extractTextFromPDFDocumentProxy, extractTextFromFileObject, parseData } from "../../utils/pdfparser";
 import Spinner from "../common/Spinner";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
@@ -54,7 +54,7 @@ const PdfLoad = forwardRef(({ onData }: PdfLoadProps, ref) => {
   };
 
   const parseInvoice = async (pdf: PDFDocumentProxy) => {
-    const pdfText = await getPDFText(pdf);
+    const pdfText = await extractTextFromPDFDocumentProxy(pdf);
     try {
       const data = await extractInvoiceInfo({ inputText: pdfText });
       const supplierInvoiceItems = data.supplierInvoiceItems;
@@ -118,7 +118,7 @@ const PdfLoad = forwardRef(({ onData }: PdfLoadProps, ref) => {
       ) {
         throw new Error("Invalid document type");
       } else {
-        const text = await loadFileObject(file);
+        const text = await extractTextFromFileObject(file);
         if (typeof text == "string") {
           const data = parseData(text);
           if (!data) {

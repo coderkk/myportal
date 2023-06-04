@@ -13,16 +13,16 @@ import type { SupplierInvoiceWithItems } from "../pages/projects/[projectId]/inv
 
 GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
 
-export const getPDFText = async (pdf: PDFDocumentProxy) => {
+export const extractTextFromPDFDocumentProxy = async (pdf: PDFDocumentProxy) => {
   const pageTextPromises = [];
   for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-    pageTextPromises.push(getPageText(pdf, pageNumber));
+    pageTextPromises.push(extractTextFromPDFPageProxy(pdf, pageNumber));
   }
   const pageTexts = await Promise.all(pageTextPromises);
   return pageTexts.join("\n");
 };
 
-const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
+const extractTextFromPDFPageProxy = async (pdf: PDFDocumentProxy, pageNumber: number) => {
   const page = await pdf.getPage(pageNumber);
   const pageText = await page.getTextContent();
   return pageText.items
@@ -37,7 +37,7 @@ const getPageText = async (pdf: PDFDocumentProxy, pageNumber: number) => {
     .join("");
 };
 
-export const loadFileObject = (source: File) => {
+export const extractTextFromFileObject = (source: File) => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
     fileReader.onload = async () => {
@@ -47,7 +47,7 @@ export const loadFileObject = (source: File) => {
       } else {
         const typedarray = new Uint8Array(result);
         try {
-          const text = await loadFilename(typedarray);
+          const text = await extractTextFromFilename(typedarray);
           resolve(text);
         } catch (error) {
           reject(error);
@@ -59,13 +59,13 @@ export const loadFileObject = (source: File) => {
   });
 };
 
-export const loadFilename = async (
+export const extractTextFromFilename = async (
   source: string | URL | TypedArray | ArrayBuffer | DocumentInitParameters
 ) => {
   const loadingTask = pdfjsLib.getDocument(source);
   try {
     const pdfDocumentProxy = await loadingTask.promise;
-    const pdfText = getPDFText(pdfDocumentProxy);
+    const pdfText = extractTextFromPDFDocumentProxy(pdfDocumentProxy);
     return pdfText;
   } catch (error) {
     throw error;
