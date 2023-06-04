@@ -57,4 +57,4 @@ jobs:
       - name: Prisma generate
         run: |
           npx prisma generate
-          npx sst deploy --stage prod
+          NODE_ENV=production npx sst deploy --stage prod
