@@ -56,4 +56,5 @@ jobs:
       - name: Deploy
         run: |
           npx prisma generate
+          npx sst telemetry disable
           NODE_ENV=production npx sst deploy --stage prod
