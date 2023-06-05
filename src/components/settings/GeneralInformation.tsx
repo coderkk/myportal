@@ -174,7 +174,9 @@ const GeneralInformation = ({
                     selected={
                       selectedPlan || { value: "No plan", label: "No plan" }
                     }
-                    onChange={setSelectedPlan}
+                    onChange={(e) => {
+                      if (e) setSelectedPlan(e);
+                    }}
                     disabled={!isCreator}
                     options={plans}
                   />
@@ -281,7 +283,9 @@ const GeneralInformation = ({
                             label: "Accountant",
                           }
                         }
-                        onChange={setSelectedProfessionalRole}
+                        onChange={(e) => {
+                          if (e) setSelectedProfessionalRole(e);
+                        }}
                         disabled={!isCreator}
                         options={professionalRoles}
                       />

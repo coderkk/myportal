@@ -319,7 +319,7 @@ model SupplierInvoice {
     taxes                Float                 @default(0)
     discount             Float                 @default(0)
     grandTotal           Float                 @default(0)
-    fileId               String                @default("")
+    fileId               String?
     paid                 Boolean               @default(false)
     approved             Boolean               @default(false)
     supplierInvoiceItems SupplierInvoiceItem[]

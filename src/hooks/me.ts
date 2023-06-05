@@ -46,10 +46,14 @@ export const useGetMyProfessionalRole = ({
 };
 
 export const useUpdateMyProfessionalRole = () => {
+  const utils = api.useContext();
   const { mutate: updateMyProfessionalRole } =
     api.me.updateMyProfessionalRole.useMutation({
       onSuccess: () => {
         toast.success("Updated your professional role");
+      },
+      async onSettled() {
+        await utils.me.getMyProfessionalRole.invalidate();
       },
     });
   return {

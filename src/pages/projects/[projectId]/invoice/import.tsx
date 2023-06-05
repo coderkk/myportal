@@ -15,18 +15,22 @@ import { useGetBudgets } from "../../../../hooks/budget";
 
 import PdfLoad from "../../../../components/invoice/PdfLoad";
 
-import type { SupplierInvoice } from "@prisma/client";
 import SelectList from "../../../../components/common/SelectList";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 
-type _SupplierInvoiceWithItems = SupplierInvoice & {
+export type SupplierInvoiceWithItems = {
+  id: string;
+  invoiceNo: string;
+  invoiceDate: Date;
+  supplierName: string;
+  subtotal: number;
+  taxes: number;
+  discount: number;
+  grandTotal: number;
+  fileId: string | undefined;
+  budgetId: string;
   supplierInvoiceItems: SupplierInvoiceItem[];
 };
-
-export type SupplierInvoiceWithItems = Omit<
-  _SupplierInvoiceWithItems,
-  "paid" | "approved" | "createdById" | "createdAt" | "updatedAt" | "projectId"
->;
 
 type LoadPDFHandle = {
   handleLoadClick: () => void;
@@ -260,12 +264,13 @@ const InvoiceImportPage = () => {
                           <SelectList
                             selected={selected}
                             options={budgetOptions}
-                            onChange={(option) =>
-                              setInvoiceData({
-                                ...invoiceData,
-                                budgetId: option.value,
-                              })
-                            }
+                            onChange={(option) => {
+                              if (option)
+                                setInvoiceData({
+                                  ...invoiceData,
+                                  budgetId: option.value,
+                                });
+                            }}
                           />
                         </div>
                       </div>

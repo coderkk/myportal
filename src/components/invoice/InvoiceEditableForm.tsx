@@ -1,4 +1,3 @@
-import type { SupplierInvoice } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import classNames from "classnames";
 import { parse } from "date-fns";
@@ -10,6 +9,7 @@ import ReactDatePicker from "react-datepicker";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { useGetBudgets } from "../../hooks/budget";
+import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/import";
 import SelectList from "../common/SelectList";
 import Spinner from "../common/Spinner";
 import type { SupplierInvoiceItem } from "./InvoiceItem";
@@ -17,29 +17,29 @@ import InvoiceItem from "./InvoiceItem";
 
 const InvoiceEditableForm = ({
   onSubmit,
-  supplierInvoiceData,
+  fileId,
   handleDownloadFile,
   useFormReturn,
   supplierInvoiceItems,
   setSupplierInvoiceItems,
   onInvoiceUpdate,
   removeInvoiceItem,
+  isLoading,
 }: {
   onSubmit: (
-    data: SupplierInvoice,
+    data: SupplierInvoiceWithItems,
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => void;
-  supplierInvoiceData?: SupplierInvoice & {
-    supplierInvoiceItems: SupplierInvoiceItem[];
-  };
-  handleDownloadFile: () => Promise<void>;
-  useFormReturn: UseFormReturn<SupplierInvoice, unknown>;
+  fileId?: string;
+  handleDownloadFile?: () => Promise<void>;
+  useFormReturn: UseFormReturn<SupplierInvoiceWithItems, unknown>;
   supplierInvoiceItems?: SupplierInvoiceItem[];
   setSupplierInvoiceItems: Dispatch<
     SetStateAction<SupplierInvoiceItem[] | undefined>
   >;
   onInvoiceUpdate: (invoiceItem: SupplierInvoiceItem, index: number) => void;
   removeInvoiceItem: (index: number) => void;
+  isLoading?: boolean;
 }) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
@@ -58,6 +58,15 @@ const InvoiceEditableForm = ({
     searchKey: "",
   });
 
+  const budgetOptions = budgets.map((budget) => ({
+    value: budget.id,
+    label: `${budget.costCode} (${budget.description})`,
+  }));
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
@@ -66,14 +75,14 @@ const InvoiceEditableForm = ({
             className="m-8"
             onSubmit={(e) => void handleSubmit(onSubmit)(e)}
           >
-            {supplierInvoiceData?.fileId && (
+            {fileId && (
               <div className="text-right">
                 <button
                   type="button"
                   className="inline-flex items-center rounded bg-gray-300 px-4 py-2 font-bold text-gray-800 hover:bg-gray-400"
                   onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.preventDefault();
-                    void handleDownloadFile();
+                    if (handleDownloadFile) void handleDownloadFile();
                   }}
                 >
                   <svg
@@ -132,9 +141,7 @@ const InvoiceEditableForm = ({
                       )}
                       type="text"
                       placeholder="Invoice No"
-                      defaultValue={supplierInvoiceData?.invoiceNo}
-                      {...(register("invoiceNo"),
-                      {
+                      {...register("invoiceNo", {
                         required: true,
                       })}
                     />
@@ -197,23 +204,19 @@ const InvoiceEditableForm = ({
                       control={control}
                       render={({ field }) => {
                         const { onChange, value } = field;
-                        const budgetOptions = budgets.map((budget) => ({
-                          value: budget.id,
-                          label: `${budget.costCode} (${budget.description})`,
-                        }));
-                        const selected = budgetOptions.find(
+                        const selected = budgetOptions?.find(
                           (budgetOption) => budgetOption.value == value
                         );
-                        if (selected)
-                          return (
-                            <SelectList
-                              selected={selected}
-                              options={budgetOptions}
-                              onChange={(option) => onChange(option.value)}
-                              error={errors.budgetId ? true : false}
-                            />
-                          );
-                        return <Spinner />;
+                        return (
+                          <SelectList
+                            selected={selected}
+                            options={budgetOptions}
+                            onChange={(option) =>
+                              option ? onChange(option.value) : null
+                            }
+                            error={errors.budgetId ? true : false}
+                          />
+                        );
                       }}
                     />
                   </div>
@@ -234,7 +237,6 @@ const InvoiceEditableForm = ({
                   }`}
                   type="text"
                   placeholder="Supplier Name"
-                  defaultValue={supplierInvoiceData?.supplierName}
                   {...register("supplierName", {
                     required: true,
                   })}
@@ -374,7 +376,6 @@ const InvoiceEditableForm = ({
                     type="number"
                     step="0.01"
                     placeholder="Subtotal"
-                    defaultValue={supplierInvoiceData?.subtotal}
                     {...register("subtotal", {
                       valueAsNumber: true,
                       required: true,
@@ -396,7 +397,6 @@ const InvoiceEditableForm = ({
                     type="number"
                     step="0.01"
                     placeholder="Discount"
-                    defaultValue={supplierInvoiceData?.discount}
                     {...register("discount", {
                       valueAsNumber: true,
                       required: true,
@@ -418,7 +418,6 @@ const InvoiceEditableForm = ({
                     type="number"
                     step="0.01"
                     placeholder="Taxes"
-                    defaultValue={supplierInvoiceData?.taxes}
                     {...register("taxes", {
                       valueAsNumber: true,
                       required: true,
@@ -442,7 +441,6 @@ const InvoiceEditableForm = ({
                       type="number"
                       step="0.01"
                       placeholder="Grand Amount"
-                      defaultValue={supplierInvoiceData?.grandTotal}
                       {...register("grandTotal", {
                         valueAsNumber: true,
                         required: true,
