@@ -23,27 +23,31 @@ import {
 
 const SupplierInvoiceView = () => {
   const router = useRouter();
-  const hiddenAnchorRef = useRef<HTMLAnchorElement | null>(null);
   const projectId = router.query.projectId as string;
   const supplierInvoiceId = router.query.supplierInvoiceId as string;
+  const hiddenAnchorRef = useRef<HTMLAnchorElement | null>(null);
 
   const [supplierInvoiceItems, setSupplierInvoiceItems] = useState<
     SupplierInvoiceItem[]
   >([]);
+
   const { supplierInvoiceData, isLoading } = useGetSupplierInvoice({
     supplierInvoiceId: supplierInvoiceId,
     onSucess: (supplierInvoiceItems: SupplierInvoiceItem[]) =>
       setSupplierInvoiceItems(supplierInvoiceItems),
   });
+
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
   });
+
   const { budgets } = useGetBudgets({
     projectId: projectId,
-    pageSize: 100,
+    pageSize: undefined,
     pageIndex: 0,
     searchKey: "",
   });
+
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
 
   const onInvoiceUpdate = (invoiceItem: SupplierInvoiceItem, index: number) => {

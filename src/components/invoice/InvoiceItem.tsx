@@ -1,7 +1,8 @@
 import type { SupplierInvoiceItem as PrismaSupplierInvoiceItem } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type BaseSyntheticEvent } from "react";
-import { FieldError, FieldErrorsImpl, Merge, useForm } from "react-hook-form";
+import type { FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 export type SupplierInvoiceItem = Omit<
   PrismaSupplierInvoiceItem,
@@ -100,6 +101,9 @@ const InvoiceItem = ({
                         : "text-slate-600 peer-placeholder-shown:text-slate-600"
                     }`;
   };
+
+  console.log("rendering");
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
