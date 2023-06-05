@@ -37,7 +37,6 @@ export const serverSchema = z.object({
   EMAIL_SERVER_PASSWORD: z.string(),
   EMAIL_SERVER_HOST: z.string(),
   EMAIL_SERVER_PORT: z.string(),
-  TEST_USER_ID: z.string(),
   OPENAI_API_KEY: z.string(),
 });
 

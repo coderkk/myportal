@@ -97,8 +97,6 @@ const InvoiceItem = ({
                     }`;
   };
 
-  console.log("rendering");
-
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>

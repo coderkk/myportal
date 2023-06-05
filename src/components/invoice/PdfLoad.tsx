@@ -7,7 +7,11 @@ import toast from "react-hot-toast";
 import { pdfjs } from "react-pdf";
 import { useExtractInvoiceInfo } from "../../hooks/gpt";
 import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/import";
-import { extractTextFromPDFDocumentProxy, extractTextFromFileObject, parseData } from "../../utils/pdfparser";
+import {
+  extractTextFromFileObject,
+  extractTextFromPDFDocumentProxy,
+  parseData,
+} from "../../utils/pdfparser";
 import Spinner from "../common/Spinner";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/js/pdf.worker.min.js";
