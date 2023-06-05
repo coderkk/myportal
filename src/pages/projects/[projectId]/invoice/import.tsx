@@ -61,7 +61,7 @@ const InvoiceImportPage = () => {
 
   const { budgets } = useGetBudgets({
     projectId: projectId,
-    pageSize: 100,
+    pageSize: undefined,
     pageIndex: 0,
     searchKey: "",
   });
