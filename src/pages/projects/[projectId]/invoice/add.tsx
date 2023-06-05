@@ -1,16 +1,10 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { parse } from "date-fns";
-import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
 import { useState, type BaseSyntheticEvent } from "react";
-import ReactDatePicker from "react-datepicker";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
-import SelectList from "../../../../components/common/SelectList";
+import InvoiceEditableForm from "../../../../components/invoice/InvoiceEditableForm";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
-import InvoiceItem from "../../../../components/invoice/InvoiceItem";
-import { useGetBudgets } from "../../../../hooks/budget";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
 import type { SupplierInvoiceWithItems } from "./import";
 
@@ -18,41 +12,26 @@ const AddInvoicePage = ({}) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
-  const [invoiceData] = useState<SupplierInvoiceWithItems>({
-    id: "",
-    invoiceNo: "",
-    invoiceDate: new Date(),
-    supplierName: "",
-    subtotal: 0,
-    taxes: 0,
-    discount: 0,
-    grandTotal: 0,
-    fileId: "",
-    budgetId: "",
-    supplierInvoiceItems: [],
-  });
-
   const [supplierInvoiceItems, setSupplierInvoiceItems] = useState<
     SupplierInvoiceItem[]
   >([]);
 
   const { createSupplierInvoice } = useCreateSupplierInvoice();
 
-  const { budgets } = useGetBudgets({
-    projectId: projectId,
-    pageSize: undefined,
-    pageIndex: 0,
-    searchKey: "",
-  });
-
-  const {
-    handleSubmit,
-    control,
-    register,
-    reset,
-    formState: { errors },
-  } = useForm<SupplierInvoiceWithItems>({
-    values: invoiceData,
+  const useFormReturn = useForm<SupplierInvoiceWithItems>({
+    values: {
+      id: "",
+      invoiceNo: "",
+      invoiceDate: new Date(),
+      supplierName: "",
+      subtotal: 0,
+      taxes: 0,
+      discount: 0,
+      grandTotal: 0,
+      fileId: "",
+      budgetId: "",
+      supplierInvoiceItems: [],
+    },
   });
 
   const onSubmit = (
@@ -60,7 +39,7 @@ const AddInvoicePage = ({}) => {
     e: BaseSyntheticEvent<object, unknown, unknown> | undefined
   ) => {
     e?.preventDefault();
-    reset();
+    useFormReturn.reset();
     createSupplierInvoice({
       ...data,
       projectId: projectId,
@@ -85,7 +64,7 @@ const AddInvoicePage = ({}) => {
     <SessionAuth>
       <PermissionToProject projectId={projectId}>
         <div className="pt-5">
-          <div className="px-4 sm:px-6 lg:px-8">
+          {/* <div className="px-4 sm:px-6 lg:px-8">
             <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
               <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-3 lg:gap-x-16">
                 <div className="col-span-3 mx-auto text-left lg:mx-0 lg:text-left">
@@ -508,7 +487,17 @@ const AddInvoicePage = ({}) => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+          <InvoiceEditableForm
+            onSubmit={onSubmit}
+            supplierInvoiceData={supplierInvoiceData}
+            handleDownloadFile={handleDownloadFile}
+            useFormReturn={useFormReturn}
+            supplierInvoiceItems={supplierInvoiceItems}
+            setSupplierInvoiceItems={setSupplierInvoiceItems}
+            onInvoiceUpdate={onInvoiceUpdate}
+            removeInvoiceItem={removeInvoiceItem}
+          />
         </div>
       </PermissionToProject>
     </SessionAuth>

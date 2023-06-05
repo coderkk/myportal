@@ -58,14 +58,6 @@ const InvoiceEditableForm = ({
     searchKey: "",
   });
 
-  //   const budgetOptions = budgets.map((budget) => ({
-  //     value: budget.id,
-  //     label: `${budget.costCode} (${budget.description})`,
-  //   }));
-  //   const selected = budgetOptions.find(
-  //     (budgetOption) => budgetOption.value == supplierInvoiceData?.budgetId
-  //   );
-
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
