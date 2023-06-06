@@ -15,18 +15,22 @@ import { useGetBudgets } from "../../../../hooks/budget";
 
 import PdfLoad from "../../../../components/invoice/PdfLoad";
 
-import type { SupplierInvoice } from "@prisma/client";
 import SelectList from "../../../../components/common/SelectList";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 
-type _SupplierInvoiceWithItems = SupplierInvoice & {
+export type SupplierInvoiceWithItems = {
+  id: string;
+  invoiceNo: string;
+  invoiceDate: Date;
+  supplierName: string;
+  subtotal: number;
+  taxes: number;
+  discount: number;
+  grandTotal: number;
+  fileId: string | undefined;
+  budgetId: string;
   supplierInvoiceItems: SupplierInvoiceItem[];
 };
-
-export type SupplierInvoiceWithItems = Omit<
-  _SupplierInvoiceWithItems,
-  "paid" | "approved" | "createdById" | "createdAt" | "updatedAt" | "projectId"
->;
 
 type LoadPDFHandle = {
   handleLoadClick: () => void;
@@ -49,10 +53,7 @@ const InvoiceImportPage = () => {
     id: "",
     invoiceNo: "",
     invoiceDate: new Date(),
-    vendorName: "",
     supplierName: "",
-    supplierAddress: "",
-    supplierPhone: "",
     subtotal: 0,
     taxes: 0,
     discount: 0,
@@ -64,7 +65,7 @@ const InvoiceImportPage = () => {
 
   const { budgets } = useGetBudgets({
     projectId: projectId,
-    pageSize: 100,
+    pageSize: undefined,
     pageIndex: 0,
     searchKey: "",
   });
@@ -108,7 +109,6 @@ const InvoiceImportPage = () => {
         invoiceData.fileId = fileId;
         createSupplierInvoice({
           ...invoiceData,
-          budgetId: invoiceData?.budgetId || "", // PLANETSCALE FIX
           projectId: projectId,
         });
         void router.push("/projects/" + projectId + "/invoice");
@@ -264,12 +264,13 @@ const InvoiceImportPage = () => {
                           <SelectList
                             selected={selected}
                             options={budgetOptions}
-                            onChange={(option) =>
-                              setInvoiceData({
-                                ...invoiceData,
-                                budgetId: option.value,
-                              })
-                            }
+                            onChange={(option) => {
+                              if (option)
+                                setInvoiceData({
+                                  ...invoiceData,
+                                  budgetId: option.value,
+                                });
+                            }}
                           />
                         </div>
                       </div>
@@ -277,19 +278,11 @@ const InvoiceImportPage = () => {
                   </div>
 
                   <div className="mb-8 flex flex-wrap justify-between">
-                    <div className="mb-2 w-full md:mb-0 md:w-1/3">
-                      <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                        Vendor name
-                      </label>
-                      <div>{invoiceData.vendorName}</div>
-                    </div>
                     <div className="w-full md:w-1/3">
                       <label className="mb-1 block text-sm font-bold uppercase tracking-wide text-gray-800">
-                        Supplier information
+                        Supplier name
                       </label>
                       <div>{invoiceData.supplierName}</div>
-                      <div>{invoiceData.supplierAddress}</div>
-                      <div>{invoiceData.supplierPhone}</div>
                     </div>
                   </div>
 

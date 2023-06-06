@@ -9,7 +9,7 @@ const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
 export const getBudgetsSchema = z.object({
   projectId: z.string(),
   searchKey: z.string(),
-  pageSize: z.number(),
+  pageSize: z.number().optional(),
   pageIndex: z.number(),
 });
 
@@ -58,7 +58,9 @@ export const budgetRouter = createTRPCRouter({
       return await trycatch({
         fn: async () => {
           if (input.searchKey === "") {
-            const skip = input.pageSize * input.pageIndex;
+            const skip = input.pageSize
+              ? input.pageSize * input.pageIndex
+              : undefined;
             const take = input.pageSize;
             const budgets = await ctx.prisma.budget.findMany({
               where: {
@@ -93,7 +95,9 @@ export const budgetRouter = createTRPCRouter({
               count: count,
             };
           } else {
-            const skip = input.pageSize * input.pageIndex;
+            const skip = input.pageSize
+              ? input.pageSize * input.pageIndex
+              : undefined;
             const take = input.pageSize;
             const budgets = await ctx.prisma.budget.findMany({
               where: {
@@ -140,7 +144,10 @@ export const budgetRouter = createTRPCRouter({
                 }
               });
             return {
-              budgets: transformBudgets.slice(skip, skip + take),
+              budgets:
+                skip && take
+                  ? transformBudgets.slice(skip, skip + take)
+                  : transformBudgets,
               count: transformBudgets.length,
             };
           }

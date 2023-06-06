@@ -356,7 +356,6 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
               alt="Your Company"
               width={32}
               height={32}
-              unoptimized={true}
             />
           </div>
           <nav className="flex flex-1 flex-col">
@@ -453,7 +452,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       </div>
 
       <div className="xl:pl-72">
-        <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
+        <div className="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
             <Logo className="h-10 w-auto" />
           </Link>

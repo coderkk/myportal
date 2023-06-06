@@ -1,7 +1,7 @@
 import type { SupplierInvoiceItem as PrismaSupplierInvoiceItem } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type BaseSyntheticEvent } from "react";
-import { FieldError, FieldErrorsImpl, Merge, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 export type SupplierInvoiceItem = Omit<
   PrismaSupplierInvoiceItem,
@@ -71,9 +71,7 @@ const InvoiceItem = ({
   };
   const [open, setOpen] = useState(false);
 
-  const getInputClasses = (
-    isError: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined
-  ) => {
+  const getInputClasses = (isError: boolean) => {
     return `peer h-full w-full rounded-[6px] border border-slate-300 border-t-transparent bg-transparent px-3 py-2.5
                     font-sans placeholder-slate-300 placeholder-opacity-0 outline outline-0
                     transition-all  focus:border-2
@@ -84,9 +82,7 @@ const InvoiceItem = ({
                     }`;
   };
 
-  const getLabelClasses = (
-    isError: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined
-  ) => {
+  const getLabelClasses = (isError: boolean) => {
     return `before:content[' '] after:content[' '] pointer-events-none absolute -top-1.5 left-0 flex h-full w-full select-none text-[11px] font-normal
                     leading-tight transition-all before:pointer-events-none before:mr-1 before:mt-[6.5px] before:box-border before:block
                     before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-l before:border-t before:border-slate-300 before:transition-all after:pointer-events-none
@@ -100,6 +96,7 @@ const InvoiceItem = ({
                         : "text-slate-600 peer-placeholder-shown:text-slate-600"
                     }`;
   };
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
@@ -127,18 +124,18 @@ const InvoiceItem = ({
                     autoFocus={true}
                     autoComplete="off"
                     type="text"
-                    className={getInputClasses(errors.description)}
+                    className={getInputClasses(!!errors.description)}
                     id="description"
                     placeholder="not used"
                     {...register("description", { required: true })}
                   />
-                  <label className={getLabelClasses(errors.description)}>
+                  <label className={getLabelClasses(!!errors.description)}>
                     {"Description"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(errors.quantity)}
+                    className={getInputClasses(!!errors.quantity)}
                     type="number"
                     step="0.01"
                     id="quantity"
@@ -148,24 +145,24 @@ const InvoiceItem = ({
                       valueAsNumber: true,
                     })}
                   />
-                  <label className={getLabelClasses(errors.quantity)}>
+                  <label className={getLabelClasses(!!errors.quantity)}>
                     {"Quantity"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(errors.unit)}
+                    className={getInputClasses(!!errors.unit)}
                     id="unit"
                     placeholder="Unit"
                     {...register("unit", { required: true })}
                   />
-                  <label className={getLabelClasses(errors.unit)}>
+                  <label className={getLabelClasses(!!errors.unit)}>
                     {"Unit"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(errors.unitPrice)}
+                    className={getInputClasses(!!errors.unitPrice)}
                     type="number"
                     id="unitPrice"
                     step="0.01"
@@ -175,13 +172,13 @@ const InvoiceItem = ({
                       valueAsNumber: true,
                     })}
                   />
-                  <label className={getLabelClasses(errors.unitPrice)}>
+                  <label className={getLabelClasses(!!errors.unitPrice)}>
                     {"Unit Price"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(errors.totalPrice)}
+                    className={getInputClasses(!!errors.totalPrice)}
                     type="number"
                     id="totalPrice"
                     step="0.01"
@@ -191,7 +188,7 @@ const InvoiceItem = ({
                       valueAsNumber: true,
                     })}
                   />
-                  <label className={getLabelClasses(errors.totalPrice)}>
+                  <label className={getLabelClasses(!!errors.totalPrice)}>
                     {"Total Price"}
                   </label>
                 </div>

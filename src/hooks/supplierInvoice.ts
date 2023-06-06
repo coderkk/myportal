@@ -25,10 +25,7 @@ export const useCreateSupplierInvoice = () => {
               id: nanoid(),
               invoiceNo: values.invoiceNo,
               invoiceDate: values.invoiceDate,
-              vendorName: values.vendorName,
               supplierName: values.supplierName,
-              supplierAddress: values.supplierAddress,
-              supplierPhone: values.supplierPhone,
               subtotal: values.subtotal,
               taxes: values.taxes,
               discount: values.discount,
@@ -109,17 +106,19 @@ export const useGetSupplierInvoice = ({
   supplierInvoiceId: string;
   onSucess: (supplierInvoiceItems: SupplierInvoiceItem[]) => void;
 }) => {
-  const { data, isLoading } = api.supplierInvoice.getSupplierInvoice.useQuery(
-    {
-      supplierInvoiceId: supplierInvoiceId,
-    },
-    {
-      onSuccess: (data) => onSucess(data.supplierInvoiceItems),
-    }
-  );
+  const { data, isLoading, isFetching } =
+    api.supplierInvoice.getSupplierInvoice.useQuery(
+      {
+        supplierInvoiceId: supplierInvoiceId,
+      },
+      {
+        onSuccess: (data) => onSucess(data.supplierInvoiceItems),
+      }
+    );
   return {
     supplierInvoiceData: data,
     isLoading: isLoading,
+    isFetching: isFetching,
   };
 };
 
@@ -156,10 +155,7 @@ export const useUpdateSupplierInvoice = ({
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = values.invoiceNo;
                 updatedSupplierInvoice.invoiceDate = values.invoiceDate;
-                updatedSupplierInvoice.vendorName = values.vendorName;
                 updatedSupplierInvoice.supplierName = values.supplierName;
-                updatedSupplierInvoice.supplierAddress = values.supplierAddress;
-                updatedSupplierInvoice.supplierPhone = values.supplierPhone;
                 updatedSupplierInvoice.subtotal = values.subtotal;
                 updatedSupplierInvoice.taxes = values.taxes;
                 updatedSupplierInvoice.discount = values.discount;
@@ -175,6 +171,29 @@ export const useUpdateSupplierInvoice = ({
               return newSupplierInvoices;
             } else {
               return oldSupplierInvoices;
+            }
+          }
+        );
+        utils.supplierInvoice.getSupplierInvoice.setData(
+          { supplierInvoiceId: values.id },
+          (oldSupplierInvoice) => {
+            if (oldSupplierInvoice) {
+              const newSupplierInvoice = { ...oldSupplierInvoice };
+              newSupplierInvoice.invoiceNo = values.invoiceNo;
+              newSupplierInvoice.invoiceDate = values.invoiceDate;
+              newSupplierInvoice.supplierName = values.supplierName;
+              newSupplierInvoice.subtotal = values.subtotal;
+              newSupplierInvoice.taxes = values.taxes;
+              newSupplierInvoice.discount = values.discount;
+              newSupplierInvoice.grandTotal = values.grandTotal;
+              newSupplierInvoice.fileId = values.fileId;
+              newSupplierInvoice.paid = false; // OU FIX
+              newSupplierInvoice.approved = false; // OU FIX
+              newSupplierInvoice.budgetId = values.budgetId;
+              newSupplierInvoice.updatedAt = new Date();
+              return newSupplierInvoice;
+            } else {
+              return oldSupplierInvoice;
             }
           }
         );
@@ -208,10 +227,7 @@ export const useUpdateSupplierInvoice = ({
               if (updatedSupplierInvoice) {
                 updatedSupplierInvoice.invoiceNo = values.invoiceNo;
                 updatedSupplierInvoice.invoiceDate = values.invoiceDate;
-                updatedSupplierInvoice.vendorName = values.vendorName;
                 updatedSupplierInvoice.supplierName = values.supplierName;
-                updatedSupplierInvoice.supplierAddress = values.supplierAddress;
-                updatedSupplierInvoice.supplierPhone = values.supplierPhone;
                 updatedSupplierInvoice.subtotal = values.subtotal;
                 updatedSupplierInvoice.taxes = values.taxes;
                 updatedSupplierInvoice.discount = values.discount;

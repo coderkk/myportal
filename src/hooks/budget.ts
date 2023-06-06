@@ -95,7 +95,7 @@ export const useGetBudgets = ({
   searchKey,
 }: {
   projectId: string;
-  pageSize: number;
+  pageSize?: number;
   pageIndex: number;
   searchKey: string;
 }) => {

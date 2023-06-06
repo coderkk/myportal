@@ -18,7 +18,7 @@ export default function SelectList({
   noResultsText = "Nothing found",
 }: {
   selected?: OptionItem;
-  onChange: (value: OptionItem) => void;
+  onChange: (value: OptionItem | null) => void;
   disabled?: boolean;
   options: OptionItem[];
   buttonClassName?: string;
@@ -35,9 +35,12 @@ export default function SelectList({
             .replace(/\s+/g, "")
             .includes(query.toLowerCase().replace(/\s+/g, ""))
         );
-
   return (
-    <Combobox value={selected} onChange={onChange} disabled={disabled}>
+    <Combobox
+      value={selected || null}
+      onChange={(option) => onChange(option)}
+      disabled={disabled}
+    >
       <div className="relative">
         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <Combobox.Button
@@ -50,7 +53,9 @@ export default function SelectList({
             <Combobox.Input
               className="w-full border-none text-sm leading-5 text-gray-900 outline-none focus:ring-0"
               onChange={(event) => setQuery(event.target.value)}
-              displayValue={(option: OptionItem) => option.label}
+              displayValue={(option: OptionItem) =>
+                option ? option.label : ""
+              }
               placeholder="Search..."
             />
             <ChevronUpDownIcon
@@ -86,27 +91,76 @@ export default function SelectList({
                   }
                   value={option}
                 >
-                  {({ selected, active }) => (
-                    <>
-                      <span
-                        className={`block truncate ${
-                          selected ? "font-medium" : "font-normal"
-                        }`}
-                      >
-                        {option.label}
-                      </span>
-                      {selected ? (
-                        <span
-                          className={classNames(
-                            active ? "text-white" : "text-blue-600",
-                            "absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"
+                  {({ selected, active }) => {
+                    let node;
+                    if (query !== "") {
+                      const unMatchedParts = option.label.split(
+                        new RegExp(
+                          query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), // Escape regex characters https://stackoverflow.com/a/6969486
+                          "gi"
+                        )
+                      );
+                      const firstPart = unMatchedParts[0];
+                      const remainingParts = unMatchedParts
+                        .slice(1)
+                        .join(query);
+                      node = (
+                        <>
+                          {firstPart && (
+                            <span
+                              className={` ${
+                                selected ? "font-medium" : "font-normal"
+                              }`}
+                            >
+                              {firstPart}
+                            </span>
                           )}
+                          <span
+                            className={classNames(
+                              active ? "bg-yellow-600" : "bg-yellow-300",
+                              selected ? "font-medium" : "font-normal"
+                            )}
+                          >
+                            {query}
+                          </span>
+                          {remainingParts && (
+                            <span
+                              className={`truncate ${
+                                selected ? "font-medium" : "font-normal"
+                              }`}
+                            >
+                              {remainingParts}
+                            </span>
+                          )}
+                        </>
+                      );
+                    } else {
+                      node = (
+                        <span
+                          className={`block truncate ${
+                            selected ? "font-medium" : "font-normal"
+                          }`}
                         >
-                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          {option.label}
                         </span>
-                      ) : null}
-                    </>
-                  )}
+                      );
+                    }
+                    return (
+                      <>
+                        {node}
+                        {selected ? (
+                          <span
+                            className={classNames(
+                              active ? "text-white" : "text-blue-600",
+                              "absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600"
+                            )}
+                          >
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    );
+                  }}
                 </Combobox.Option>
               ))
             )}

@@ -8,10 +8,7 @@ import { z } from "zod";
 export const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
   NODE_ENV: z.enum(["development", "test", "production"]),
-  NEXTAUTH_SECRET:
-    process.env.NODE_ENV === "production"
-      ? z.string().min(1)
-      : z.string().min(1).optional(),
+  NEXTAUTH_SECRET: z.string().min(1),
   NEXTAUTH_URL: z.preprocess(
     // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
     // Since NextAuth.js automatically uses the VERCEL_URL if present.
@@ -20,8 +17,8 @@ export const serverSchema = z.object({
     process.env.VERCEL ? z.string() : z.string().url()
   ),
   MY_AWS_S3_BUCKET_REGION: z.string(),
-  MY_AWS_ACCESS_KEY_ID: z.string(),
-  MY_AWS_SECRET_ACCESS_KEY: z.string(),
+  MY_AWS_S3_ACCESS_KEY_ID: z.string(),
+  MY_AWS_S3_SECRET_ACCESS_KEY: z.string(),
   DISCORD_CLIENT_ID: z.string(),
   DISCORD_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
@@ -40,7 +37,6 @@ export const serverSchema = z.object({
   EMAIL_SERVER_PASSWORD: z.string(),
   EMAIL_SERVER_HOST: z.string(),
   EMAIL_SERVER_PORT: z.string(),
-  TEST_USER_ID: z.string(),
   OPENAI_API_KEY: z.string(),
 });
 

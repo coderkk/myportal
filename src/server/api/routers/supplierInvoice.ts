@@ -6,15 +6,12 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 export const createSupplierInvoiceSchema = z.object({
   invoiceNo: z.string(),
   invoiceDate: z.date(),
-  vendorName: z.string(),
   supplierName: z.string(),
-  supplierAddress: z.string(),
-  supplierPhone: z.string(),
   subtotal: z.number(),
   taxes: z.number(),
   discount: z.number(),
   grandTotal: z.number(),
-  fileId: z.string(),
+  fileId: z.string().optional(),
   projectId: z.string(),
   budgetId: z.string(),
   supplierInvoiceItems: z.array(
@@ -44,15 +41,12 @@ export const updateSupplierInvoiceSchema = z.object({
   id: z.string(),
   invoiceNo: z.string(),
   invoiceDate: z.date(),
-  vendorName: z.string(),
   supplierName: z.string(),
-  supplierAddress: z.string(),
-  supplierPhone: z.string(),
   subtotal: z.number(),
   taxes: z.number(),
   discount: z.number(),
   grandTotal: z.number(),
-  fileId: z.string(),
+  fileId: z.string().optional(),
   projectId: z.string(),
   budgetId: z.string(),
   supplierInvoiceItems: z.array(
@@ -102,7 +96,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .input(getSupplierInvoicesSchema)
     .query(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
+        fn: async () => {
           if (
             input.startDate &&
             input.endDate &&
@@ -112,7 +106,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
               code: "INTERNAL_SERVER_ERROR",
             });
           }
-          return ctx.prisma.supplierInvoice.findMany({
+          const invoices = await ctx.prisma.supplierInvoice.findMany({
             where: {
               projectId: input.projectId,
               budgetId: input.budgetId,
@@ -126,6 +120,12 @@ export const supplierInvoiceRouter = createTRPCRouter({
             orderBy: {
               createdAt: "desc",
             },
+          });
+          return invoices.map((invoice) => {
+            return {
+              ...invoice,
+              fileId: invoice.fileId || undefined,
+            };
           });
         },
         errorMessages: ["Failed to get supplier invoices"],
@@ -151,7 +151,7 @@ export const supplierInvoiceRouter = createTRPCRouter({
             });
           return {
             ...supplierInvoice,
-            budgetId: supplierInvoice.budgetId || "", // PLANETSCALE FIX
+            fileId: supplierInvoice.fileId || undefined,
           };
         },
         errorMessages: ["Failed to get supplier invoice"],

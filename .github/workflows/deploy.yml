@@ -1,0 +1,60 @@
+name: Deploy
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+      NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+      MY_AWS_S3_BUCKET_REGION: ${{ secrets.MY_AWS_S3_BUCKET_REGION }}
+      MY_AWS_S3_ACCESS_KEY_ID: ${{ secrets.MY_AWS_S3_ACCESS_KEY_ID }}
+      MY_AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.MY_AWS_S3_SECRET_ACCESS_KEY }}
+      DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+      DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      FACEBOOK_CLIENT_ID: ${{ secrets.FACEBOOK_CLIENT_ID }}
+      FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
+      TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+      TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      TWITTER_CLIENT_ID: ${{ secrets.TWITTER_CLIENT_ID }}
+      TWITTER_CLIENT_SECRET: ${{ secrets.TWITTER_CLIENT_SECRET }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      EMAIL_SERVER_USER: ${{ secrets.EMAIL_SERVER_USER }}
+      EMAIL_SERVER_PASSWORD: ${{ secrets.EMAIL_SERVER_PASSWORD }}
+      EMAIL_SERVER_HOST: ${{ secrets.EMAIL_SERVER_HOST }}
+      EMAIL_SERVER_PORT: ${{ secrets.EMAIL_SERVER_PORT }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      HOST_URL: ${{ secrets.HOST_URL }}
+      NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME: ${{ secrets.NEXT_PUBLIC_AWS_S3_FILE_MANAGER_BUCKET_NAME }}
+      NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME: ${{ secrets.NEXT_PUBLIC_AWS_S3_INVOICES_BUCKET_NAME }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy
+        run: |
+          npx prisma generate
+          npx sst telemetry disable
+          NODE_ENV=production npx sst deploy --stage prod

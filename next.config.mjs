@@ -21,7 +21,6 @@ const config = {
       "static-cdn.jtvnw.net", // Twitch
       "pbs.twimg.com", // Twitter
     ],
-    unoptimized: true,
   },
   async redirects() {
     return [

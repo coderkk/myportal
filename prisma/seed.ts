@@ -1,7 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { MaterialUnit, TaskStatus, WeatherCondition } from "@prisma/client";
 import { customAlphabet } from "nanoid";
-import { env } from "../src/env/server.mjs";
 import { prisma } from "../src/server/db";
 
 const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
@@ -49,7 +48,7 @@ export const makeData = (samples: number) => {
 };
 
 async function main() {
-  const userId = env.TEST_USER_ID;
+  const userId = "12jkdnavdiosu9";
 
   // delete all existing "projects" and "createdProjects" for userId
   await prisma.user.update({
