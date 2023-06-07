@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { CSVLink } from "react-csv";
 import {
   activeDateFiltersAtom,
   activeSearchFiltersAtom,
@@ -66,6 +67,18 @@ const Invoices = () => {
                   </p>
                 </div>
                 <div className="mt-4 inline sm:ml-16 sm:mt-0 sm:flex">
+                  <CSVLink
+                    data={[
+                      ["firstname", "lastname", "email"],
+                      ["Ahmed", "Tomi", "ah@smthing.co.com"],
+                      ["Raed", "Labes", "rl@smthing.co.com"],
+                      ["Yezzi", "Min l3b", "ymin@cocococo.com"],
+                    ]}
+                    filename={"invoices.csv"}
+                    className="mx-2 block rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  >
+                    Export to CSV
+                  </CSVLink>
                   <button
                     type="button"
                     onClick={() => {

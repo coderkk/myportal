@@ -19,6 +19,7 @@ import {
 import { env } from "../../env/client.mjs";
 import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task";
 import { api } from "../../utils/api";
+import { Logo } from "../common/Logo";
 import { projectFeatures } from "../project/data";
 import { getDateFromActiveFilter } from "../siteDiary/DateFilter";
 
@@ -436,13 +437,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       <div className="xl:pl-72">
         <div className="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
-            <Image
-              className="mx-auto h-20 w-auto"
-              src="/images/logos/main.svg"
-              alt="Your Company"
-              width={32}
-              height={32}
-            />
+            <Logo className="h-10 w-auto" />
           </Link>
           <button
             type="button"
