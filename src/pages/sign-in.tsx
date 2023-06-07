@@ -6,8 +6,6 @@ import DiscordButton from "../components/oauth/DiscordButton";
 import EmailButton from "../components/oauth/EmailButton";
 import FacebookButton from "../components/oauth/FacebookButton";
 import GoogleButton from "../components/oauth/GoogleButton";
-import MicrosoftButton from "../components/oauth/MicrosoftButton";
-import TwitchButton from "../components/oauth/TwitchButton";
 import TwitterButton from "../components/oauth/TwitterButton";
 
 export default function Signin() {
@@ -39,12 +37,10 @@ export default function Signin() {
                 Sign in with
               </span>
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <TwitchButton callbackUrl={callbackUrl} />
                 <DiscordButton callbackUrl={callbackUrl} />
                 <TwitterButton callbackUrl={callbackUrl} />
                 <FacebookButton callbackUrl={callbackUrl} />
                 <GoogleButton callbackUrl={callbackUrl} />
-                <MicrosoftButton callbackUrl={callbackUrl} />
               </div>
 
               <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
