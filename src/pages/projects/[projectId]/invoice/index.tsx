@@ -113,17 +113,18 @@ const Invoices = () => {
                             >
                               Cost Code
                             </th>
-                            <th
-                              scope="col"
-                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                            >
-                              Total Amount
-                            </th>
+
                             <th
                               scope="col"
                               className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                             >
                               Status
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
+                              Total Amount
                             </th>
                             <th
                               scope="col"
@@ -168,7 +169,7 @@ const Invoices = () => {
                                   </div>
                                 ) : (
                                   <div className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-blue-600/20">
-                                    Pending
+                                    Unapproved
                                   </div>
                                 )}
                               </td>

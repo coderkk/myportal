@@ -19,7 +19,6 @@ import {
 import { env } from "../../env/client.mjs";
 import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task";
 import { api } from "../../utils/api";
-import { Logo } from "../common/Logo";
 import { projectFeatures } from "../project/data";
 import { getDateFromActiveFilter } from "../siteDiary/DateFilter";
 
@@ -37,7 +36,6 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
   );
   const [activeDateFilters] = useAtom(activeDateFiltersAtom);
 
-  // TODO: add prefetching for financial dashboard, invoice processing, settings, and photos
   const prefetch = ({
     projectId,
     href,
@@ -117,22 +115,6 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
           staleTime: Infinity,
         });
         void utils.me.isCreatorOfProject.prefetch(
-          { projectId: projectId },
-          {
-            staleTime: Infinity,
-          }
-        );
-        break;
-      case "/requestForInformation":
-        void utils.requestForInformation.getRequestForInformations.prefetch(
-          { projectId: projectId },
-          {
-            staleTime: Infinity,
-          }
-        );
-        break;
-      case "/order":
-        void utils.order.getOrders.prefetch(
           { projectId: projectId },
           {
             staleTime: Infinity,
@@ -235,8 +217,8 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-white/10">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
-                      className="h-8 w-auto"
-                      src="/images/logos/laravel.svg"
+                      className="mx-auto h-20 w-auto"
+                      src="/images/logos/main.svg"
                       alt="Your Company"
                       width={32}
                       height={32}
@@ -351,8 +333,8 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-black/5">
           <div className="flex h-16 shrink-0 items-center">
             <Image
-              className="h-8 w-auto"
-              src="/images/logos/laravel.svg"
+              className="mx-auto h-20 w-auto"
+              src="/images/logos/main.svg"
               alt="Your Company"
               width={32}
               height={32}
@@ -454,7 +436,13 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       <div className="xl:pl-72">
         <div className="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
-            <Logo className="h-10 w-auto" />
+            <Image
+              className="mx-auto h-20 w-auto"
+              src="/images/logos/main.svg"
+              alt="Your Company"
+              width={32}
+              height={32}
+            />
           </Link>
           <button
             type="button"

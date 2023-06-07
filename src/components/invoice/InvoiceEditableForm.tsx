@@ -302,8 +302,13 @@ const InvoiceEditableForm = ({
                   </span>
                 </p>
               </div>
-
-              <div className="w-40 px-1 text-center"></div>
+              <div className="  w-56 px-1 text-center">
+                <p className="leading-none">
+                  <span className="block text-sm font-bold uppercase tracking-wide text-gray-800">
+                    Actions
+                  </span>
+                </p>
+              </div>
             </div>
             {supplierInvoiceItems ? (
               supplierInvoiceItems.map((supplierInvoiceItem, i) => {
@@ -342,7 +347,7 @@ const InvoiceEditableForm = ({
                         </span>
                       </p>
                     </div>
-                    <div className="w-40 px-1 text-center">
+                    <div className="flex w-56 justify-center  text-center">
                       <InvoiceItem
                         title="Edit"
                         index={i}

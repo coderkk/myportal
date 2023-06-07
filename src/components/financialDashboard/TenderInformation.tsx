@@ -120,16 +120,13 @@ const TenderInformation = () => {
             </div>
             <h1 className="flex gap-x-3 text-base leading-7">
               <span className="font-semibold text-black">
-                Tender Information
+                Information Centre
               </span>
             </h1>
           </div>
           <p className="text-xs leading-6 text-gray-400">
             Stats and information related to you project
           </p>
-        </div>
-        <div className="order-first flex-none rounded-lg bg-blue-400/10 px-4 py-2 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-400/30 hover:cursor-pointer sm:order-none">
-          Update
         </div>
       </div>
 

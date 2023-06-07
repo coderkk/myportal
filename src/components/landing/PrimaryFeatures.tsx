@@ -11,25 +11,25 @@ const features = [
     title: "Automatic invoices processing",
     description:
       "Upload your invoices and our built-in OCR AI will extract key details such as invoice number, costs and vendor automatically for you, magically!",
-    image: "/images/screenshots/payroll.png",
+    image: "/images/screenshots/invoice-processing.png",
   },
   {
     title: "Real time financial dashboard",
     description:
       "Assign each processed invoice to a cost code and the project's budget will be updated automatically.",
-    image: "/images/screenshots/expenses.png",
+    image: "/images/screenshots/financial-dashboard.png",
   },
   {
     title: "Invoice approval and payment status",
     description:
       "Review each invoice before making any payments to avoid any over-payments. Track payment status of each invoice to avoid any penalty charges due to late payment.",
-    image: "/images/screenshots/vat-returns.png",
+    image: "/images/screenshots/invoice-approval.png",
   },
   {
     title: "Data utilization",
     description:
       "Export extracted invoice data to an excel file for other financial management use such as cost reconciliation and accounting preparation. No more wasted time as all data have been prepared for you through our automation technology powered by AI.",
-    image: "/images/screenshots/reporting.png",
+    image: "/images/screenshots/invoice-approval.png",
   },
 ];
 
@@ -133,8 +133,8 @@ export const PrimaryFeatures = () => {
                       <Image
                         className="w-full"
                         src={feature.image}
-                        width={500}
-                        height={500}
+                        width={2245}
+                        height={1636}
                         alt=""
                       />
                     </div>

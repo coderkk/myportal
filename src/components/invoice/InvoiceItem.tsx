@@ -85,11 +85,11 @@ const InvoiceItem = ({
                         after:border-slate-300 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75]
                         peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:font-medium
                         peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:before:border-l-2 peer-focus:before:border-t-2 peer-focus:before:border-blue-500
-                        peer-focus:after:border-r-2 peer-focus:after:border-t-2 peer-focus:after:border-blue-500 text-slate-600 peer-placeholder-shown:text-slate-600`;
+                        peer-focus:after:border-r-2 peer-focus:after:border-t-2 peer-focus:after:border-blue-500`;
 
   const inputErrorClasses = `border-red-500  placeholder-shown:border placeholder-shown:border-red-500 placeholder-shown:border-t-red-500 focus:border-red-500`;
 
-  const labelErrorClasses = `text-slate-600 peer-placeholder-shown:text-slate-600`;
+  const labelErrorClasses = `text-red-500 peer-placeholder-shown:text-red-500 peer-focus:text-red-500 peer-focus:before:border-red-500 peer-focus:after:border-red-500`;
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -119,8 +119,10 @@ const InvoiceItem = ({
                     autoComplete="off"
                     type="text"
                     className={classNames(
-                      inputClasses,
-                      errors.description ? inputErrorClasses : ""
+                      errors.description
+                        ? inputErrorClasses
+                        : "placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300",
+                      inputClasses
                     )}
                     id="description"
                     placeholder="not used"
@@ -128,8 +130,10 @@ const InvoiceItem = ({
                   />
                   <label
                     className={classNames(
-                      labelClasses,
-                      errors.description ? labelErrorClasses : ""
+                      errors.description
+                        ? labelErrorClasses
+                        : "text-slate-600 peer-placeholder-shown:text-slate-600",
+                      labelClasses
                     )}
                   >
                     {"Description"}
@@ -139,7 +143,9 @@ const InvoiceItem = ({
                   <input
                     className={classNames(
                       inputClasses,
-                      errors.quantity ? inputErrorClasses : ""
+                      errors.quantity
+                        ? inputErrorClasses
+                        : "placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300"
                     )}
                     type="number"
                     step="0.01"
@@ -153,7 +159,9 @@ const InvoiceItem = ({
                   <label
                     className={classNames(
                       labelClasses,
-                      errors.quantity ? labelErrorClasses : ""
+                      errors.quantity
+                        ? labelErrorClasses
+                        : "text-slate-600 peer-placeholder-shown:text-slate-600"
                     )}
                   >
                     {"Quantity"}
@@ -163,7 +171,9 @@ const InvoiceItem = ({
                   <input
                     className={classNames(
                       inputClasses,
-                      errors.unit ? inputErrorClasses : ""
+                      errors.unit
+                        ? inputErrorClasses
+                        : "placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300"
                     )}
                     id="unit"
                     placeholder="Unit"
@@ -172,7 +182,9 @@ const InvoiceItem = ({
                   <label
                     className={classNames(
                       labelClasses,
-                      errors.unit ? labelErrorClasses : ""
+                      errors.unit
+                        ? labelErrorClasses
+                        : "text-slate-600 peer-placeholder-shown:text-slate-600"
                     )}
                   >
                     {"Unit"}
@@ -182,7 +194,9 @@ const InvoiceItem = ({
                   <input
                     className={classNames(
                       inputClasses,
-                      errors.unitPrice ? inputErrorClasses : ""
+                      errors.unitPrice
+                        ? inputErrorClasses
+                        : "placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300"
                     )}
                     type="number"
                     id="unitPrice"
@@ -196,7 +210,9 @@ const InvoiceItem = ({
                   <label
                     className={classNames(
                       labelClasses,
-                      errors.unitPrice ? labelErrorClasses : ""
+                      errors.unitPrice
+                        ? labelErrorClasses
+                        : "text-slate-600 peer-placeholder-shown:text-slate-600"
                     )}
                   >
                     {"Unit Price"}
@@ -206,7 +222,9 @@ const InvoiceItem = ({
                   <input
                     className={classNames(
                       inputClasses,
-                      errors.totalPrice ? inputErrorClasses : ""
+                      errors.totalPrice
+                        ? inputErrorClasses
+                        : "placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300"
                     )}
                     type="number"
                     id="totalPrice"
@@ -220,7 +238,9 @@ const InvoiceItem = ({
                   <label
                     className={classNames(
                       labelClasses,
-                      errors.totalPrice ? labelErrorClasses : ""
+                      errors.totalPrice
+                        ? labelErrorClasses
+                        : "text-slate-600 peer-placeholder-shown:text-slate-600"
                     )}
                   >
                     {"Total Price"}

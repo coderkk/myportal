@@ -12,7 +12,7 @@ const features = [
     summary: "Keep your site records up to date.",
     description:
       "Now everyone in your team can keep be kept in sync through the site diary, avoiding communication errors as much as possible.",
-    image: "/images/screenshots/profit-loss.png",
+    image: "/images/screenshots/site-diary.png",
     icon: function ReportingIcon() {
       const id = useId();
       return (
@@ -46,7 +46,7 @@ const features = [
     summary: "Your project's own Google Drive.",
     description:
       "Ensure everyone is working on the same file version at anytime, anywhere.",
-    image: "/images/screenshots/inventory.png",
+    image: "/images/screenshots/file-sharing.png",
     icon: function InventoryIcon() {
       return (
         <>
@@ -73,7 +73,7 @@ const features = [
     summary: "Your central hub to track tasks.",
     description:
       "Track all your tasks and easily find who is doing what and how far along are they.",
-    image: "/images/screenshots/contacts.png",
+    image: "/images/screenshots/tasks.png",
     icon: function ContactsIcon() {
       return (
         <>
