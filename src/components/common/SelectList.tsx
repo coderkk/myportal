@@ -57,6 +57,7 @@ export default function SelectList({
                 option ? option.label : ""
               }
               placeholder="Search..."
+              autoComplete="off"
             />
             <ChevronUpDownIcon
               className="h-5 w-5 text-gray-400"

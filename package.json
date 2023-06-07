@@ -31,7 +31,7 @@
     "@trpc/next": "^10.7.0",
     "@trpc/react-query": "^10.7.0",
     "@trpc/server": "^10.7.0",
-    "aws-sdk": "^2.1353.0",
+    "aws-sdk": "^2.1392.0",
     "child_process": "^1.0.2",
     "chonky": "^2.3.2",
     "chonky-icon-fontawesome": "^2.3.2",

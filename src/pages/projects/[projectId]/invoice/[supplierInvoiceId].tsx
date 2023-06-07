@@ -13,7 +13,7 @@ import {
   useGetSupplierInvoice,
   useUpdateSupplierInvoice,
 } from "../../../../hooks/supplierInvoice";
-import type { SupplierInvoiceWithItems } from "./import";
+import type { SupplierInvoiceWithItems } from "./add";
 
 const SupplierInvoiceView = () => {
   const router = useRouter();
@@ -37,7 +37,10 @@ const SupplierInvoiceView = () => {
 
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
 
-  const onInvoiceUpdate = (invoiceItem: SupplierInvoiceItem, index: number) => {
+  const onInvoiceItemUpdate = (
+    invoiceItem: SupplierInvoiceItem,
+    index: number
+  ) => {
     if (!supplierInvoiceItems) return;
     const newSupplierInvoiceItems = [...supplierInvoiceItems];
     newSupplierInvoiceItems[index] = invoiceItem;
@@ -54,8 +57,6 @@ const SupplierInvoiceView = () => {
   const useFormReturn = useForm<SupplierInvoiceWithItems>({
     values: supplierInvoiceData,
   });
-
-  supplierInvoiceData?.fileId;
 
   const onSubmit = (
     data: SupplierInvoiceWithItems,
@@ -111,7 +112,7 @@ const SupplierInvoiceView = () => {
               useFormReturn={useFormReturn}
               supplierInvoiceItems={supplierInvoiceItems}
               setSupplierInvoiceItems={setSupplierInvoiceItems}
-              onInvoiceUpdate={onInvoiceUpdate}
+              onInvoiceItemUpdate={onInvoiceItemUpdate}
               removeInvoiceItem={removeInvoiceItem}
               isLoading={isLoading}
             />

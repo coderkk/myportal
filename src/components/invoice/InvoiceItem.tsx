@@ -1,5 +1,6 @@
 import type { SupplierInvoiceItem as PrismaSupplierInvoiceItem } from "@prisma/client";
 import * as Dialog from "@radix-ui/react-dialog";
+import classNames from "classnames";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 
@@ -69,33 +70,26 @@ const InvoiceItem = ({
       );
     }
   };
+
   const [open, setOpen] = useState(false);
 
-  const getInputClasses = (isError: boolean) => {
-    return `peer h-full w-full rounded-[6px] border border-slate-300 border-t-transparent bg-transparent px-3 py-2.5
-                    font-sans placeholder-slate-300 placeholder-opacity-0 outline outline-0
-                    transition-all  focus:border-2
-                    focus:border-blue-500 focus:border-t-transparent focus:outline-0 ${
-                      isError
-                        ? "border-red-500  placeholder-shown:border placeholder-shown:border-red-500 placeholder-shown:border-t-red-500 focus:border-red-500 "
-                        : "placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300 "
-                    }`;
-  };
+  const inputClasses = `peer h-full w-full rounded-[6px] border border-slate-300 border-t-transparent bg-transparent px-3 py-2.5
+                        font-sans placeholder-slate-300 placeholder-opacity-0 outline outline-0
+                        transition-all  focus:border-2
+                        focus:border-blue-500 focus:border-t-transparent focus:outline-0 placeholder-shown:border placeholder-shown:border-slate-300 placeholder-shown:border-t-slate-300`;
 
-  const getLabelClasses = (isError: boolean) => {
-    return `before:content[' '] after:content[' '] pointer-events-none absolute -top-1.5 left-0 flex h-full w-full select-none text-[11px] font-normal
-                    leading-tight transition-all before:pointer-events-none before:mr-1 before:mt-[6.5px] before:box-border before:block
-                    before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-l before:border-t before:border-slate-300 before:transition-all after:pointer-events-none
-                    after:ml-1 after:mt-[6.5px] after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-r after:border-t
-                    after:border-slate-300 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75]
-                    peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:font-medium
-                    peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:before:border-l-2 peer-focus:before:border-t-2 peer-focus:before:border-blue-500
-                    peer-focus:after:border-r-2 peer-focus:after:border-t-2 peer-focus:after:border-blue-500 ${
-                      isError
-                        ? "border-red-500 text-red-500 peer-placeholder-shown:text-red-500 peer-focus:text-red-500 peer-focus:before:border-red-500 peer-focus:after:border-red-500"
-                        : "text-slate-600 peer-placeholder-shown:text-slate-600"
-                    }`;
-  };
+  const labelClasses = `before:content[' '] after:content[' '] pointer-events-none absolute -top-1.5 left-0 flex h-full w-full select-none text-[11px] font-normal
+                        leading-tight transition-all before:pointer-events-none before:mr-1 before:mt-[6.5px] before:box-border before:block
+                        before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-l before:border-t before:border-slate-300 before:transition-all after:pointer-events-none
+                        after:ml-1 after:mt-[6.5px] after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-r after:border-t
+                        after:border-slate-300 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75]
+                        peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:font-medium
+                        peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:before:border-l-2 peer-focus:before:border-t-2 peer-focus:before:border-blue-500
+                        peer-focus:after:border-r-2 peer-focus:after:border-t-2 peer-focus:after:border-blue-500 text-slate-600 peer-placeholder-shown:text-slate-600`;
+
+  const inputErrorClasses = `border-red-500  placeholder-shown:border placeholder-shown:border-red-500 placeholder-shown:border-t-red-500 focus:border-red-500`;
+
+  const labelErrorClasses = `text-slate-600 peer-placeholder-shown:text-slate-600`;
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -124,18 +118,29 @@ const InvoiceItem = ({
                     autoFocus={true}
                     autoComplete="off"
                     type="text"
-                    className={getInputClasses(!!errors.description)}
+                    className={classNames(
+                      inputClasses,
+                      errors.description ? inputErrorClasses : ""
+                    )}
                     id="description"
                     placeholder="not used"
                     {...register("description", { required: true })}
                   />
-                  <label className={getLabelClasses(!!errors.description)}>
+                  <label
+                    className={classNames(
+                      labelClasses,
+                      errors.description ? labelErrorClasses : ""
+                    )}
+                  >
                     {"Description"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(!!errors.quantity)}
+                    className={classNames(
+                      inputClasses,
+                      errors.quantity ? inputErrorClasses : ""
+                    )}
                     type="number"
                     step="0.01"
                     id="quantity"
@@ -145,24 +150,40 @@ const InvoiceItem = ({
                       valueAsNumber: true,
                     })}
                   />
-                  <label className={getLabelClasses(!!errors.quantity)}>
+                  <label
+                    className={classNames(
+                      labelClasses,
+                      errors.quantity ? labelErrorClasses : ""
+                    )}
+                  >
                     {"Quantity"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(!!errors.unit)}
+                    className={classNames(
+                      inputClasses,
+                      errors.unit ? inputErrorClasses : ""
+                    )}
                     id="unit"
                     placeholder="Unit"
                     {...register("unit", { required: true })}
                   />
-                  <label className={getLabelClasses(!!errors.unit)}>
+                  <label
+                    className={classNames(
+                      labelClasses,
+                      errors.unit ? labelErrorClasses : ""
+                    )}
+                  >
                     {"Unit"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(!!errors.unitPrice)}
+                    className={classNames(
+                      inputClasses,
+                      errors.unitPrice ? inputErrorClasses : ""
+                    )}
                     type="number"
                     id="unitPrice"
                     step="0.01"
@@ -172,13 +193,21 @@ const InvoiceItem = ({
                       valueAsNumber: true,
                     })}
                   />
-                  <label className={getLabelClasses(!!errors.unitPrice)}>
+                  <label
+                    className={classNames(
+                      labelClasses,
+                      errors.unitPrice ? labelErrorClasses : ""
+                    )}
+                  >
                     {"Unit Price"}
                   </label>
                 </div>
                 <div className="relative mb-2 flex flex-col justify-between gap-5">
                   <input
-                    className={getInputClasses(!!errors.totalPrice)}
+                    className={classNames(
+                      inputClasses,
+                      errors.totalPrice ? inputErrorClasses : ""
+                    )}
                     type="number"
                     id="totalPrice"
                     step="0.01"
@@ -188,7 +217,12 @@ const InvoiceItem = ({
                       valueAsNumber: true,
                     })}
                   />
-                  <label className={getLabelClasses(!!errors.totalPrice)}>
+                  <label
+                    className={classNames(
+                      labelClasses,
+                      errors.totalPrice ? labelErrorClasses : ""
+                    )}
+                  >
                     {"Total Price"}
                   </label>
                 </div>
