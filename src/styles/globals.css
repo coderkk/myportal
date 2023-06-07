@@ -84,3 +84,9 @@
 .chonky-iconWithText + span {
   @apply hidden lg:inline-block;
 }
+
+/* https://github.com/wojtekmaj/react-pdf/issues/418 */
+.react-pdf__Page.prevPage {
+  position: absolute !important;
+  z-index: 1;
+}

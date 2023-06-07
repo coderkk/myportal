@@ -77,17 +77,6 @@ const Invoices = () => {
                   >
                     Add Supplier Invoice
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void router.push(
-                        "/projects/" + projectId + "/invoice/import"
-                      );
-                    }}
-                    className="mx-2 block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                  >
-                    Import Supplier Invoice
-                  </button>
                 </div>
               </div>
               <div className="mt-3 flow-root">
@@ -124,17 +113,18 @@ const Invoices = () => {
                             >
                               Cost Code
                             </th>
-                            <th
-                              scope="col"
-                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                            >
-                              Total Amount
-                            </th>
+
                             <th
                               scope="col"
                               className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                             >
                               Status
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
+                              Total Amount
                             </th>
                             <th
                               scope="col"
@@ -179,7 +169,7 @@ const Invoices = () => {
                                   </div>
                                 ) : (
                                   <div className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-blue-600/20">
-                                    Pending
+                                    Unapproved
                                   </div>
                                 )}
                               </td>

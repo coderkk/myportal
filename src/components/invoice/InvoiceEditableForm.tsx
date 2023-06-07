@@ -3,13 +3,19 @@ import classNames from "classnames";
 import { parse } from "date-fns";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
-import type { BaseSyntheticEvent, Dispatch, SetStateAction } from "react";
+import type {
+  BaseSyntheticEvent,
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+} from "react";
 import React from "react";
 import ReactDatePicker from "react-datepicker";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useGetBudgets } from "../../hooks/budget";
-import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/import";
+import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/add";
 import SelectList from "../common/SelectList";
 import Spinner from "../common/Spinner";
 import type { SupplierInvoiceItem } from "./InvoiceItem";
@@ -22,9 +28,10 @@ const InvoiceEditableForm = ({
   useFormReturn,
   supplierInvoiceItems,
   setSupplierInvoiceItems,
-  onInvoiceUpdate,
+  onInvoiceItemUpdate,
   removeInvoiceItem,
   isLoading,
+  fileInputRef,
 }: {
   onSubmit: (
     data: SupplierInvoiceWithItems,
@@ -37,9 +44,13 @@ const InvoiceEditableForm = ({
   setSupplierInvoiceItems: Dispatch<
     SetStateAction<SupplierInvoiceItem[] | undefined>
   >;
-  onInvoiceUpdate: (invoiceItem: SupplierInvoiceItem, index: number) => void;
+  onInvoiceItemUpdate: (
+    invoiceItem: SupplierInvoiceItem,
+    index: number
+  ) => void;
   removeInvoiceItem: (index: number) => void;
   isLoading?: boolean;
+  fileInputRef?: MutableRefObject<HTMLInputElement | null>;
 }) => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
@@ -68,8 +79,8 @@ const InvoiceEditableForm = ({
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+    <div className="w-[80%] px-4 sm:px-6 lg:px-8">
+      <div className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
         <div className="mx-auto text-left lg:mx-0 lg:text-left">
           <form
             className="m-8"
@@ -96,33 +107,46 @@ const InvoiceEditableForm = ({
                 </button>
               </div>
             )}
-            <div className="mb-6 flex items-center">
-              <button
-                type="button"
-                onClick={() => {
-                  void router.push("/projects/" + projectId + "/invoice");
-                }}
-                title="Back"
-                className="mx-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-6 w-6"
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    void router.push("/projects/" + projectId + "/invoice");
+                  }}
+                  title="Back"
+                  className="mx-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                  />
-                </svg>
-              </button>
-              <h2 className="px-3 py-2 text-2xl font-bold uppercase tracking-wider">
-                Invoice
-              </h2>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                    />
+                  </svg>
+                </button>
+                <h2 className="px-3 py-2 text-2xl font-bold uppercase tracking-wider">
+                  Invoice
+                </h2>
+              </div>
+              {fileInputRef && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                  }}
+                  className="rounded-md bg-blue-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800"
+                >
+                  Attach file
+                </button>
+              )}
             </div>
 
             <div className="mb-8 flex justify-between">
@@ -278,8 +302,13 @@ const InvoiceEditableForm = ({
                   </span>
                 </p>
               </div>
-
-              <div className="w-40 px-1 text-center"></div>
+              <div className="  w-56 px-1 text-center">
+                <p className="leading-none">
+                  <span className="block text-sm font-bold uppercase tracking-wide text-gray-800">
+                    Actions
+                  </span>
+                </p>
+              </div>
             </div>
             {supplierInvoiceItems ? (
               supplierInvoiceItems.map((supplierInvoiceItem, i) => {
@@ -318,13 +347,13 @@ const InvoiceEditableForm = ({
                         </span>
                       </p>
                     </div>
-                    <div className="w-40 px-1 text-center">
+                    <div className="flex w-56 justify-center  text-center">
                       <InvoiceItem
                         title="Edit"
                         index={i}
                         invoiceItem={supplierInvoiceItem}
                         onUpdate={(data) => {
-                          onInvoiceUpdate(data, i);
+                          onInvoiceItemUpdate(data, i);
                         }}
                       />
                       <button
@@ -453,6 +482,11 @@ const InvoiceEditableForm = ({
             <button
               className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none disabled:bg-blue-50 disabled:text-blue-200"
               type="submit"
+              onClick={() => {
+                if (errors.budgetId) {
+                  toast.error("Please select a budget");
+                }
+              }}
             >
               Submit
             </button>

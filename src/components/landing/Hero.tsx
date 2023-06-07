@@ -1,9 +1,8 @@
-import { Button } from "../common/Button";
 import { Container } from "../common/Container";
 
 export const Hero = () => {
   return (
-    <Container className="pb-16 pt-20 text-center lg:pt-32">
+    <Container className="pb-16 pt-20 text-center lg:py-48">
       <h1 className="font-display mx-auto max-w-4xl text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
         Financial{" "}
         <span className="relative whitespace-nowrap text-blue-600">
@@ -23,28 +22,6 @@ export const Hero = () => {
         Your new personal assistant to speed up your invoice recording process
         and manage your accounts payable better.
       </p>
-      <div className="mt-10 flex justify-center gap-x-6">
-        <Button href="sign-in">Get 6 months free</Button>
-        <Button
-          href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-          variant="outline"
-        >
-          <svg
-            aria-hidden="true"
-            className="h-3 w-3 flex-none fill-blue-600 group-active:fill-current"
-          >
-            <path d="m9.997 6.91-7.583 3.447A1 1 0 0 1 1 9.447V2.553a1 1 0 0 1 1.414-.91L9.997 5.09c.782.355.782 1.465 0 1.82Z" />
-          </svg>
-          <span className="ml-3">Watch video</span>
-        </Button>
-      </div>
-      <div className="mt-36 lg:mt-44">
-        <p className="font-display text-base text-slate-900">
-          Download our invoice template and share it with your suppliers to
-          start automating your financial recording process
-        </p>
-        {/* TODO: Add download link and remove companies*/}
-      </div>
     </Container>
   );
 };
