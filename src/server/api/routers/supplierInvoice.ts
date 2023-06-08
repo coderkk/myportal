@@ -79,22 +79,38 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return trycatch({
         fn: () => {
-          const { supplierInvoiceItems, ...rest } = input;
-          return ctx.prisma.supplierInvoice.create({
-            data: {
-              ...rest,
-              createdById: ctx.session.user.id,
-              supplierInvoiceItems: {
-                createMany: {
-                  data: supplierInvoiceItems.map((supplierInvoiceItem) => {
-                    return {
-                      ...supplierInvoiceItem,
-                      createdById: ctx.session.user.id,
-                    };
-                  }),
+          return ctx.prisma.$transaction(async (tx) => {
+            const { supplierInvoiceItems, ...rest } = input;
+            const supplierInvoice = await tx.supplierInvoice.create({
+              data: {
+                ...rest,
+                createdById: ctx.session.user.id,
+                supplierInvoiceItems: {
+                  createMany: {
+                    data: supplierInvoiceItems.map((supplierInvoiceItem) => {
+                      return {
+                        ...supplierInvoiceItem,
+                        createdById: ctx.session.user.id,
+                      };
+                    }),
+                  },
                 },
               },
-            },
+            });
+            await tx.budget.update({
+              where: {
+                id: rest.budgetId,
+              },
+              data: {
+                costsIncurred: {
+                  increment: rest.grandTotal,
+                },
+              },
+            });
+
+            return {
+              supplierInvoice: supplierInvoice,
+            };
           });
         },
         errorMessages: ["Failed to create supplier invoice"],
@@ -170,37 +186,92 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: () => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { supplierInvoiceItems, ...other } = input;
-          // https://github.com/prisma/prisma/issues/2255#issuecomment-683811551
-          return ctx.prisma.supplierInvoice.update({
-            where: {
-              id: other.id,
-            },
-            data: {
-              ...other,
-              supplierInvoiceItems: {
-                deleteMany: {
-                  supplierInvoiceId: other.id,
-                  NOT: input.supplierInvoiceItems.map(({ id }) => ({ id })),
+          return ctx.prisma.$transaction(async (tx) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { supplierInvoiceItems, ...rest } = input;
+            const currentSupplierInvoiceGrandTotal = (
+              await tx.supplierInvoice.findUniqueOrThrow({
+                where: {
+                  id: rest.id,
                 },
-                upsert: input.supplierInvoiceItems.map(
-                  (supplierInvoiceItem) => {
-                    const { id, ...rest } = supplierInvoiceItem;
-                    return {
-                      where: { id: id },
-                      update: { ...rest },
-                      create: {
-                        ...rest,
-                        createdById: ctx.session.user.id,
-                      },
-                    };
-                  }
-                ),
+              })
+            ).grandTotal;
+            // https://github.com/prisma/prisma/issues/2255#issuecomment-683811551
+            const supplierInvoice = await tx.supplierInvoice.update({
+              where: {
+                id: rest.id,
               },
-            },
+              data: {
+                ...rest,
+                budgetId: rest.budgetId,
+                supplierInvoiceItems: {
+                  deleteMany: {
+                    supplierInvoiceId: rest.id,
+                    NOT: input.supplierInvoiceItems.map(({ id }) => ({ id })),
+                  },
+                  upsert: input.supplierInvoiceItems.map(
+                    (supplierInvoiceItem) => {
+                      const { id, ...rest } = supplierInvoiceItem;
+                      return {
+                        where: { id: id },
+                        update: { ...rest },
+                        create: {
+                          ...rest,
+                          createdById: ctx.session.user.id,
+                        },
+                      };
+                    }
+                  ),
+                },
+              },
+            });
+            await tx.budget.update({
+              where: {
+                id: rest.budgetId,
+              },
+              data: {
+                costsIncurred: {
+                  increment: rest.grandTotal - currentSupplierInvoiceGrandTotal,
+                },
+              },
+            });
+
+            return {
+              supplierInvoice: supplierInvoice,
+            };
           });
         },
+        //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        //   const { supplierInvoiceItems, ...other } = input;
+        //   // https://github.com/prisma/prisma/issues/2255#issuecomment-683811551
+        //   return ctx.prisma.supplierInvoice.update({
+        //     where: {
+        //       id: other.id,
+        //     },
+        //     data: {
+        //       ...other,
+        //       supplierInvoiceItems: {
+        //         deleteMany: {
+        //           supplierInvoiceId: other.id,
+        //           NOT: input.supplierInvoiceItems.map(({ id }) => ({ id })),
+        //         },
+        //         upsert: input.supplierInvoiceItems.map(
+        //           (supplierInvoiceItem) => {
+        //             const { id, ...rest } = supplierInvoiceItem;
+        //             return {
+        //               where: { id: id },
+        //               update: { ...rest },
+        //               create: {
+        //                 ...rest,
+        //                 createdById: ctx.session.user.id,
+        //               },
+        //             };
+        //           }
+        //         ),
+        //       },
+        //     },
+        //   });
+        // },
         errorMessages: ["Failed to update supplier invoice"],
       })();
     }),

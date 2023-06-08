@@ -3,7 +3,8 @@ import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { nanoid } from "nanoid";
 import { useSession } from "next-auth/react";
-import { MutableRefObject, useMemo } from "react";
+import type { MutableRefObject } from "react";
+import { useMemo } from "react";
 import { mutationCountAtom } from "../atoms/supplierInvoiceAtoms";
 import { api } from "../utils/api";
 
