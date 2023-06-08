@@ -65,6 +65,14 @@ export const deleteSupplierInvoiceSchema = z.object({
   supplierInvoiceId: z.string(),
 });
 
+export const getSupplierInvoicesForCSVDownloadSchema = z.object({
+  projectId: z.string(),
+  approved: z.boolean().optional(),
+  budgetId: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+});
+
 export const supplierInvoiceRouter = createTRPCRouter({
   createSupplierInvoice: protectedProcedure
     .input(createSupplierInvoiceSchema)
@@ -208,6 +216,26 @@ export const supplierInvoiceRouter = createTRPCRouter({
           });
         },
         errorMessages: ["Failed to delete supplier invoice"],
+      })();
+    }),
+  getSupplierInvoicesForCSVDownload: protectedProcedure
+    .input(getSupplierInvoicesForCSVDownloadSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.supplierInvoice.findMany({
+            where: {
+              projectId: input.projectId,
+            },
+            include: {
+              supplierInvoiceItems: true,
+              budget: true,
+            },
+          });
+        },
+        errorMessages: [
+          "Failed to get supplier invoices data for CSV download",
+        ],
       })();
     }),
 });

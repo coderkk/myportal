@@ -218,11 +218,11 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-white/10">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
-                      className="mx-auto h-20 w-auto"
-                      src="/images/logos/main.svg"
+                      className="mx-auto mt-6 h-32 w-auto"
+                      src="/images/logos/main.png"
                       alt="Your Company"
-                      width={32}
-                      height={32}
+                      width={400}
+                      height={200}
                     />
                   </div>
                   <nav className="flex flex-1 flex-col">
@@ -334,11 +334,11 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-black/5">
           <div className="flex h-16 shrink-0 items-center">
             <Image
-              className="mx-auto h-20 w-auto"
-              src="/images/logos/main.svg"
+              className="mx-auto mt-6 h-32 w-auto"
+              src="/images/logos/main.png"
               alt="Your Company"
-              width={32}
-              height={32}
+              width={400}
+              height={200}
             />
           </div>
           <nav className="flex flex-1 flex-col">
