@@ -134,29 +134,42 @@ export function Pricing() {
             description="Good for anyone who is self-employed and just getting started."
             href="sign-in"
             features={[
+              "20 invoices per month",
+              "Up to 3 users",
               "Financial dashboard",
-              "Automated invoice processing",
               "Site diary",
+              "Tasks",
               "File sharing",
-              "RFIs management",
-              "Tasks allocation",
-              "Photos gallery",
             ]}
           />
           <Plan
             featured
             name="Small business"
-            price="RM 200 per month per project"
+            price="RM 98 per month per project"
             description="Perfect for small & medium sized businesses."
             href="sign-in"
-            features={["Everything in Starter", "Plus"]}
+            features={[
+              "150 invoices per month", 
+              "Up to 20 users",
+              "Financial dashboard",
+              "Site diary",
+              "Tasks",
+              "File sharing",
+            ]}
           />
           <Plan
             name="Enterprise"
-            price="RM 500 per month per project"
+            price="RM 248 per month per project"
             description="For even the biggest enterprise companies."
             href="sign-in"
-            features={["Everything in Small business", "Plus"]}
+            features={[
+              "450 invoices per month", 
+              "Up to 50 users",
+              "Financial dashboard",
+              "Site diary",
+              "Tasks",
+              "File sharing",
+            ]}
           />
         </div>
       </Container>
