@@ -3,12 +3,13 @@ import classNames from "classnames";
 import { parse } from "date-fns";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
-import React, {
+import type {
   BaseSyntheticEvent,
   Dispatch,
   MutableRefObject,
   SetStateAction,
 } from "react";
+import React from "react";
 import ReactDatePicker from "react-datepicker";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
