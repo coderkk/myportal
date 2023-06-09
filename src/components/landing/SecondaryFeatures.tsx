@@ -15,7 +15,6 @@ const features = [
     summary: "Keep your site records up to date.",
     description:
       "Now everyone in your team can keep be kept in sync through the site diary, avoiding communication errors as much as possible.",
-    image: "/images/screenshots/site-diary.png",
     icon: function ReportingIcon() {
       const id = useId();
       return (
@@ -49,7 +48,6 @@ const features = [
     summary: "Your project's own Google Drive.",
     description:
       "Ensure everyone is working on the same file version at anytime, anywhere.",
-    image: "/images/screenshots/file-sharing.png",
     icon: function InventoryIcon() {
       return (
         <>
@@ -76,7 +74,6 @@ const features = [
     summary: "Your central hub to track tasks.",
     description:
       "Track all your tasks and easily find who is doing what and how far along are they.",
-    image: "/images/screenshots/tasks.png",
     icon: function ContactsIcon() {
       return (
         <>
@@ -113,14 +110,12 @@ type feature =
       name: string;
       summary: string;
       description: string;
-      image: string;
       icon: () => JSX.Element;
     }
   | {
       name: JSX.Element;
       summary: string;
       description: string;
-      image: string;
       icon: () => JSX.Element;
     };
 
@@ -168,19 +163,16 @@ const Feature = ({
 const FeaturesMobile = () => {
   return (
     <div className="-mx-4 mt-20 flex flex-col gap-y-10 overflow-hidden px-4 sm:-mx-6 sm:px-6 lg:hidden">
-      {features.map((feature, idx) => (
-        <div key={idx}>
+      {features.map((feature, featureIndex) => (
+        <div key={featureIndex}>
           <Feature feature={feature} className="mx-auto max-w-2xl" isActive />
           <div className="relative mt-10 pb-10">
             <div className="absolute -inset-x-4 bottom-0 top-8 bg-slate-200 sm:-inset-x-6" />
             <div className="relative mx-auto w-[52.75rem] overflow-hidden rounded-xl bg-white shadow-lg shadow-slate-900/5 ring-1 ring-slate-500/10">
               <Image
                 className="w-full"
-                src={feature.image}
-                alt=""
-                sizes="52.75rem"
-                width={500}
-                height={500}
+                src={getImages(featureIndex)}
+                alt="Picture of secondary feature"
               />
             </div>
           </div>
@@ -231,7 +223,6 @@ const FeaturesDesktop = () => {
                       className="w-full"
                       src={getImages(featureIndex)}
                       alt="Picture of secondary feature"
-                      sizes="52.75rem"
                     />
                   </div>
                 </Tab.Panel>

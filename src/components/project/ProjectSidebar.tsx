@@ -8,6 +8,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import type { ReactNode } from "react";
 import { Fragment, useEffect, useState } from "react";
+import defaultPhoto from "../../../public/images/default-photo.jpg";
+import mainLogo from "../../../public/images/logos/main-logo.png";
 import {
   activeDateFiltersAtom,
   activeSearchFiltersAtom as activeSearchFiltersAtomForSiteDiary,
@@ -219,10 +221,8 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
                       className="mx-auto mt-6 h-32 w-auto"
-                      src="/images/logos/main.png"
+                      src={mainLogo}
                       alt="Your Company"
-                      width={400}
-                      height={200}
                     />
                   </div>
                   <nav className="flex flex-1 flex-col">
@@ -273,8 +273,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                                 <Image
                                   className="mr-4 h-8 w-8 rounded-full bg-gray-800"
                                   src={
-                                    session.data?.user?.image ||
-                                    "/images/default-photo.jpg"
+                                    session.data?.user?.image || defaultPhoto
                                   }
                                   alt="Your Profile Picture"
                                   width={32}
@@ -335,10 +334,8 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
           <div className="flex h-16 shrink-0 items-center">
             <Image
               className="mx-auto mt-6 h-32 w-auto"
-              src="/images/logos/main.png"
+              src={mainLogo}
               alt="Your Company"
-              width={400}
-              height={200}
             />
           </div>
           <nav className="flex flex-1 flex-col">
@@ -382,10 +379,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                         <span className="sr-only">Your profile picture</span>
                         <Image
                           className="mr-4 h-8 w-8 rounded-full bg-gray-800"
-                          src={
-                            session.data?.user?.image ||
-                            "/images/default-photo.jpg"
-                          }
+                          src={session.data?.user?.image || defaultPhoto}
                           alt="Your Profile Picture"
                           width={32}
                           height={32}

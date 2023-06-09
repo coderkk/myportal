@@ -3,12 +3,14 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import defaultPhoto from "../../../../../public/images/default-photo.jpg";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
 import SearchAndAdd from "../../../../components/team/SearchAndAdd";
 import { useIsCreatorOfProject } from "../../../../hooks/me";
 import { useRemoveFromProject } from "../../../../hooks/project";
 import { useGetUsers, useGetUsersForProject } from "../../../../hooks/user";
+
 const DeleteButton = dynamic(
   () => import("../../../../components/common/DeleteButton")
 );
@@ -113,10 +115,7 @@ const Team = () => {
                         <span className="block flex-shrink-0">
                           <Image
                             className="h-10 w-10 rounded-full"
-                            src={
-                              userForProject?.image ||
-                              "/images/default-photo.jpg"
-                            }
+                            src={userForProject?.image || defaultPhoto}
                             width={50}
                             height={50}
                             alt=""

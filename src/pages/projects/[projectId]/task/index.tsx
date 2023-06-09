@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import type { MutableRefObject } from "react";
 import { useCallback, useRef } from "react";
+import defaultPhoto from "../../../../../public/images/default-photo.jpg";
 import {
   activeSearchFiltersAtom,
   activeStatusFiltersAtom,
@@ -208,7 +209,7 @@ const MotionTR = ({
           <div className="h-11 w-11 flex-shrink-0">
             <Image
               className="h-11 w-11 rounded-full"
-              src={task.assignedTo?.image || "/images/default-photo.jpg"}
+              src={task.assignedTo?.image || defaultPhoto}
               alt="Assigned to photo"
               width={44}
               height={44}
@@ -246,7 +247,7 @@ const MotionTR = ({
           <div className="h-11 w-11 flex-shrink-0">
             <Image
               className="h-11 w-11 rounded-full"
-              src={task.createdBy?.image || "/images/default-photo.jpg"}
+              src={task.createdBy?.image || defaultPhoto}
               alt="Created by photo"
               width={44}
               height={44}

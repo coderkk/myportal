@@ -5,6 +5,7 @@ import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import Image from "next/image";
 import { useRef } from "react";
+import defaultPhoto from "../../../public/images/default-photo.jpg";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { Header } from "../../components/common/Header";
 import Spinner from "../../components/common/Spinner";
@@ -145,7 +146,7 @@ const MotionTR = ({
         <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-start lg:gap-3">
           <Image
             className=" h-8 w-8 rounded-full sm:h-11 sm:w-11"
-            src={project.createdBy?.image || "/images/default-photo.jpg"}
+            src={project.createdBy?.image || defaultPhoto}
             alt="Created by photo"
             width={44}
             height={44}
