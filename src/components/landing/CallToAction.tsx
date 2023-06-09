@@ -5,7 +5,7 @@ export const CallToAction = () => {
   return (
     <section
       id="get-started-today"
-      className="relative overflow-hidden bg-gradient-to-bl from-violet-500 via-blue-500  to-blue-600 py-32 "
+      className="relative overflow-hidden bg-gradient-to-bl from-violet-500 via-blue-500 to-blue-600 py-32 "
     >
       <Container className="relative">
         <div className="mx-auto max-w-lg text-center">

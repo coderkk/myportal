@@ -5,31 +5,30 @@ import { useEffect, useState } from "react";
 
 import { Container } from "../common/Container";
 
-// TODO: replace with real screenshots of product
+import financialDashboard from "../../../public/images/screenshots/financial-dashboard.png";
+import invoiceApproval from "../../../public/images/screenshots/invoice-approval.png";
+import invoiceProcessing from "../../../public/images/screenshots/invoice-processing.png";
+
 const features = [
   {
     title: "Automatic invoices processing",
     description:
       "Upload your invoices and our built-in OCR AI will extract key details such as invoice number, costs and vendor automatically for you, magically!",
-    image: "/images/screenshots/invoice-processing.png",
   },
   {
     title: "Real time financial dashboard",
     description:
       "Assign each processed invoice to a cost code and the project's budget will be updated automatically.",
-    image: "/images/screenshots/financial-dashboard.png",
   },
   {
     title: "Invoice approval and payment status",
     description:
       "Review each invoice before making any payments to avoid any over-payments. Track payment status of each invoice to avoid any penalty charges due to late payment.",
-    image: "/images/screenshots/invoice-approval.png",
   },
   {
     title: "Data utilization",
     description:
       "Export extracted invoice data to an excel file for other financial management use such as cost reconciliation and accounting preparation. No more wasted time as all data have been prepared for you through our automation technology powered by AI.",
-    image: "/images/screenshots/invoice-approval.png",
   },
 ];
 
@@ -50,6 +49,21 @@ export const PrimaryFeatures = () => {
       lgMediaQuery.removeEventListener("change", onMediaQueryChange);
     };
   }, []);
+
+  const getImages = (index: number) => {
+    switch (index) {
+      case 0:
+        return invoiceProcessing;
+      case 1:
+        return financialDashboard;
+      case 2:
+        return invoiceApproval;
+      case 3:
+        return invoiceProcessing;
+      default:
+        throw new Error("Invalid index");
+    }
+  };
 
   return (
     <section
@@ -114,7 +128,7 @@ export const PrimaryFeatures = () => {
                 </Tab.List>
               </div>
               <Tab.Panels className="lg:col-span-7">
-                {features.map((feature) => (
+                {features.map((feature, featureIndex) => (
                   <Tab.Panel key={feature.title} unmount={false}>
                     <div className="relative sm:px-6 lg:hidden">
                       <div className="absolute -inset-x-4 bottom-[-4.25rem] top-[-6.5rem] bg-white/10 ring-1 ring-inset ring-white/10 sm:inset-x-0 sm:rounded-t-xl" />
@@ -125,10 +139,8 @@ export const PrimaryFeatures = () => {
                     <div className="mt-10 w-[45rem] overflow-hidden rounded-xl bg-slate-50 shadow-xl shadow-blue-900/20 sm:w-auto lg:mt-0 lg:w-[67.8125rem]">
                       <Image
                         className="w-full"
-                        src={feature.image}
-                        width={2245}
-                        height={1636}
-                        alt=""
+                        src={getImages(featureIndex)}
+                        alt="Picture of primary feature"
                       />
                     </div>
                   </Tab.Panel>

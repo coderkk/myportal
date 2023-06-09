@@ -5,7 +5,10 @@ import { useId } from "react";
 
 import { Container } from "../common/Container";
 
-// TODO: update images
+import fileSharing from "../../../public/images/screenshots/file-sharing.png";
+import siteDiary from "../../../public/images/screenshots/site-diary.png";
+import tasks from "../../../public/images/screenshots/tasks.png";
+
 const features = [
   {
     name: "Site Records",
@@ -91,6 +94,19 @@ const features = [
     },
   },
 ];
+
+const getImages = (index: number) => {
+  switch (index) {
+    case 0:
+      return fileSharing;
+    case 1:
+      return tasks;
+    case 2:
+      return siteDiary;
+    default:
+      throw new Error("Invalid index");
+  }
+};
 
 type feature =
   | {
@@ -213,11 +229,9 @@ const FeaturesDesktop = () => {
                   <div className="w-[52.75rem] overflow-hidden rounded-xl bg-white shadow-lg shadow-slate-900/5 ring-1 ring-slate-500/10">
                     <Image
                       className="w-full"
-                      src={feature.image}
-                      alt=""
+                      src={getImages(featureIndex)}
+                      alt="Picture of secondary feature"
                       sizes="52.75rem"
-                      width={500}
-                      height={500}
                     />
                   </div>
                 </Tab.Panel>
