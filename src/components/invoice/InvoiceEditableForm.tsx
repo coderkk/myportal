@@ -3,13 +3,12 @@ import classNames from "classnames";
 import { parse } from "date-fns";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/router";
-import type {
+import React, {
   BaseSyntheticEvent,
   Dispatch,
   MutableRefObject,
   SetStateAction,
 } from "react";
-import React from "react";
 import ReactDatePicker from "react-datepicker";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
@@ -69,6 +68,8 @@ const InvoiceEditableForm = ({
     searchKey: "",
   });
 
+  const onError = () => toast.error("Missing fields!");
+
   const budgetOptions = budgets.map((budget) => ({
     value: budget.id,
     label: `${budget.costCode} (${budget.description})`,
@@ -84,7 +85,7 @@ const InvoiceEditableForm = ({
         <div className="mx-auto text-left lg:mx-0 lg:text-left">
           <form
             className="m-8"
-            onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+            onSubmit={(e) => void handleSubmit(onSubmit, onError)(e)}
           >
             {fileId && (
               <div className="text-right">
@@ -482,11 +483,6 @@ const InvoiceEditableForm = ({
             <button
               className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none disabled:bg-blue-50 disabled:text-blue-200"
               type="submit"
-              onClick={() => {
-                if (errors.budgetId) {
-                  toast.error("Please select a budget");
-                }
-              }}
             >
               Submit
             </button>
