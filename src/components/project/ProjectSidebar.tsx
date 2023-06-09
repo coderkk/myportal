@@ -99,7 +99,6 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
               };
             }),
           },
-          undefined,
           {
             staleTime: Infinity,
           }
