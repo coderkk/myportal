@@ -28,7 +28,7 @@ const CsvExport = ({ projectId }: { projectId: string }) => {
           "Quantity",
           "Unit",
           "Unit Price",
-          "Total Price",
+          "Total Price (of each item)",
         ],
         filename: "invoices",
       });

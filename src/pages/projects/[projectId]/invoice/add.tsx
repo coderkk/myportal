@@ -174,6 +174,8 @@ const AddInvoicePage = () => {
       const file = files[0];
       if (!ACCEPTEDFORMAT.includes(file["type"]))
         return toast.error("Invalid document type! Please upload a pdf");
+      const fileSize = file.size / 1024 / 1024; // MB
+      if (fileSize > 5) return toast.error("File size exceeds 5MB.");
       setFileToUpload(files[0]);
       const fileId =
         file.name.slice(0, file.name.lastIndexOf(".")) +
