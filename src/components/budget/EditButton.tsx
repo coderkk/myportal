@@ -1,14 +1,13 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import { Edit } from "styled-icons/boxicons-solid";
+import type { z } from "zod";
 import { useUpdateBudget } from "../../hooks/budget";
+import { createUpdateBudgetSchema } from "../../schema/budget";
 
-type FormValues = {
-  description: string;
-  expectedBudget: number;
-  costsIncurred: number;
-};
+type FormValues = z.infer<typeof createUpdateBudgetSchema>;
 
 const EditButton = ({
   budgetId,
@@ -35,11 +34,12 @@ const EditButton = ({
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    values: {
+    resolver: zodResolver(createUpdateBudgetSchema),
+    values: createUpdateBudgetSchema.parse({
       description: description,
       expectedBudget: expectedBudget,
       costsIncurred: costsIncurred,
-    },
+    }),
   });
 
   const { updateBudget } = useUpdateBudget({
@@ -57,10 +57,10 @@ const EditButton = ({
     setOpen(false);
     reset();
     updateBudget({
+      budgetId: budgetId,
       description: data.description,
       expectedBudget: data.expectedBudget,
       costsIncurred: data.costsIncurred,
-      budgetId: budgetId,
     });
   };
   const [open, setOpen] = useState(false);
@@ -148,17 +148,17 @@ const EditButton = ({
             </fieldset>
             {errors.description && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Description is required
+                {errors.description.message}
               </span>
             )}
             {errors.expectedBudget && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Budget is required
+                {errors.expectedBudget.message}
               </span>
             )}
             {errors.costsIncurred && (
               <span className="flex justify-center text-xs italic text-red-400">
-                Costs incurred is required
+                {errors.costsIncurred.message}
               </span>
             )}
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 import { z } from "zod";
-import { createBudgetSchema } from "../../../schema/budget";
+import { createUpdateBudgetSchema } from "../../../schema/budget";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -13,15 +13,12 @@ export const getBudgetsSchema = z.object({
   pageIndex: z.number(),
 });
 
-export const createBudgetSchemaWithId = createBudgetSchema.extend({
+export const createBudgetSchemaWithId = createUpdateBudgetSchema.extend({
   projectId: z.string(),
 });
 
-export const updateBudgetSchema = z.object({
+export const updateBudgetSchemaWithId = createUpdateBudgetSchema.extend({
   budgetId: z.string(),
-  description: z.string(),
-  expectedBudget: z.number(),
-  costsIncurred: z.number(),
 });
 
 export const deleteBudgetSchema = z.object({
@@ -156,7 +153,7 @@ export const budgetRouter = createTRPCRouter({
       })();
     }),
   updateBudget: protectedProcedure
-    .input(updateBudgetSchema)
+    .input(updateBudgetSchemaWithId)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: () => {

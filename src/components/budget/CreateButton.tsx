@@ -6,9 +6,9 @@ import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { useCreateBudget } from "../../hooks/budget";
-import { createBudgetSchema } from "../../schema/budget";
+import { createUpdateBudgetSchema } from "../../schema/budget";
 
-type FormValues = z.infer<typeof createBudgetSchema>;
+type FormValues = z.infer<typeof createUpdateBudgetSchema>;
 
 const CreateButton = ({
   pageIndex,
@@ -27,7 +27,7 @@ const CreateButton = ({
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(createBudgetSchema),
+    resolver: zodResolver(createUpdateBudgetSchema),
   });
   const { createBudget } = useCreateBudget({
     pageIndex,
