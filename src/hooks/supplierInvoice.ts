@@ -1,8 +1,10 @@
 import type { SupplierInvoiceItem } from "@prisma/client";
+import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { nanoid } from "nanoid";
 import { useSession } from "next-auth/react";
 import type { MutableRefObject } from "react";
+import { useMemo } from "react";
 import { mutationCountAtom } from "../atoms/supplierInvoiceAtoms";
 import { api } from "../utils/api";
 
@@ -322,5 +324,56 @@ export const useDeleteSupplierInvoice = ({
     });
   return {
     deleteSupplierInvoice,
+  };
+};
+
+export const useGetSupplierInvoicesForCSVDownload = () => {
+  const {
+    data,
+    isLoading,
+    mutateAsync: getSupplierInvoicesForCSVDownload,
+  } = api.supplierInvoice.getSupplierInvoicesForCSVDownload.useMutation();
+
+  return {
+    data: useMemo(() => {
+      if (!data) return undefined;
+      const transformedData: string[][] = [];
+      for (const supplierInvoice of data) {
+        const {
+          invoiceNo,
+          invoiceDate,
+          budget,
+          supplierName,
+          taxes,
+          discount,
+          grandTotal,
+        } = supplierInvoice;
+        const costCode = `${budget.costCode} (${budget.description})`;
+        let newRow = [
+          invoiceNo,
+          format(invoiceDate, "dd/MM/yyyy"),
+          costCode,
+          supplierName,
+        ];
+        for (const supplierInvoiceItem of supplierInvoice.supplierInvoiceItems) {
+          const { description, quantity, unit, unitPrice, totalPrice } =
+            supplierInvoiceItem;
+          newRow = newRow.concat([
+            description,
+            quantity.toString(),
+            unit.toString(),
+            unitPrice.toString(),
+            totalPrice.toString(),
+            taxes.toString(),
+            discount.toString(),
+            grandTotal.toString(),
+          ]);
+          transformedData.push(newRow);
+        }
+      }
+      return transformedData;
+    }, [data]),
+    getSupplierInvoicesForCSVDownload: getSupplierInvoicesForCSVDownload,
+    isCSVDataLoading: isLoading,
   };
 };

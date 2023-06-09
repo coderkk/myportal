@@ -218,11 +218,11 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-white/10">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
-                      className="mx-auto h-20 w-auto"
-                      src="/images/logos/main.svg"
+                      className="mx-auto mt-6 h-32 w-auto"
+                      src="/images/logos/main.png"
                       alt="Your Company"
-                      width={32}
-                      height={32}
+                      width={400}
+                      height={200}
                     />
                   </div>
                   <nav className="flex flex-1 flex-col">
@@ -330,15 +330,15 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         </Dialog>
       </Transition.Root>
       {/* Static sidebar for desktop */}
-      <div className="hidden xl:fixed xl:inset-y-0 xl:flex xl:w-72 xl:flex-col">
+      <div className="z-10 hidden xl:fixed xl:inset-y-0 xl:flex xl:w-72 xl:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-black/5">
           <div className="flex h-16 shrink-0 items-center">
             <Image
-              className="mx-auto h-20 w-auto"
-              src="/images/logos/main.svg"
+              className="mx-auto mt-6 h-32 w-auto"
+              src="/images/logos/main.png"
               alt="Your Company"
-              width={32}
-              height={32}
+              width={400}
+              height={200}
             />
           </div>
           <nav className="flex flex-1 flex-col">
@@ -435,7 +435,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       </div>
 
       <div className="xl:pl-72">
-        <div className="sticky top-0 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
+        <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
             <Logo className="h-10 w-auto" />
           </Link>

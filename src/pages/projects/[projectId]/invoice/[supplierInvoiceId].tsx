@@ -31,6 +31,7 @@ const SupplierInvoiceView = () => {
       setSupplierInvoiceItems(supplierInvoiceItems),
   });
 
+  console.log(supplierInvoiceData?.budgetId);
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
   });
