@@ -349,26 +349,45 @@ export const useGetSupplierInvoicesForCSVDownload = () => {
           grandTotal,
         } = supplierInvoice;
         const costCode = `${budget.costCode} (${budget.description})`;
-        let newRow = [
+        const invoiceInfo = [
           invoiceNo,
           format(invoiceDate, "dd/MM/yyyy"),
           costCode,
           supplierName,
+          taxes.toString(),
+          discount.toString(),
+          grandTotal.toString(),
         ];
+        let firstRow = true;
+        if (supplierInvoice.supplierInvoiceItems.length <= 0) {
+          transformedData.push(invoiceInfo.concat(["", "", "", "", ""]));
+        }
         for (const supplierInvoiceItem of supplierInvoice.supplierInvoiceItems) {
           const { description, quantity, unit, unitPrice, totalPrice } =
             supplierInvoiceItem;
-          newRow = newRow.concat([
-            description,
-            quantity.toString(),
-            unit.toString(),
-            unitPrice.toString(),
-            totalPrice.toString(),
-            taxes.toString(),
-            discount.toString(),
-            grandTotal.toString(),
-          ]);
-          transformedData.push(newRow);
+          if (firstRow) {
+            transformedData.push(
+              invoiceInfo.concat([
+                description,
+                quantity.toString(),
+                unit.toString(),
+                unitPrice.toString(),
+                totalPrice.toString(),
+              ])
+            );
+            firstRow = false;
+          } else {
+            const paddingArray: string[] = ["", "", "", "", "", "", ""];
+            transformedData.push(
+              paddingArray.concat([
+                description,
+                quantity.toString(),
+                unit.toString(),
+                unitPrice.toString(),
+                totalPrice.toString(),
+              ])
+            );
+          }
         }
       }
       return transformedData;
