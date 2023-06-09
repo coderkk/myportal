@@ -37,6 +37,8 @@ export type SupplierInvoiceWithItems = {
   grandTotal: number;
   fileId: string | undefined;
   budgetId: string;
+  paid: boolean;
+  approved: boolean;
   supplierInvoiceItems: SupplierInvoiceItem[];
 };
 
@@ -155,6 +157,8 @@ const AddInvoicePage = () => {
           ...data,
           projectId: projectId,
           fileId: fileId || undefined,
+          paid: data.paid || false,
+          approved: data.approved || false,
           supplierInvoiceItems: supplierInvoiceItems || [],
         });
         void router.push("/projects/" + projectId + "/invoice/");

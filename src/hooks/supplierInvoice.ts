@@ -33,8 +33,8 @@ export const useCreateSupplierInvoice = () => {
               discount: values.discount,
               grandTotal: values.grandTotal,
               fileId: values.fileId,
-              paid: false, // OU FIX
-              approved: false, // OU FIX
+              paid: values.paid || false, // OU FIX
+              approved: values.approved || false, // OU FIX
               budgetId: values.budgetId,
               projectId: values.projectId,
               createdBy: { name: session.data?.user?.name || "You" },
@@ -163,8 +163,8 @@ export const useUpdateSupplierInvoice = ({
                 updatedSupplierInvoice.discount = values.discount;
                 updatedSupplierInvoice.grandTotal = values.grandTotal;
                 updatedSupplierInvoice.fileId = values.fileId;
-                updatedSupplierInvoice.paid = false; // OU FIX
-                updatedSupplierInvoice.approved = false; // OU FIX
+                updatedSupplierInvoice.paid = values.paid || false; // OU FIX
+                updatedSupplierInvoice.approved = values.approved || false; // OU FIX
                 updatedSupplierInvoice.budgetId = values.budgetId;
                 updatedSupplierInvoice.updatedAt = new Date();
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =
@@ -189,8 +189,8 @@ export const useUpdateSupplierInvoice = ({
               newSupplierInvoice.discount = values.discount;
               newSupplierInvoice.grandTotal = values.grandTotal;
               newSupplierInvoice.fileId = values.fileId;
-              newSupplierInvoice.paid = false; // OU FIX
-              newSupplierInvoice.approved = false; // OU FIX
+              newSupplierInvoice.paid = values.paid || false; // OU FIX
+              newSupplierInvoice.approved = values.approved || false; // OU FIX
               newSupplierInvoice.budgetId = values.budgetId;
               newSupplierInvoice.updatedAt = new Date();
               return newSupplierInvoice;
@@ -235,8 +235,8 @@ export const useUpdateSupplierInvoice = ({
                 updatedSupplierInvoice.discount = values.discount;
                 updatedSupplierInvoice.grandTotal = values.grandTotal;
                 updatedSupplierInvoice.fileId = values.fileId;
-                updatedSupplierInvoice.paid = false; // OU FIX
-                updatedSupplierInvoice.approved = false; // OU FIX
+                updatedSupplierInvoice.paid = values.paid || false; // OU FIX
+                updatedSupplierInvoice.approved = values.approved || false; // OU FIX
                 updatedSupplierInvoice.budgetId = values.budgetId;
                 updatedSupplierInvoice.updatedAt = new Date();
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =

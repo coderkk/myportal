@@ -14,6 +14,8 @@ export const createSupplierInvoiceSchema = z.object({
   fileId: z.string().optional(),
   projectId: z.string(),
   budgetId: z.string(),
+  paid: z.boolean(),
+  approved: z.boolean(),
   supplierInvoiceItems: z.array(
     z.object({
       description: z.string(),
@@ -49,6 +51,8 @@ export const updateSupplierInvoiceSchema = z.object({
   fileId: z.string().optional(),
   projectId: z.string(),
   budgetId: z.string(),
+  paid: z.boolean(),
+  approved: z.boolean(),
   supplierInvoiceItems: z.array(
     z.object({
       id: z.string(),
