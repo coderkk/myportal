@@ -73,6 +73,21 @@ const AddInvoicePage = () => {
   const [fileId, setFileId] = useState("");
 
   const useFormReturn = useForm<SupplierInvoiceWithItems>({
+    defaultValues: {
+      id: "",
+      invoiceNo: "",
+      invoiceDate: new Date(),
+      supplierName: "",
+      subtotal: 0,
+      taxes: 0,
+      discount: 0,
+      grandTotal: 0,
+      fileId: "",
+      budgetId: "",
+      paid: false,
+      approved: false,
+      supplierInvoiceItems: [],
+    },
     values: data,
   });
 
@@ -157,8 +172,8 @@ const AddInvoicePage = () => {
           ...data,
           projectId: projectId,
           fileId: fileId || undefined,
-          paid: data.paid || false,
-          approved: data.approved || false,
+          paid: data.paid,
+          approved: data.approved,
           supplierInvoiceItems: supplierInvoiceItems || [],
         });
         void router.push("/projects/" + projectId + "/invoice/");

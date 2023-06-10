@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { Edit } from "styled-icons/boxicons-solid";
 import {
   activeDateFiltersAtom,
   activeSearchFiltersAtom,
@@ -17,7 +18,6 @@ import {
   useDeleteSupplierInvoice,
   useGetSupplierInvoices,
 } from "../../../../hooks/supplierInvoice";
-import { Edit } from "styled-icons/boxicons-solid";
 
 const DeleteButton = dynamic(
   () => import("../../../../components/common/DeleteButton")
@@ -134,6 +134,7 @@ const Invoices = () => {
                               className="py-3.5 pl-3 pr-4 sm:pr-6"
                             >
                               Actions
+                              <span className="sr-only">Actions</span>
                             </th>
                           </tr>
                         </thead>
@@ -178,7 +179,7 @@ const Invoices = () => {
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.grandTotal}
                               </td>
-                              <td className="flex whitespace-nowrap py-4 pl-3 pr-4 justify-center text-sm font-medium sm:pr-6">
+                              <td className="flex justify-center whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
                                 <button
                                   type="button"
                                   onClick={() => {
