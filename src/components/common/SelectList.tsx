@@ -49,6 +49,7 @@ export default function SelectList({
               "absolute inset-y-0 right-0 flex items-center pr-2",
               error ? "border-2 border-red-400 focus:border-red-400" : ""
             )}
+            onClick={() => setQuery("")}
           >
             <Combobox.Input
               className="w-full border-none text-sm leading-5 text-gray-900 outline-none focus:ring-0"
