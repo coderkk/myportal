@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
 import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import defaultPhoto from "../../../public/images/default-photo.jpg";
 import SessionAuth from "../../components/auth/SessionAuth";
@@ -111,7 +111,6 @@ const MotionTR = ({
   project: project;
   deleteProject: () => void;
 }) => {
-  const router = useRouter();
   const utils = api.useContext();
 
   const onEnterCallback = () => {
@@ -134,14 +133,12 @@ const MotionTR = ({
       className={"w-full hover:bg-slate-100"}
       onMouseEnter={onEnterCallback}
     >
-      <td
+      <Link
         className=" relative w-32 max-w-[8rem] px-3 py-5 text-sm text-gray-500 hover:cursor-pointer sm:w-96 sm:max-w-[24rem]"
-        onClick={() =>
-          void router.push(`/projects/${project.id}/financial-dashboard`)
-        }
+        href={`/projects/${project.id}/financial-dashboard`}
       >
         <div className="text-blue-500 hover:underline">{project.name}</div>
-      </td>
+      </Link>
       <td className="px-3 py-5 text-sm text-gray-500">
         <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-start lg:gap-3">
           <Image
@@ -154,7 +151,6 @@ const MotionTR = ({
           <div className="break-words font-medium text-gray-900">
             {project.createdBy.name}
           </div>
-          {/* <div className="mt-1 text-gray-500">{task.createdBy?.email}</div> */}
         </div>
       </td>
       <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">

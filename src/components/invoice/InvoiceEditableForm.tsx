@@ -1,3 +1,4 @@
+import { Switch } from "@headlessui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import classNames from "classnames";
 import { parse } from "date-fns";
@@ -109,7 +110,7 @@ const InvoiceEditableForm = ({
                 </button>
               </div>
             )}
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex justify-between">
               <div className="flex items-center">
                 <button
                   type="button"
@@ -117,7 +118,7 @@ const InvoiceEditableForm = ({
                     void router.push("/projects/" + projectId + "/invoice");
                   }}
                   title="Back"
-                  className="mx-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
+                  className="mr-2 block rounded-md bg-white px-3 py-2 text-center text-sm font-semibold text-black shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -219,7 +220,7 @@ const InvoiceEditableForm = ({
                     />
                   </div>
                 </div>
-                <div className="mb-2 items-center md:mb-1 md:flex">
+                <div className="mb-4 items-center md:mb-4 md:flex">
                   <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
                     Cost code
                   </label>
@@ -242,6 +243,74 @@ const InvoiceEditableForm = ({
                             }
                             error={errors.budgetId ? true : false}
                           />
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="mb-2 items-center md:mb-2 md:flex">
+                  <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
+                    Paid
+                  </label>
+                  <div className="flex-1">
+                    <Controller
+                      name="paid"
+                      control={control}
+                      render={({ field }) => {
+                        const { onChange, value } = field;
+                        return (
+                          <Switch
+                            checked={value}
+                            onChange={(option) => {
+                              onChange(option);
+                            }}
+                            className={classNames(
+                              value ? "bg-blue-600" : "bg-gray-200",
+                              "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                            )}
+                          >
+                            <span className="sr-only">Paid</span>
+                            <span
+                              aria-hidden="true"
+                              className={classNames(
+                                value ? "translate-x-5" : "translate-x-0",
+                                "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                              )}
+                            />
+                          </Switch>
+                        );
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="mb-2 items-center md:mb-2 md:flex">
+                  <label className="block w-32 text-sm font-bold uppercase tracking-wide text-gray-800">
+                    Approved
+                  </label>
+                  <div className="flex-1">
+                    <Controller
+                      name="approved"
+                      control={control}
+                      render={({ field }) => {
+                        const { onChange, value } = field;
+                        return (
+                          <Switch
+                            checked={value}
+                            onChange={(option) => onChange(option)}
+                            className={classNames(
+                              value ? "bg-blue-600" : "bg-gray-200",
+                              "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                            )}
+                          >
+                            <span className="sr-only">Approved</span>
+                            <span
+                              aria-hidden="true"
+                              className={classNames(
+                                value ? "translate-x-5" : "translate-x-0",
+                                "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                              )}
+                            />
+                          </Switch>
                         );
                       }}
                     />

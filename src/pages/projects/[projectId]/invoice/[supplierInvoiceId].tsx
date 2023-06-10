@@ -31,7 +31,6 @@ const SupplierInvoiceView = () => {
       setSupplierInvoiceItems(supplierInvoiceItems),
   });
 
-  console.log(supplierInvoiceData?.budgetId);
   const { updateSupplierInvoice } = useUpdateSupplierInvoice({
     projectId: projectId,
   });
@@ -56,6 +55,21 @@ const SupplierInvoiceView = () => {
   };
 
   const useFormReturn = useForm<SupplierInvoiceWithItems>({
+    defaultValues: {
+      id: "",
+      invoiceNo: "",
+      invoiceDate: new Date(),
+      supplierName: "",
+      subtotal: 0,
+      taxes: 0,
+      discount: 0,
+      grandTotal: 0,
+      fileId: "",
+      budgetId: "",
+      paid: false,
+      approved: false,
+      supplierInvoiceItems: [],
+    },
     values: supplierInvoiceData,
   });
 
@@ -67,7 +81,7 @@ const SupplierInvoiceView = () => {
     updateSupplierInvoice({
       ...data,
       projectId: projectId,
-      fileId: data.fileId || undefined,
+      fileId: data.fileId !== "" ? data.fileId : undefined,
       supplierInvoiceItems: supplierInvoiceItems || [],
     });
     void router.push("/projects/" + projectId + "/invoice/");

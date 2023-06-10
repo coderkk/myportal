@@ -49,6 +49,7 @@ export default function SelectList({
               "absolute inset-y-0 right-0 flex items-center pr-2",
               error ? "border-2 border-red-400 focus:border-red-400" : ""
             )}
+            onClick={() => setQuery("")}
           >
             <Combobox.Input
               className="w-full border-none text-sm leading-5 text-gray-900 outline-none focus:ring-0"
@@ -73,7 +74,7 @@ export default function SelectList({
         >
           <Combobox.Options
             className={classNames(
-              "absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
+              "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
               filteredOptions.length === 0 && query === "" ? "hidden" : ""
             )}
           >
