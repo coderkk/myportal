@@ -19,7 +19,6 @@ const EditButton = ({
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormValues>({
     values: {
@@ -34,7 +33,6 @@ const EditButton = ({
   ) => {
     e?.preventDefault();
     setOpen(false);
-    reset();
     updatePlant({
       plantId: plant.id,
       plantType: data.type,

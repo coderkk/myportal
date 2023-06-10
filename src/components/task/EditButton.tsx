@@ -37,7 +37,6 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors },
   } = useForm<FormValues>({
@@ -56,7 +55,6 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
   ) => {
     e?.preventDefault();
     setOpen(false);
-    reset();
     updateTask({
       taskId: task.id,
       taskDescription: data.description,
