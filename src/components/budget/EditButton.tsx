@@ -31,7 +31,6 @@ const EditButton = ({
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(updateBudgetSchema),
@@ -55,7 +54,6 @@ const EditButton = ({
   ) => {
     e?.preventDefault();
     setOpen(false);
-    reset();
     updateBudget({
       budgetId: budgetId,
       description: data.description,
