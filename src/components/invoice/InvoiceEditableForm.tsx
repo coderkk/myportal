@@ -231,7 +231,6 @@ const InvoiceEditableForm = ({
                       control={control}
                       render={({ field }) => {
                         const { onChange, value } = field;
-                        console.log(value);
                         const selected = budgetOptions?.find(
                           (budgetOption) => budgetOption.value == value
                         );
@@ -259,7 +258,6 @@ const InvoiceEditableForm = ({
                       control={control}
                       render={({ field }) => {
                         const { onChange, value } = field;
-                        console.log(value);
                         return (
                           <Switch
                             checked={value}
@@ -297,7 +295,7 @@ const InvoiceEditableForm = ({
                         const { onChange, value } = field;
                         return (
                           <Switch
-                            checked={value || false}
+                            checked={value}
                             onChange={(option) => onChange(option)}
                             className={classNames(
                               value ? "bg-blue-600" : "bg-gray-200",
