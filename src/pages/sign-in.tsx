@@ -28,9 +28,9 @@ export default function Signin() {
   }, [router, session.status]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center space-y-8 bg-[url('/images/background-auth.jpg')] bg-cover py-12 sm:px-6 lg:space-y-12 lg:px-8">
+    <div className="via-lightBlue-500 bg-coversm:px-6 flex flex-col items-center justify-center space-y-8 bg-gradient-to-t from-violet-400  to-blue-500 lg:space-y-12 lg:px-8">
       <div className="w-full space-y-4 sm:mx-auto sm:max-w-md">
-        <div className="flex min-h-screen flex-col items-center justify-center space-y-8 py-12 sm:px-6 lg:space-y-12 lg:px-8">
+        <div className="flex min-h-screen flex-col items-center justify-center space-y-8 sm:px-6 lg:space-y-12 lg:px-8">
           <div className="border-y border-gray-700 bg-gray-800 px-4 py-8 shadow sm:rounded-lg sm:border-x sm:px-10">
             <div className="flex animate-fade-in flex-col justify-center text-center">
               <span className="text-sm font-medium text-gray-300">

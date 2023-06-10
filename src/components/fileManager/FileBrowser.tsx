@@ -80,14 +80,17 @@ const FileBrowser = ({ projectId }: { projectId: string }) => {
   ) => {
     const files = event.target.files;
     if (files && files[0]) {
+      const fileSize = files[0].size / 1024 / 1024; // MB
+      if (fileSize > 5) return toast.error("File size exceeds 5MB.");
       const fileName = files[0].name;
       // if exists, don't upload
-      chonkyFiles?.map((file) => {
-        if (file?.name == fileName) {
-          toast.error("Duplicate file name. Delete existing file first");
-          return;
+      if (chonkyFiles)
+        for (const file of chonkyFiles) {
+          if (file?.name == fileName) {
+            toast.error("Duplicate file name. Delete existing file first");
+            return;
+          }
         }
-      });
       await handleUploadFile(files[0]);
       event.target.value = ""; // clear the input
     }

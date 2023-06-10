@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { BaseSyntheticEvent } from "react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import defaultPhoto from "../../../public/images/default-photo.jpg";
 import {
   useGetMyProfessionalRole,
   useUpdateMyProfessionalRole,
@@ -249,7 +250,7 @@ const GeneralInformation = ({
             <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:max-w-xl sm:grid-cols-6">
               <div className="col-span-full flex items-center gap-x-8">
                 <Image
-                  src={session.data?.user?.image || "/images/default-photo.jpg"}
+                  src={session.data?.user?.image || defaultPhoto}
                   alt="Your profile picture"
                   width={50}
                   height={50}
