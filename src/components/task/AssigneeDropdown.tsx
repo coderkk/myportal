@@ -20,6 +20,7 @@ const AssigneeDropdown = ({
   const assigneeInTeam = assignees
     ?.map((assignee) => assignee.id)
     .find((id) => id === taskAssignee?.id);
+  // console.log(assigneeInTeam);
   const placeholder = !taskAssignee
     ? "Select a task assignee"
     : assigneeInTeam
@@ -44,19 +45,20 @@ const AssigneeDropdown = ({
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
-        <Select.Content className="overflow-hidden rounded-md border border-blue-300 bg-white">
+        <Select.Content className="z-30 rounded-md border border-blue-300 bg-white">
           <Select.ScrollUpButton className="flex h-6 items-center justify-center bg-white text-blue-600">
             <ChevronUpIcon />
           </Select.ScrollUpButton>
-          <Select.Viewport className="p-2">
+          <Select.Viewport className=" p-2">
             <Select.Group>
               <Select.Label className="px-8 py-0 text-center text-base text-blue-600">
                 Task Assignee
               </Select.Label>
             </Select.Group>
-            <Select.Separator className=" h-px bg-gray-300" />
+            <Select.Separator className="h-px bg-gray-300" />
             <Select.Group>
               {assignees?.map((assignee) => {
+                console.log(assignee);
                 return (
                   assignee.id &&
                   assignee.email && (
@@ -65,7 +67,7 @@ const AssigneeDropdown = ({
                     </SelectItem>
                   )
                 );
-              }) || []}
+              })}
             </Select.Group>
           </Select.Viewport>
           <Select.ScrollDownButton className="flex h-6 items-center justify-center bg-white text-blue-600">
