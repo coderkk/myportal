@@ -10,5 +10,4 @@ export const createBudgetSchema = z.object({
     .positive({ message: "Costs incurred must be positive" }),
 });
 
-// update refers to the same object as create
 export const updateBudgetSchema = createBudgetSchema;
