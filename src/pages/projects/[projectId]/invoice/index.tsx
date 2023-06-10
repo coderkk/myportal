@@ -134,6 +134,7 @@ const Invoices = () => {
                               className="py-3.5 pl-3 pr-4 sm:pr-6"
                             >
                               Actions
+                              <span className="sr-only">Edit</span>
                             </th>
                           </tr>
                         </thead>
