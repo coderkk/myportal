@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useRef } from "react";
+import { Edit } from "styled-icons/boxicons-solid";
 import {
   activeDateFiltersAtom,
   activeSearchFiltersAtom,
@@ -130,10 +131,10 @@ const Invoices = () => {
                             </th>
                             <th
                               scope="col"
-                              className="relative py-3.5 pl-3 pr-4 sm:pr-6"
+                              className="py-3.5 pl-3 pr-4 sm:pr-6"
                             >
                               Actions
-                              <span className="sr-only">Edit</span>
+                              <span className="sr-only">Actions</span>
                             </th>
                           </tr>
                         </thead>
@@ -178,7 +179,7 @@ const Invoices = () => {
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.grandTotal}
                               </td>
-                              <td className="flex whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                              <td className="flex justify-center whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -189,14 +190,13 @@ const Invoices = () => {
                                         supplierInvoice.id
                                     );
                                   }}
-                                  className="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                                  className="mr-5"
                                 >
-                                  Edit
+                                  <Edit className="h-6 w-6  text-green-500" />
                                 </button>
                                 <DeleteButton
                                   title={`Delete Supplier Invoice ${supplierInvoice.invoiceNo}`}
                                   subtitle="Are you sure you want to permanently delete this supplier invoice?"
-                                  triggerLabel="Delete"
                                   onDelete={() => {
                                     deleteSupplierInvoice({
                                       supplierInvoiceId: supplierInvoice.id,

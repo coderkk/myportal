@@ -329,7 +329,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         </Dialog>
       </Transition.Root>
       {/* Static sidebar for desktop */}
-      <div className="z-10 hidden xl:fixed xl:inset-y-0 xl:flex xl:w-72 xl:flex-col">
+      <div className="z-[15] hidden xl:fixed xl:inset-y-0 xl:flex xl:w-72 xl:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-black/5">
           <div className="flex h-16 shrink-0 items-center">
             <Image
@@ -429,7 +429,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       </div>
 
       <div className="xl:pl-72">
-        <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
+        <div className="sticky top-0 z-[15] flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
             <Logo className="h-10 w-auto" />
           </Link>

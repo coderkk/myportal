@@ -24,6 +24,8 @@ export const useExtractInvoiceInfo = () => {
               id: "",
               fileId: "",
               budgetId: "",
+              paid: false,
+              approved: false,
               invoiceDate: isValid(
                 parse(data.invoiceDate, "dd/MM/yyyy", new Date())
               )
