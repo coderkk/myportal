@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
 import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import Image from "next/image";
@@ -112,7 +111,6 @@ const MotionTR = ({
   project: project;
   deleteProject: () => void;
 }) => {
-  const router = useRouter();
   const utils = api.useContext();
 
   const onEnterCallback = () => {
