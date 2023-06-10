@@ -32,7 +32,6 @@ const EditButton = ({
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormValues>({
     values: {
@@ -55,7 +54,6 @@ const EditButton = ({
   ) => {
     e?.preventDefault();
     setOpen(false);
-    reset();
     updateBudget({
       description: data.description,
       expectedBudget: data.expectedBudget,

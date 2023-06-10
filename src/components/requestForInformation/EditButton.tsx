@@ -29,7 +29,6 @@ const EditButton = ({
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors },
   } = useForm<FormValues>({
@@ -48,7 +47,6 @@ const EditButton = ({
   ) => {
     e?.preventDefault();
     setOpen(false);
-    reset();
     updateRequestForInformation({
       requestForInformationId: requestForInformation.id,
       requestForInformationTopic: data.topic,

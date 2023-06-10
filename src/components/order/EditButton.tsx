@@ -33,7 +33,6 @@ const EditButton = ({
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors },
   } = useForm<FormValues>({
@@ -53,7 +52,6 @@ const EditButton = ({
   ) => {
     e?.preventDefault();
     setOpen(false);
-    reset();
     updateOrder({
       orderId: order.id,
       orderNumber: data.orderNumber,

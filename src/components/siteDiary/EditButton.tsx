@@ -27,7 +27,6 @@ const EditButton = ({
   const {
     register,
     handleSubmit,
-    reset,
     control,
     formState: { errors },
   } = useForm<FormValues>({
@@ -43,7 +42,6 @@ const EditButton = ({
   ) => {
     e?.preventDefault();
     setOpen(false);
-    reset();
     updateSiteDiary({
       siteDiaryId: siteDiary.id,
       siteDiaryDate: data.date,
