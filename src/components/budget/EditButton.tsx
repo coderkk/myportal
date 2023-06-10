@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import { Edit } from "styled-icons/boxicons-solid";
 import type { z } from "zod";
 import { useUpdateBudget } from "../../hooks/budget";
-import { createUpdateBudgetSchema } from "../../schema/budget";
+import { updateBudgetSchema } from "../../schema/budget";
 
-type FormValues = z.infer<typeof createUpdateBudgetSchema>;
+type FormValues = z.infer<typeof updateBudgetSchema>;
 
 const EditButton = ({
   budgetId,
@@ -34,8 +34,8 @@ const EditButton = ({
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(createUpdateBudgetSchema),
-    values: createUpdateBudgetSchema.parse({
+    resolver: zodResolver(updateBudgetSchema),
+    values: updateBudgetSchema.parse({
       description: description,
       expectedBudget: expectedBudget,
       costsIncurred: costsIncurred,
