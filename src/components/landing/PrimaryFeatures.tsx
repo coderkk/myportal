@@ -88,7 +88,7 @@ export const PrimaryFeatures = () => {
         >
           {({ selectedIndex }) => (
             <>
-              <div className="-mx-4 flex overflow-x-auto pb-4 sm:mx-0 sm:overflow-visible sm:pb-0 lg:col-span-5">
+              <div className="-mx-4 flex overflow-x-auto pb-4 sm:mx-0 lg:col-span-5">
                 <Tab.List className="relative z-10 flex gap-x-4 whitespace-nowrap px-4 sm:mx-auto sm:px-0 lg:mx-0 lg:block lg:gap-x-0 lg:gap-y-1 lg:whitespace-normal">
                   {features.map((feature, featureIndex) => (
                     <div
@@ -96,7 +96,7 @@ export const PrimaryFeatures = () => {
                       className={clsx(
                         "group relative rounded-full px-4 py-1 lg:rounded-l-xl lg:rounded-r-none lg:p-6",
                         selectedIndex === featureIndex
-                          ? "bg-white lg:bg-white/10 lg:ring-1 lg:ring-inset lg:ring-white/10"
+                          ? "lg:bg-white/10 lg:ring-white/10 bg-white lg:ring-1 lg:ring-inset"
                           : "hover:bg-white/10 lg:hover:bg-white/5"
                       )}
                     >
@@ -136,7 +136,7 @@ export const PrimaryFeatures = () => {
                         {feature.description}
                       </p>
                     </div>
-                    <div className="mt-10 w-[45rem] overflow-hidden rounded-xl bg-slate-50 shadow-xl shadow-blue-900/20 sm:w-auto lg:mt-0 lg:w-[67.8125rem]">
+                    <div className="lg:w-[67.8125rem] mt-10 w-[45rem] overflow-hidden rounded-xl bg-slate-50 shadow-xl shadow-blue-900/20 sm:w-auto lg:mt-0">
                       <Image
                         className="w-full"
                         src={getImages(featureIndex)}
