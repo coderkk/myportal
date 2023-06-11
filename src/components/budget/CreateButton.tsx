@@ -28,6 +28,12 @@ const CreateButton = ({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(createBudgetSchema),
+    defaultValues: {
+      projectId: projectId,
+      description: "",
+      expectedBudget: 0,
+      costsIncurred: 0,
+    },
   });
   const { createBudget } = useCreateBudget({
     pageIndex,

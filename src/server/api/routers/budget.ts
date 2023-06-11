@@ -13,14 +13,6 @@ export const getBudgetsSchema = z.object({
   pageIndex: z.number(),
 });
 
-export const createBudgetSchemaWithId = createBudgetSchema.extend({
-  projectId: z.string(),
-});
-
-export const updateBudgetSchemaWithId = updateBudgetSchema.extend({
-  budgetId: z.string(),
-});
-
 export const deleteBudgetSchema = z.object({
   budgetId: z.string(),
 });
@@ -31,7 +23,7 @@ export const getExpectedBudgetSumAndCostsIncurredSumSchema = z.object({
 
 export const budgetRouter = createTRPCRouter({
   createBudget: protectedProcedure
-    .input(createBudgetSchemaWithId)
+    .input(createBudgetSchema)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: () => {
@@ -153,7 +145,7 @@ export const budgetRouter = createTRPCRouter({
       })();
     }),
   updateBudget: protectedProcedure
-    .input(updateBudgetSchemaWithId)
+    .input(updateBudgetSchema)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: () => {

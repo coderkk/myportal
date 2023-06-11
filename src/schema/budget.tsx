@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const createBudgetSchema = z.object({
+  projectId: z.string().min(1, "A projectId is required"),
   description: z.string().trim().min(1, "A description is required"),
   expectedBudget: z
     .number({ invalid_type_error: "Budget must be a number" })
@@ -10,4 +11,8 @@ export const createBudgetSchema = z.object({
     .positive({ message: "Costs incurred must be positive" }),
 });
 
-export const updateBudgetSchema = createBudgetSchema;
+export const updateBudgetSchema = createBudgetSchema
+  .omit({ projectId: true })
+  .extend({
+    budgetId: z.string().min(1, "A budgetId is required"),
+  });
