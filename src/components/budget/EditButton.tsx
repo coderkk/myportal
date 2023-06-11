@@ -34,12 +34,12 @@ const EditButton = ({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(updateBudgetSchema),
-    values: updateBudgetSchema.parse({
+    values: {
       budgetId: budgetId,
       description: description,
       expectedBudget: expectedBudget,
       costsIncurred: costsIncurred,
-    }),
+    },
   });
 
   const { updateBudget } = useUpdateBudget({
