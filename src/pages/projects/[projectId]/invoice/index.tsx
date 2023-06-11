@@ -154,7 +154,7 @@ const Invoices = () => {
                                 )}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {supplierInvoice.budgetId}
+                                {supplierInvoice.budget.description} ({supplierInvoice.budget.costCode})
                               </td>
                               <td className="flex gap-2 whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.paid ? (

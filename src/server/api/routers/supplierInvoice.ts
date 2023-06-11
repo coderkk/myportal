@@ -145,6 +145,14 @@ export const supplierInvoiceRouter = createTRPCRouter({
               approved:
                 input.approved !== undefined ? input.approved : undefined,
             },
+            include: {
+              budget: {
+                select: {
+                  description: true,
+                  costCode: true,
+                }
+              }
+            },
             orderBy: {
               createdAt: "desc",
             },
