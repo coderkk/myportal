@@ -1,5 +1,6 @@
 import { customAlphabet } from "nanoid";
 import { z } from "zod";
+import { createBudgetSchema, updateBudgetSchema } from "../../../schema/budget";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -10,20 +11,6 @@ export const getBudgetsSchema = z.object({
   searchKey: z.string(),
   pageSize: z.number().optional(),
   pageIndex: z.number(),
-});
-
-export const createBudgetSchema = z.object({
-  projectId: z.string(),
-  description: z.string(),
-  expectedBudget: z.number(),
-  costsIncurred: z.number(),
-});
-
-export const updateBudgetSchema = z.object({
-  budgetId: z.string(),
-  description: z.string(),
-  expectedBudget: z.number(),
-  costsIncurred: z.number(),
 });
 
 export const deleteBudgetSchema = z.object({
