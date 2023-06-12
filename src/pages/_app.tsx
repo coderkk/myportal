@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import NextNProgress from "nextjs-progressbar";
 import { Toaster } from "react-hot-toast";
 import "../styles/globals.css";
 import { api } from "../utils/api";
@@ -32,6 +33,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <ReactQueryDevtools />
       <Toaster />
+      <NextNProgress
+        options={{ showSpinner: false }}
+        startPosition={0}
+        stopDelayMs={200}
+      />
       {component}
     </SessionProvider>
   );

@@ -180,8 +180,8 @@ const Invoices = () => {
                                 {supplierInvoice.grandTotal}
                               </td>
                               <td className="flex justify-center whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-6">
-                                <button
-                                  type="button"
+                                <Edit
+                                  className="h-6 w-6  text-green-500"
                                   onClick={() => {
                                     void router.push(
                                       "/projects/" +
@@ -190,10 +190,7 @@ const Invoices = () => {
                                         supplierInvoice.id
                                     );
                                   }}
-                                  className="mr-5"
-                                >
-                                  <Edit className="h-6 w-6  text-green-500" />
-                                </button>
+                                />
                                 <DeleteButton
                                   title={`Delete Supplier Invoice ${supplierInvoice.invoiceNo}`}
                                   subtitle="Are you sure you want to permanently delete this supplier invoice?"

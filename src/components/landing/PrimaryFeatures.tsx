@@ -96,7 +96,7 @@ export const PrimaryFeatures = () => {
                       className={clsx(
                         "group relative rounded-full px-4 py-1 lg:rounded-l-xl lg:rounded-r-none lg:p-6",
                         selectedIndex === featureIndex
-                          ? "lg:bg-white/10 lg:ring-white/10 bg-white lg:ring-1 lg:ring-inset"
+                          ? "bg-white lg:bg-white/10 lg:ring-1 lg:ring-inset lg:ring-white/10"
                           : "hover:bg-white/10 lg:hover:bg-white/5"
                       )}
                     >
@@ -136,7 +136,7 @@ export const PrimaryFeatures = () => {
                         {feature.description}
                       </p>
                     </div>
-                    <div className="lg:w-[67.8125rem] mt-10 w-[45rem] overflow-hidden rounded-xl bg-slate-50 shadow-xl shadow-blue-900/20 sm:w-auto lg:mt-0">
+                    <div className="mt-10 w-[45rem] overflow-hidden rounded-xl bg-slate-50 shadow-xl shadow-blue-900/20 sm:w-auto lg:mt-0 lg:w-[67.8125rem]">
                       <Image
                         className="w-full"
                         src={getImages(featureIndex)}
