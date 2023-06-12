@@ -21,7 +21,6 @@ import {
 import { env } from "../../env/client.mjs";
 import { INFINITE_QUERY_LIMIT, getSearchType } from "../../hooks/task";
 import { api } from "../../utils/api";
-import { Logo } from "../common/Logo";
 import { projectFeatures } from "../project/data";
 import { getDateFromActiveFilter } from "../siteDiary/DateFilter";
 
@@ -220,7 +219,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-white/10">
                   <div className="flex h-16 shrink-0 items-center">
                     <Image
-                      className="mx-auto mt-6 h-32 w-auto"
+                      className="mx-auto h-16 w-auto"
                       src={mainLogo}
                       alt="Your Company"
                     />
@@ -333,7 +332,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-50 px-6 ring-1 ring-black/5">
           <div className="flex h-16 shrink-0 items-center">
             <Image
-              className="mx-auto mt-6 h-32 w-auto"
+              className="mx-auto h-32 w-auto"
               src={mainLogo}
               alt="Your Company"
             />
@@ -431,7 +430,11 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
       <div className="xl:pl-72">
         <div className="sticky top-0 z-[15] flex h-16 shrink-0 items-center justify-between border-b bg-white px-4 shadow-sm sm:px-6 lg:px-8 xl:hidden">
           <Link href="/" aria-label="Home">
-            <Logo className="h-10 w-auto" />
+            <Image
+              className="mx-auto mb-2 h-32 w-auto"
+              src={mainLogo}
+              alt="MySmart Portal"
+            />
           </Link>
           <button
             type="button"

@@ -1,7 +1,8 @@
 import Link from "next/link";
 
+import Image from "next/image";
+import mainLogo from "../../../public/images/logos/main-logo.png";
 import { Container } from "./Container";
-import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
 
 export function Footer() {
@@ -9,7 +10,11 @@ export function Footer() {
     <footer className="bg-slate-50">
       <Container>
         <div className="py-16">
-          <Logo className="mx-auto h-10 w-auto" />
+          <Image
+            className="mx-auto h-32 w-auto"
+            src={mainLogo}
+            alt="MySmart Portal"
+          />
           <nav className="mt-10 text-sm" aria-label="quick links">
             <div className="-my-1 flex justify-center gap-x-6">
               <NavLink href="#features">Features</NavLink>

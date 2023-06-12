@@ -5,9 +5,10 @@ import type { ReactNode } from "react";
 import { Fragment } from "react";
 
 import { signOut } from "next-auth/react";
+import Image from "next/image";
+import mainLogo from "../../../public/images/logos/main-logo.png";
 import { Button } from "./Button";
 import { Container } from "./Container";
-import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
 import RenderIfAuthedElse from "./RenderIfAuthedElse";
 
@@ -141,12 +142,16 @@ export const Header = ({
   mobileExtraComponents?: ReactNode;
 }) => {
   return (
-    <header className="py-10">
+    <header>
       <Container>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
             <Link href="/" aria-label="Home">
-              <Logo className="h-10 w-auto" />
+              <Image
+                className="mx-auto h-32 w-auto"
+                src={mainLogo}
+                alt="MySmart Portal"
+              />
             </Link>
             <div className="hidden md:flex md:gap-x-6">
               <RenderIfAuthedElse
