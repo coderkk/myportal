@@ -30,7 +30,7 @@ const EditButton = ({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    values: {
+    defaultValues: {
       name: siteDiary.name,
       date: siteDiary.date,
     },
@@ -74,7 +74,6 @@ const EditButton = ({
                     errors.name ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="name"
-                  defaultValue={siteDiary.name}
                   {...register("name", { required: true })}
                 />
 
