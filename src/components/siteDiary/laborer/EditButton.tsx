@@ -25,6 +25,10 @@ const EditButton = ({
       type: laborer.type,
       amount: laborer.amount,
     },
+    defaultValues: {
+      type: "",
+      amount: 0,
+    },
   });
   const { updateLaborer } = useUpdateLaborer({ siteDiaryId: siteDiaryId });
   const onSubmit = (
@@ -87,7 +91,6 @@ const EditButton = ({
                   }`}
                   id="amount"
                   placeholder="Nr."
-                  // defaultValue={1}
                   type="number"
                   {...register("amount", {
                     required: true,
