@@ -36,6 +36,7 @@ export const useCreateSupplierInvoice = () => {
               paid: values.paid,
               approved: values.approved,
               budgetId: values.budgetId,
+              budget: {description: "", costCode: ""},
               projectId: values.projectId,
               createdBy: { name: session.data?.user?.name || "You" },
               createdById: session.data?.user?.id || nanoid(),
