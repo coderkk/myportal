@@ -34,7 +34,7 @@ const EditButton = ({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(updateBudgetSchema),
-    values: {
+    defaultValues: {
       budgetId: budgetId,
       description: description,
       expectedBudget: expectedBudget,
@@ -113,7 +113,6 @@ const EditButton = ({
                       : ""
                   }`}
                   id="expectedBudget"
-                  defaultValue={Math.floor(Math.random() * 100000).toString()}
                   {...register("expectedBudget", {
                     required: true,
                     valueAsNumber: true,
@@ -136,7 +135,6 @@ const EditButton = ({
                       : ""
                   }`}
                   id="costsIncurred"
-                  defaultValue={Math.floor(Math.random() * 100000).toString()}
                   {...register("costsIncurred", {
                     required: true,
                     valueAsNumber: true,
