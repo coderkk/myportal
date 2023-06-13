@@ -19,7 +19,14 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      orderNumber: "",
+      note: "",
+      arrivalOnSite: "NO",
+      supplierEmailAddress: "",
+    },
+  });
 
   const { createOrder } = useCreateOrder();
   const onSubmit = (
@@ -110,7 +117,6 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                   <Controller
                     name="arrivalOnSite"
                     control={control}
-                    defaultValue={"NO"}
                     rules={{ required: true }}
                     render={({ field }) => {
                       const value = field.value;

@@ -36,7 +36,7 @@ const EditButton = ({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    values: {
+    defaultValues: {
       note: order.orderNote,
       orderNumber: order.orderNumber,
       supplierEmailAddress: order.supplierEmailAddress,
@@ -133,7 +133,6 @@ const EditButton = ({
                   <Controller
                     name="arrivalOnSite"
                     control={control}
-                    defaultValue={"NO"}
                     rules={{ required: true }}
                     render={({ field }) => {
                       const { value, onChange } = field;
