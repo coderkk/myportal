@@ -32,7 +32,7 @@ const EditButton = ({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    values: {
+    defaultValues: {
       topic: requestForInformation.topic,
       status: requestForInformation.status,
     },
@@ -84,7 +84,6 @@ const EditButton = ({
                 <Controller
                   name="status"
                   control={control}
-                  defaultValue="PENDING"
                   rules={{ required: true }}
                   render={({ field }) => {
                     const { value, onChange } = field;

@@ -17,7 +17,12 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      topic: "",
+      status: "PENDING",
+    },
+  });
   const { createRequestForInformation } = useCreateRequestForInformation();
 
   const onSubmit = (
@@ -64,7 +69,6 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                 <Controller
                   name="status"
                   control={control}
-                  defaultValue="PENDING"
                   rules={{ required: true }}
                   render={({ field }) => {
                     const value = field.value;
