@@ -1,11 +1,11 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Mailbox } from "@styled-icons/bootstrap/Mailbox";
 import { signIn } from "next-auth/react";
 import type { BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
-
-type FormValues = {
-  email: string;
-};
+import type { z } from "zod";
+import { OAuthSchema } from "../../schema/oauth";
+type FormValues = z.infer<typeof OAuthSchema>;
 
 const EmailButton = ({ callbackUrl }: { callbackUrl: string }) => {
   const {
@@ -13,7 +13,12 @@ const EmailButton = ({ callbackUrl }: { callbackUrl: string }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    resolver: zodResolver(OAuthSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
 
   const onSubmit = (
     data: FormValues,
@@ -51,7 +56,7 @@ const EmailButton = ({ callbackUrl }: { callbackUrl: string }) => {
       </div>
       {errors.email && (
         <span className="flex justify-center text-xs italic text-red-400">
-          Email is required and must match email format
+          {errors.email.message}
         </span>
       )}
       <button
