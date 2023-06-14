@@ -1,4 +1,4 @@
-import type { SupplierInvoiceItem } from "@prisma/client";
+import type { Budget, SupplierInvoiceItem } from "@prisma/client";
 import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { nanoid } from "nanoid";
@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { supplierInvoicesMutationCountAtom } from "../atoms/supplierInvoiceAtoms";
 import { api } from "../utils/api";
 
-export const useCreateSupplierInvoice = () => {
+export const useCreateSupplierInvoice = ({ budget }: { budget?: Budget }) => {
   const utils = api.useContext();
   const session = useSession();
   const [, setSupplierInvoicesMutationCount] = useAtom(
@@ -16,8 +16,10 @@ export const useCreateSupplierInvoice = () => {
   const { mutate: createSupplierInvoice } =
     api.supplierInvoice.createSupplierInvoice.useMutation({
       async onMutate(values) {
+        // console.log(ss);
         setSupplierInvoicesMutationCount((prev) => prev + 1);
         await utils.supplierInvoice.getSupplierInvoices.cancel();
+
         const previousData = utils.supplierInvoice.getSupplierInvoices.getData({
           projectId: values.projectId,
         });
@@ -42,6 +44,10 @@ export const useCreateSupplierInvoice = () => {
               createdById: session.data?.user?.id || nanoid(),
               createdAt: new Date(),
               updatedAt: new Date(),
+              budget: {
+                description: budget?.description || "",
+                costCode: budget?.costCode || "",
+              },
             };
             if (oldSupplierInvoices) {
               return [optimisticUpdateObject, ...oldSupplierInvoices];
@@ -129,8 +135,10 @@ export const useGetSupplierInvoice = ({
 
 export const useUpdateSupplierInvoice = ({
   projectId,
+  budget,
 }: {
   projectId: string;
+  budget?: Budget;
 }) => {
   const utils = api.useContext();
   const [, setSupplierInvoicesMutationCount] = useAtom(
@@ -172,6 +180,9 @@ export const useUpdateSupplierInvoice = ({
                 updatedSupplierInvoice.approved = values.approved;
                 updatedSupplierInvoice.budgetId = values.budgetId;
                 updatedSupplierInvoice.updatedAt = new Date();
+                updatedSupplierInvoice.budget.description =
+                  budget?.description || "";
+                updatedSupplierInvoice.budget.costCode = budget?.costCode || "";
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =
                   updatedSupplierInvoice;
               }
@@ -244,6 +255,9 @@ export const useUpdateSupplierInvoice = ({
                 updatedSupplierInvoice.approved = values.approved;
                 updatedSupplierInvoice.budgetId = values.budgetId;
                 updatedSupplierInvoice.updatedAt = new Date();
+                updatedSupplierInvoice.budget.description =
+                  budget?.description || "";
+                updatedSupplierInvoice.budget.costCode = budget?.costCode || "";
                 newSupplierInvoices[supplierInvoiceToUpdateIndex] =
                   updatedSupplierInvoice;
               }

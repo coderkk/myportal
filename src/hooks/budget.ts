@@ -120,6 +120,27 @@ export const useGetBudgets = ({
   };
 };
 
+export const useGetBudget = ({
+  budgetId,
+  enabled,
+}: {
+  budgetId: string;
+  enabled: boolean;
+}) => {
+  const { data: budget, isLoading } = api.budget.getBudget.useQuery(
+    {
+      budgetId: budgetId,
+    },
+    {
+      enabled: enabled,
+    }
+  );
+  return {
+    budget: budget,
+    isLoading: isLoading,
+  };
+};
+
 export const useUpdateBudget = ({
   pageIndex,
   pageSize,

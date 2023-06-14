@@ -9,6 +9,7 @@ import { env } from "../../../../env/client.mjs";
 import { useGetPreSignedURLForDownload } from "../../../../hooks/s3";
 
 import InvoiceEditableForm from "../../../../components/invoice/InvoiceEditableForm";
+import { useGetBudget } from "../../../../hooks/budget";
 import {
   useGetSupplierInvoice,
   useUpdateSupplierInvoice,
@@ -29,10 +30,6 @@ const SupplierInvoiceView = () => {
     supplierInvoiceId: supplierInvoiceId,
     onSucess: (supplierInvoiceItems: SupplierInvoiceItem[]) =>
       setSupplierInvoiceItems(supplierInvoiceItems),
-  });
-
-  const { updateSupplierInvoice } = useUpdateSupplierInvoice({
-    projectId: projectId,
   });
 
   const { getPreSignedURLForDownload } = useGetPreSignedURLForDownload();
@@ -71,6 +68,16 @@ const SupplierInvoiceView = () => {
       supplierInvoiceItems: [],
     },
     values: supplierInvoiceData,
+  });
+
+  console.log(useFormReturn.getValues().budgetId);
+  const { budget } = useGetBudget({
+    budgetId: useFormReturn.getValues().budgetId,
+    enabled: useFormReturn.getValues().budgetId !== "",
+  });
+  const { updateSupplierInvoice } = useUpdateSupplierInvoice({
+    projectId: projectId,
+    budget: budget,
   });
 
   const onSubmit = (

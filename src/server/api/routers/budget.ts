@@ -21,6 +21,8 @@ export const getExpectedBudgetSumAndCostsIncurredSumSchema = z.object({
   projectId: z.string(),
 });
 
+export const getBudgetSchema = deleteBudgetSchema;
+
 export const budgetRouter = createTRPCRouter({
   createBudget: protectedProcedure
     .input(createBudgetSchema)
@@ -142,6 +144,20 @@ export const budgetRouter = createTRPCRouter({
           }
         },
         errorMessages: ["Failed to get budgets"],
+      })();
+    }),
+  getBudget: protectedProcedure
+    .input(getBudgetSchema)
+    .query(async ({ ctx, input }) => {
+      return await trycatch({
+        fn: () => {
+          return ctx.prisma.budget.findUniqueOrThrow({
+            where: {
+              id: input.budgetId,
+            },
+          });
+        },
+        errorMessages: ["Failed to get budget"],
       })();
     }),
   updateBudget: protectedProcedure
