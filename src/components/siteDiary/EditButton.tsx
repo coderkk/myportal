@@ -30,9 +30,13 @@ const EditButton = ({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: {
+    values: {
       name: siteDiary.name,
       date: siteDiary.date,
+    },
+    defaultValues: {
+      name: "",
+      date: new Date(),
     },
   });
   const { updateSiteDiary } = useUpdateSiteDiary({ projectId: projectId });

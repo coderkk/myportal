@@ -36,11 +36,17 @@ const EditButton = ({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: {
+    values: {
       note: order.orderNote,
       orderNumber: order.orderNumber,
       supplierEmailAddress: order.supplierEmailAddress,
       arrivalOnSite: order.arrivalOnSite,
+    },
+    defaultValues: {
+      orderNumber: "",
+      note: "",
+      arrivalOnSite: "NO",
+      supplierEmailAddress: "",
     },
   });
 

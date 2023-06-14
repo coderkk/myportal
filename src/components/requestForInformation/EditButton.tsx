@@ -32,9 +32,13 @@ const EditButton = ({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: {
+    values: {
       topic: requestForInformation.topic,
       status: requestForInformation.status,
+    },
+    defaultValues: {
+      topic: "",
+      status: "PENDING",
     },
   });
   const { updateRequestForInformation } = useUpdateRequestForInformation({
