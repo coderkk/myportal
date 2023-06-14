@@ -25,6 +25,10 @@ const EditButton = ({
       type: plant.type,
       amount: plant.amount,
     },
+    defaultValues: {
+      type: "",
+      amount: 1,
+    },
   });
   const { updatePlant } = useUpdatePlant({ siteDiaryId: siteDiaryId });
   const onSubmit = (
@@ -87,7 +91,6 @@ const EditButton = ({
                   }`}
                   id="amount"
                   placeholder="Nr."
-                  // defaultValue={1}
                   type="number"
                   {...register("amount", {
                     required: true,

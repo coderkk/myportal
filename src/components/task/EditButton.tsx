@@ -45,6 +45,11 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
       status: task.status,
       assignee: task.assignedTo,
     },
+    defaultValues: {
+      description: "",
+      assignee: undefined,
+      status: "NOT_STARTED",
+    },
   });
   const { updateTask } = useUpdateTask({ projectId: projectId });
   const { usersForProject } = useGetUsersForProject({ projectId: projectId });
@@ -110,7 +115,6 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
                 <Controller
                   name="status"
                   control={control}
-                  defaultValue={"NOT_STARTED"}
                   rules={{ required: true }}
                   render={({ field }) => {
                     const { value, onChange } = field;
