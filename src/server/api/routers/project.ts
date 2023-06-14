@@ -1,4 +1,6 @@
+import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import type { Session } from "next-auth";
 import { z } from "zod";
 import { createProjectSchema } from "../../../schema/project";
 import { trycatch } from "../../../utils/trycatch";
@@ -33,6 +35,29 @@ export const removeFromProjectSchema = z.object({
 export const getProjectCreatorSchema = z.object({
   projectId: z.string(),
 });
+
+export async function userIsCreator({
+  prisma,
+  session,
+  projectId,
+}: {
+  prisma: PrismaClient;
+  session: Session;
+  projectId: string;
+}) {
+  const isCreator = await prisma.project.findFirst({
+    where: {
+      id: projectId,
+      createdById: session?.user?.id,
+    },
+  });
+  if (!isCreator) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+  return isCreator;
+}
 
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
@@ -139,19 +164,11 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: async () => {
-          const isCreator = await ctx.prisma.project.findFirst({
-            where: {
-              id: input.projectId,
-              createdById: ctx.session.user.id,
-            },
+          await userIsCreator({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
           });
-
-          // if not isCreator, we throw an error
-          if (!isCreator) {
-            throw new TRPCError({
-              code: "UNAUTHORIZED",
-            });
-          }
           // delete project
           return await ctx.prisma.project.delete({
             where: {
@@ -170,11 +187,10 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: async () => {
-          const isCreatorPromise = ctx.prisma.project.findFirst({
-            where: {
-              id: input.projectId,
-              createdById: ctx.session.user.id,
-            },
+          const isCreatorPromise = userIsCreator({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
           });
           const userAlreadyInProjectPromise =
             ctx.prisma.usersOnProjects.findFirst({
@@ -220,11 +236,10 @@ export const projectRouter = createTRPCRouter({
       return await trycatch({
         fn: async () => {
           // check for permission first - only creator of the project can remove others
-          const isCreatorPromise = ctx.prisma.project.findFirst({
-            where: {
-              id: input.projectId,
-              createdById: ctx.session.user.id,
-            },
+          const isCreatorPromise = userIsCreator({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
           });
           const userAlreadyInProjectPromise =
             ctx.prisma.usersOnProjects.findFirst({
