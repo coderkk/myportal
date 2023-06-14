@@ -48,7 +48,7 @@ export async function userIsCreator({
   const isCreator = await prisma.project.findFirst({
     where: {
       id: projectId,
-      createdById: session?.user?.id,
+      createdById: session.user?.id,
     },
   });
   if (!isCreator) {
@@ -57,6 +57,29 @@ export async function userIsCreator({
     });
   }
   return isCreator;
+}
+
+export async function userBelongsToProject({
+  prisma,
+  session,
+  projectId,
+}: {
+  prisma: PrismaClient;
+  session: Session;
+  projectId: string;
+}) {
+  const belongsToProject = await prisma.usersOnProjects.findFirst({
+    where: {
+      userId: session.user?.id,
+      projectId: projectId,
+    },
+  });
+  if (!belongsToProject) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+  return belongsToProject;
 }
 
 export const projectRouter = createTRPCRouter({
@@ -132,22 +155,35 @@ export const projectRouter = createTRPCRouter({
     .input(getProjectSchema)
     .query(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
-          return ctx.prisma.project.findUniqueOrThrow({
+        fn: async () => {
+          await userBelongsToProject({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
+          });
+          return await ctx.prisma.project.findUniqueOrThrow({
             where: {
               id: input.projectId,
             },
           });
         },
-        errorMessages: ["Failed to get project"],
+        errorMessages: [
+          "Failed to get project",
+          "You do not belong to this project",
+        ],
       })();
     }),
   updateProject: protectedProcedure
     .input(updateProjectSchema)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
-          return ctx.prisma.project.update({
+        fn: async () => {
+          await userBelongsToProject({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
+          });
+          return await ctx.prisma.project.update({
             where: {
               id: input.projectId,
             },
@@ -156,7 +192,10 @@ export const projectRouter = createTRPCRouter({
             },
           });
         },
-        errorMessages: ["Failed to update project"],
+        errorMessages: [
+          "Failed to update project",
+          "You do not belong to this project",
+        ],
       })();
     }),
   deleteProject: protectedProcedure
@@ -169,6 +208,7 @@ export const projectRouter = createTRPCRouter({
             session: ctx.session,
             projectId: input.projectId,
           });
+
           // delete project
           return await ctx.prisma.project.delete({
             where: {
@@ -264,16 +304,13 @@ export const projectRouter = createTRPCRouter({
             });
           }
 
-          return await ctx.prisma.$transaction(async (tx) => {
-            // remove user from project
-            return tx.usersOnProjects.delete({
-              where: {
-                userId_projectId: {
-                  userId: input.userToBeRemovedId,
-                  projectId: input.projectId,
-                },
+          return await ctx.prisma.usersOnProjects.delete({
+            where: {
+              userId_projectId: {
+                userId: input.userToBeRemovedId,
+                projectId: input.projectId,
               },
-            });
+            },
           });
         },
         errorMessages: [
