@@ -10,7 +10,7 @@ const DangerZone = ({
   projectName: string | undefined;
 }) => {
   const router = useRouter();
-  const { deleteProject } = useDeleteProject({});
+  const { deleteProject } = useDeleteProject();
   return (
     <span className="m-8 flex flex-col ">
       <>

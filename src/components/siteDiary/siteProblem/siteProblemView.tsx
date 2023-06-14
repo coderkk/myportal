@@ -2,7 +2,6 @@ import { type SiteProblem as _SiteProblem } from "@prisma/client";
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import { useDeleteSiteProblem } from "../../../hooks/siteProblem";
 
 export type SiteProblem = _SiteProblem & {
@@ -28,10 +27,8 @@ export const SiteProblemView = ({
   siteProblems: SiteProblem[];
 }) => {
   const router = useRouter();
-  const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
   const { deleteSiteProblem } = useDeleteSiteProblem({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     siteDiaryId: siteDiaryId,
   });
 

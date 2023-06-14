@@ -20,6 +20,7 @@ import ConfirmationDialog from "../../../../components/invoice/ConfirmationDialo
 import InvoiceEditableForm from "../../../../components/invoice/InvoiceEditableForm";
 import type { SupplierInvoiceItem } from "../../../../components/invoice/InvoiceItem";
 import { env } from "../../../../env/client.mjs";
+import { useGetBudget } from "../../../../hooks/budget";
 import { useExtractInvoiceInfo } from "../../../../hooks/gpt";
 import { useGetPreSignedURLForUpload } from "../../../../hooks/s3";
 import { useCreateSupplierInvoice } from "../../../../hooks/supplierInvoice";
@@ -67,7 +68,7 @@ const AddInvoicePage = () => {
   const [supplierInvoiceItems, setSupplierInvoiceItems] = useState<
     SupplierInvoiceItem[] | undefined
   >([]);
-  const { createSupplierInvoice } = useCreateSupplierInvoice();
+
   const { getPreSignedURLForUpload } = useGetPreSignedURLForUpload();
   const { data, isLoading, extractInvoiceInfo } = useExtractInvoiceInfo();
   const [fileId, setFileId] = useState("");
@@ -89,6 +90,13 @@ const AddInvoicePage = () => {
       supplierInvoiceItems: [],
     },
     values: data,
+  });
+  const { budget } = useGetBudget({
+    budgetId: useFormReturn.getValues().budgetId,
+    enabled: useFormReturn.getValues().budgetId !== "",
+  });
+  const { createSupplierInvoice } = useCreateSupplierInvoice({
+    budget: budget,
   });
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);

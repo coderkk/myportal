@@ -1,6 +1,8 @@
+import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
-import type { MutableRefObject } from "react";
 import toast from "react-hot-toast";
+import { projectsMutationCountAtom } from "../atoms/projectAtoms";
+import { usersForProjectMutationCountAtom } from "../atoms/userAtoms";
 import { api } from "../utils/api";
 
 export const useCreateProject = () => {
@@ -37,7 +39,10 @@ export const useCreateProject = () => {
 };
 
 export const useGetProjects = () => {
-  const { data, isLoading } = api.project.getProjects.useQuery();
+  const [projectsMutationCount] = useAtom(projectsMutationCountAtom);
+  const { data, isLoading } = api.project.getProjects.useQuery(undefined, {
+    enabled: projectsMutationCount === 0,
+  });
   return {
     projects: data,
     isLoading: isLoading,
@@ -125,15 +130,12 @@ export const useUpdateProject = () => {
   };
 };
 
-export const useDeleteProject = ({
-  pendingDeleteCountRef,
-}: {
-  pendingDeleteCountRef?: MutableRefObject<number>;
-}) => {
+export const useDeleteProject = () => {
   const utils = api.useContext();
+  const [, setProjectsMutationCount] = useAtom(projectsMutationCountAtom);
   const { mutate: deleteProject } = api.project.deleteProject.useMutation({
     async onMutate({ projectId }) {
-      if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
+      setProjectsMutationCount((prev) => prev + 1);
       await utils.project.getProjects.cancel();
       const previousData = utils.project.getProjects.getData();
       utils.project.getProjects.setData(undefined, (oldProjects) => {
@@ -159,14 +161,8 @@ export const useDeleteProject = ({
       toast.success("Project deleted");
     },
     async onSettled() {
-      if (pendingDeleteCountRef) {
-        pendingDeleteCountRef.current -= 1;
-        if (pendingDeleteCountRef.current === 0) {
-          await utils.project.getProjects.invalidate();
-        }
-      } else {
-        await utils.project.getProjects.invalidate();
-      }
+      setProjectsMutationCount((prev) => prev - 1);
+      await utils.project.getProjects.invalidate();
     },
   });
   return {
@@ -216,16 +212,15 @@ export const useAddToProject = () => {
   };
 };
 
-export const useRemoveFromProject = ({
-  pendingRemoveCountRef,
-}: {
-  pendingRemoveCountRef?: MutableRefObject<number>;
-}) => {
+export const useRemoveFromProject = () => {
   const utils = api.useContext();
+  const [, setUsersForProjectMutationCount] = useAtom(
+    usersForProjectMutationCountAtom
+  );
   const { mutate: removeFromProject } =
     api.project.removeFromProject.useMutation({
       async onMutate({ projectId, userToBeRemovedId }) {
-        if (pendingRemoveCountRef) pendingRemoveCountRef.current += 1;
+        setUsersForProjectMutationCount((prev) => prev + 1);
         await utils.user.getUsersForProject.cancel();
         const previousData = utils.user.getUsersForProject.getData();
         utils.user.getUsersForProject.setData(
@@ -260,14 +255,8 @@ export const useRemoveFromProject = ({
         );
       },
       async onSettled() {
-        if (pendingRemoveCountRef) {
-          pendingRemoveCountRef.current -= 1;
-          if (pendingRemoveCountRef.current === 0) {
-            await utils.user.getUsersForProject.invalidate();
-          }
-        } else {
-          await utils.user.getUsersForProject.invalidate();
-        }
+        setUsersForProjectMutationCount((prev) => prev - 1);
+        await utils.user.getUsersForProject.invalidate();
       },
     });
   return {

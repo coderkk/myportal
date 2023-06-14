@@ -2,7 +2,6 @@ import { type Material as _Material } from "@prisma/client";
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import { useDeleteMaterial } from "../../../hooks/material";
 
 export type Material = _Material & {
@@ -24,10 +23,8 @@ const bgColors = [
 
 export const MaterialView = ({ materials }: { materials: Material[] }) => {
   const router = useRouter();
-  const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
   const { deleteMaterial } = useDeleteMaterial({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     siteDiaryId: siteDiaryId,
   });
   return (

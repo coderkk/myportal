@@ -1,9 +1,9 @@
 import type { TaskStatus } from "@prisma/client";
 import { useAtom } from "jotai";
-import type { MutableRefObject } from "react";
 import {
   activeSearchFiltersAtom,
   activeStatusFiltersAtom,
+  tasksMutationCountAtom,
 } from "../atoms/taskAtoms";
 import { api } from "../utils/api";
 
@@ -122,6 +122,7 @@ export const useGetTasks = ({
   statuses: TaskStatus[];
   searches: search[];
 }) => {
+  const [tasksMutationCount] = useAtom(tasksMutationCountAtom);
   const { data, isLoading, isSuccess, hasNextPage, fetchNextPage, isFetching } =
     api.task.getTasks.useInfiniteQuery(
       {
@@ -137,6 +138,7 @@ export const useGetTasks = ({
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
+        enabled: tasksMutationCount === 0,
       }
     );
   return {
@@ -311,19 +313,14 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
   };
 };
 
-export const useDeleteTask = ({
-  pendingDeleteCountRef,
-  projectId,
-}: {
-  pendingDeleteCountRef?: MutableRefObject<number>;
-  projectId: string;
-}) => {
+export const useDeleteTask = ({ projectId }: { projectId: string }) => {
   const utils = api.useContext();
   const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
   const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
+  const [, setTasksMutationCount] = useAtom(tasksMutationCountAtom);
   const { mutate: deleteTask } = api.task.deleteTask.useMutation({
     async onMutate({ taskId }) {
-      if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
+      setTasksMutationCount((prev) => prev + 1); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
       await utils.task.getTasks.cancel();
       const previousData = utils.task.getTasks.getInfiniteData({
         projectId: projectId,
@@ -424,38 +421,20 @@ export const useDeleteTask = ({
       );
     },
     async onSettled() {
-      if (pendingDeleteCountRef) {
-        pendingDeleteCountRef.current -= 1;
-        if (pendingDeleteCountRef.current === 0) {
-          await utils.task.getTasks.invalidate({
-            projectId: projectId,
-            limit: INFINITE_QUERY_LIMIT,
-            statuses: activeStatusFilters.map(
-              (activeStatusFilter) => activeStatusFilter.value
-            ),
-            searches: activeSearchFilters.map((activeSearchFilter) => {
-              return {
-                category: getSearchType(activeSearchFilter.label),
-                value: activeSearchFilter.value,
-              };
-            }),
-          });
-        }
-      } else {
-        await utils.task.getTasks.invalidate({
-          projectId: projectId,
-          limit: INFINITE_QUERY_LIMIT,
-          statuses: activeStatusFilters.map(
-            (activeStatusFilter) => activeStatusFilter.value
-          ),
-          searches: activeSearchFilters.map((activeSearchFilter) => {
-            return {
-              category: getSearchType(activeSearchFilter.label),
-              value: activeSearchFilter.value,
-            };
-          }),
-        });
-      }
+      setTasksMutationCount((prev) => prev - 1);
+      await utils.task.getTasks.invalidate({
+        projectId: projectId,
+        limit: INFINITE_QUERY_LIMIT,
+        statuses: activeStatusFilters.map(
+          (activeStatusFilter) => activeStatusFilter.value
+        ),
+        searches: activeSearchFilters.map((activeSearchFilter) => {
+          return {
+            category: getSearchType(activeSearchFilter.label),
+            value: activeSearchFilter.value,
+          };
+        }),
+      });
     },
   });
   return {

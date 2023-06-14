@@ -221,7 +221,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
                     <Image
                       className="mx-auto h-16 w-auto"
                       src={mainLogo}
-                      alt="Your Company"
+                      alt="MySmart Portal"
                     />
                   </div>
                   <nav className="flex flex-1 flex-col">
@@ -334,7 +334,7 @@ const ProjectSidebar = ({ children }: { children: ReactNode }) => {
             <Image
               className="mx-auto h-32 w-auto"
               src={mainLogo}
-              alt="Your Company"
+              alt="MySmart Portal"
             />
           </div>
           <nav className="flex flex-1 flex-col">

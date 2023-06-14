@@ -2,7 +2,6 @@ import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import defaultPhoto from "../../../../../public/images/default-photo.jpg";
 import PermissionToProject from "../../../../components/auth/PermissionToProject";
 import SessionAuth from "../../../../components/auth/SessionAuth";
@@ -27,7 +26,6 @@ const Team = () => {
   const { isCreator } = useIsCreatorOfProject({
     projectId: projectId,
   });
-  const pendingRemoveCountRef = useRef(0);
 
   const usersForProjectIds = usersForProject?.map((userForProject) => {
     return userForProject.id;
@@ -53,9 +51,7 @@ const Team = () => {
       };
     });
 
-  const { removeFromProject } = useRemoveFromProject({
-    pendingRemoveCountRef: pendingRemoveCountRef,
-  });
+  const { removeFromProject } = useRemoveFromProject();
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>

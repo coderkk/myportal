@@ -17,6 +17,7 @@ import { Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetBudgets } from "../../hooks/budget";
 import type { SupplierInvoiceWithItems } from "../../pages/projects/[projectId]/invoice/add";
+import { api } from "../../utils/api";
 import SelectList from "../common/SelectList";
 import Spinner from "../common/Spinner";
 import type { SupplierInvoiceItem } from "./InvoiceItem";
@@ -76,6 +77,8 @@ const InvoiceEditableForm = ({
     value: budget.id,
     label: `${budget.costCode} (${budget.description})`,
   }));
+
+  const utils = api.useContext();
 
   if (isLoading) {
     return <Spinner />;
@@ -238,9 +241,10 @@ const InvoiceEditableForm = ({
                           <SelectList
                             selected={selected}
                             options={budgetOptions}
-                            onChange={(option) =>
-                              option ? onChange(option.value) : null
-                            }
+                            onChange={(option) => {
+                              void utils.budget.getBudget.invalidate();
+                              onChange(option ? option.value : null);
+                            }}
                             error={errors.budgetId ? true : false}
                           />
                         );

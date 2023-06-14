@@ -2,7 +2,6 @@ import { type Laborer as _Laborer } from "@prisma/client";
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import { useDeleteLaborer } from "../../../hooks/laborer";
 
 export type Laborer = _Laborer & {
@@ -24,10 +23,8 @@ const bgColors = [
 
 export const LaborerView = ({ laborers }: { laborers: Laborer[] }) => {
   const router = useRouter();
-  const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
   const { deleteLaborer } = useDeleteLaborer({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     siteDiaryId: siteDiaryId,
   });
   return (

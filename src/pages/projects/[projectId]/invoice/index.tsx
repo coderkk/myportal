@@ -2,7 +2,6 @@ import { format } from "date-fns";
 import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import { Edit } from "styled-icons/boxicons-solid";
 import {
   activeDateFiltersAtom,
@@ -38,9 +37,7 @@ const Invoices = () => {
     endDate: getDateFromActiveFilter(false, activeDateFilters),
   });
 
-  const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
   const { deleteSupplierInvoice } = useDeleteSupplierInvoice({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     projectId: projectId,
   });
 
@@ -114,7 +111,7 @@ const Invoices = () => {
                               scope="col"
                               className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                             >
-                              Cost Code
+                              Cost type
                             </th>
 
                             <th
@@ -154,7 +151,7 @@ const Invoices = () => {
                                 )}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {supplierInvoice.budgetId}
+                                {`${supplierInvoice.budget.description} (${supplierInvoice.budget.costCode})`}
                               </td>
                               <td className="flex gap-2 whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {supplierInvoice.paid ? (

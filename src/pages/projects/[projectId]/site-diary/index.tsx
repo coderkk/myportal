@@ -2,7 +2,6 @@ import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import {
   activeDateFiltersAtom,
   activeSearchFiltersAtom,
@@ -43,10 +42,8 @@ const SiteDiary = () => {
     startDate: getDateFromActiveFilter(true, activeDateFilters),
     endDate: getDateFromActiveFilter(false, activeDateFilters),
   });
-  const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
   const { deleteSiteDiary } = useDeleteSiteDiary({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     projectId: projectId,
   });
 
