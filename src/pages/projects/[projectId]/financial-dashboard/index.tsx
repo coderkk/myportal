@@ -21,7 +21,7 @@ const Index = () => {
   const projectId = query.projectId as string;
   const { project } = useGetProject({ projectId: projectId });
 
-  const { deleteProject } = useDeleteProject({});
+  const { deleteProject } = useDeleteProject();
   return (
     <SessionAuth>
       <PermissionToProject projectId={projectId}>

@@ -2,7 +2,6 @@ import { type Plant as _Plant } from "@prisma/client";
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import { useDeletePlant } from "../../../hooks/plant";
 
 export type Plant = _Plant & {
@@ -24,10 +23,8 @@ const bgColors = [
 
 export const PlantView = ({ plants }: { plants: Plant[] }) => {
   const router = useRouter();
-  const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
   const { deletePlant } = useDeletePlant({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     siteDiaryId: siteDiaryId,
   });
   return (

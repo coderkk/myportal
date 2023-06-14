@@ -1,5 +1,6 @@
+import { useAtom } from "jotai";
 import { useSession } from "next-auth/react";
-import type { MutableRefObject } from "react";
+import { siteDiaryMutationCountAtom } from "../atoms/siteDiaryAtoms";
 import { api } from "../utils/api";
 
 export const useCreateLaborer = () => {
@@ -130,17 +131,12 @@ export const useUpdateLaborer = ({ siteDiaryId }: { siteDiaryId: string }) => {
   };
 };
 
-export const useDeleteLaborer = ({
-  pendingDeleteCountRef,
-  siteDiaryId,
-}: {
-  pendingDeleteCountRef?: MutableRefObject<number>;
-  siteDiaryId: string;
-}) => {
+export const useDeleteLaborer = ({ siteDiaryId }: { siteDiaryId: string }) => {
   const utils = api.useContext();
+  const [, setSiteDiaryMutationCount] = useAtom(siteDiaryMutationCountAtom);
   const { mutate: deleteLaborer } = api.laborer.deleteLaborer.useMutation({
     async onMutate({ laborerId }) {
-      if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1;
+      setSiteDiaryMutationCount((prev) => prev + 1);
       await utils.siteDiary.getSiteDiary.cancel();
       const previousData = utils.siteDiary.getSiteDiary.getData();
       utils.siteDiary.getSiteDiary.setData(
@@ -187,14 +183,8 @@ export const useDeleteLaborer = ({
       );
     },
     async onSettled() {
-      if (pendingDeleteCountRef) {
-        pendingDeleteCountRef.current -= 1;
-        if (pendingDeleteCountRef.current === 0) {
-          await utils.siteDiary.getSiteDiary.invalidate();
-        }
-      } else {
-        await utils.siteDiary.getSiteDiary.invalidate();
-      }
+      setSiteDiaryMutationCount((prev) => prev - 1);
+      await utils.siteDiary.getSiteDiary.invalidate();
     },
   });
   return {

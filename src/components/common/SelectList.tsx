@@ -102,6 +102,9 @@ export default function SelectList({
                           "gi"
                         )
                       );
+                      const matchedStartingIndex = option.label
+                        .toLowerCase()
+                        .indexOf(query.toLowerCase());
                       const firstPart = unMatchedParts[0];
                       const remainingParts = unMatchedParts
                         .slice(1)
@@ -119,11 +122,16 @@ export default function SelectList({
                           )}
                           <span
                             className={classNames(
-                              active ? "bg-yellow-600" : "bg-yellow-300",
+                              active
+                                ? "bg-yellow-600 text-yellow-200"
+                                : "bg-yellow-400 ",
                               selected ? "font-medium" : "font-normal"
                             )}
                           >
-                            {query}
+                            {option.label.substring(
+                              matchedStartingIndex,
+                              matchedStartingIndex + query.length
+                            )}
                           </span>
                           {remainingParts && (
                             <span

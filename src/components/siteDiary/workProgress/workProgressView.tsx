@@ -2,7 +2,6 @@ import { type WorkProgress as _WorkProgress } from "@prisma/client";
 import classNames from "classnames";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useRef } from "react";
 import { useDeleteWorkProgress } from "../../../hooks/workProgress";
 
 export type WorkProgress = _WorkProgress & {
@@ -28,10 +27,8 @@ export const WorkProgressView = ({
   workProgresses: WorkProgress[];
 }) => {
   const router = useRouter();
-  const pendingDeleteCountRef = useRef(0);
   const siteDiaryId = router.query.siteDiaryId as string;
   const { deleteWorkProgress } = useDeleteWorkProgress({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     siteDiaryId: siteDiaryId,
   });
   const initials = (workProgress: WorkProgress): string => {

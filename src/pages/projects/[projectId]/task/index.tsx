@@ -5,8 +5,7 @@ import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import type { MutableRefObject } from "react";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import defaultPhoto from "../../../../../public/images/default-photo.jpg";
 import {
   activeSearchFiltersAtom,
@@ -69,7 +68,6 @@ const Task = () => {
       };
     }),
   });
-  const pendingDeleteCountRef = useRef(0); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
 
   // https://tkdodo.eu/blog/avoiding-use-effect-with-callback-refs
   const observerRef = useCallback(
@@ -154,7 +152,6 @@ const Task = () => {
                               key={task.id}
                               task={task}
                               projectId={projectId}
-                              pendingDeleteCountRef={pendingDeleteCountRef}
                             />
                           ))}
                         </AnimatePresence>
@@ -180,17 +177,8 @@ const Task = () => {
   );
 };
 
-const MotionTR = ({
-  task,
-  projectId,
-  pendingDeleteCountRef,
-}: {
-  task: task;
-  projectId: string;
-  pendingDeleteCountRef: MutableRefObject<number>;
-}) => {
+const MotionTR = ({ task, projectId }: { task: task; projectId: string }) => {
   const { deleteTask } = useDeleteTask({
-    pendingDeleteCountRef: pendingDeleteCountRef,
     projectId: projectId,
   });
   return (

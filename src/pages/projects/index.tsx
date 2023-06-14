@@ -4,7 +4,6 @@ import { useDeleteProject, useGetProjects } from "../../hooks/project";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
 import defaultPhoto from "../../../public/images/default-photo.jpg";
 import SessionAuth from "../../components/auth/SessionAuth";
 import { Header } from "../../components/common/Header";
@@ -23,9 +22,8 @@ const EditButton = dynamic(() => import("../../components/project/EditButton"));
 
 const Projects = () => {
   const { projects, isLoading } = useGetProjects();
-  const pendingDeleteCountRef = useRef(0);
 
-  const { deleteProject } = useDeleteProject({ pendingDeleteCountRef });
+  const { deleteProject } = useDeleteProject();
   return (
     <SessionAuth>
       <Header />
@@ -133,12 +131,14 @@ const MotionTR = ({
       className={"w-full hover:bg-slate-100"}
       onMouseEnter={onEnterCallback}
     >
-      <Link
-        className=" relative w-32 max-w-[8rem] px-3 py-5 text-sm text-gray-500 hover:cursor-pointer sm:w-96 sm:max-w-[24rem]"
-        href={`/projects/${project.id}/financial-dashboard`}
-      >
-        <div className="text-blue-500 hover:underline">{project.name}</div>
-      </Link>
+      <td>
+        <Link
+          className=" relative w-32 max-w-[8rem] px-3 py-5 text-sm text-gray-500 hover:cursor-pointer sm:w-96 sm:max-w-[24rem]"
+          href={`/projects/${project.id}/financial-dashboard`}
+        >
+          <div className="text-blue-500 hover:underline">{project.name}</div>
+        </Link>
+      </td>
       <td className="px-3 py-5 text-sm text-gray-500">
         <div className="flex flex-col items-start gap-2 lg:flex-row lg:items-center lg:justify-start lg:gap-3">
           <Image

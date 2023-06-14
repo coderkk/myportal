@@ -3,19 +3,20 @@ import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { nanoid } from "nanoid";
 import { useSession } from "next-auth/react";
-import type { MutableRefObject } from "react";
 import { useMemo } from "react";
-import { mutationCountAtom } from "../atoms/supplierInvoiceAtoms";
+import { supplierInvoicesMutationCountAtom } from "../atoms/supplierInvoiceAtoms";
 import { api } from "../utils/api";
 
 export const useCreateSupplierInvoice = () => {
   const utils = api.useContext();
   const session = useSession();
-  const [, setMutationCount] = useAtom(mutationCountAtom);
+  const [, setSupplierInvoicesMutationCount] = useAtom(
+    supplierInvoicesMutationCountAtom
+  );
   const { mutate: createSupplierInvoice } =
     api.supplierInvoice.createSupplierInvoice.useMutation({
       async onMutate(values) {
-        setMutationCount((prev) => prev + 1);
+        setSupplierInvoicesMutationCount((prev) => prev + 1);
         await utils.supplierInvoice.getSupplierInvoices.cancel();
         const previousData = utils.supplierInvoice.getSupplierInvoices.getData({
           projectId: values.projectId,
@@ -61,7 +62,7 @@ export const useCreateSupplierInvoice = () => {
         }
       },
       async onSettled() {
-        setMutationCount((prev) => prev - 1);
+        setSupplierInvoicesMutationCount((prev) => prev - 1);
         await utils.supplierInvoice.getSupplierInvoices.invalidate();
       },
     });
@@ -83,7 +84,9 @@ export const useGetSupplierInvoices = ({
   startDate?: Date;
   endDate?: Date;
 }) => {
-  const [mutationCount] = useAtom(mutationCountAtom);
+  const [supplierInvoicesMutationCount] = useAtom(
+    supplierInvoicesMutationCountAtom
+  );
   const { data, isLoading } = api.supplierInvoice.getSupplierInvoices.useQuery(
     {
       projectId: projectId,
@@ -92,7 +95,7 @@ export const useGetSupplierInvoices = ({
       startDate: startDate,
       endDate: endDate,
     },
-    { enabled: mutationCount === 0, keepPreviousData: true }
+    { enabled: supplierInvoicesMutationCount === 0, keepPreviousData: true }
   );
 
   return {
@@ -130,11 +133,13 @@ export const useUpdateSupplierInvoice = ({
   projectId: string;
 }) => {
   const utils = api.useContext();
-  const [, setMutationCount] = useAtom(mutationCountAtom);
+  const [, setSupplierInvoicesMutationCount] = useAtom(
+    supplierInvoicesMutationCountAtom
+  );
   const { mutate: updateSupplierInvoice } =
     api.supplierInvoice.updateSupplierInvoice.useMutation({
       async onMutate(values) {
-        setMutationCount((prev) => prev + 1);
+        setSupplierInvoicesMutationCount((prev) => prev + 1);
         await utils.supplierInvoice.getSupplierInvoices.cancel();
         const previousData = utils.supplierInvoice.getSupplierInvoices.getData({
           projectId: values.projectId,
@@ -250,7 +255,7 @@ export const useUpdateSupplierInvoice = ({
         );
       },
       async onSettled() {
-        setMutationCount((prev) => prev - 1);
+        setSupplierInvoicesMutationCount((prev) => prev - 1);
         await utils.supplierInvoice.getSupplierInvoices.invalidate();
       },
     });
@@ -260,19 +265,18 @@ export const useUpdateSupplierInvoice = ({
 };
 
 export const useDeleteSupplierInvoice = ({
-  pendingDeleteCountRef,
   projectId,
 }: {
-  pendingDeleteCountRef?: MutableRefObject<number>;
   projectId: string;
 }) => {
   const utils = api.useContext();
-  const [, setMutationCount] = useAtom(mutationCountAtom);
+  const [, setSupplierInvoicesMutationCount] = useAtom(
+    supplierInvoicesMutationCountAtom
+  );
   const { mutate: deleteSupplierInvoice } =
     api.supplierInvoice.deleteSupplierInvoice.useMutation({
       async onMutate({ supplierInvoiceId }) {
-        setMutationCount((prev) => prev + 1);
-        if (pendingDeleteCountRef) pendingDeleteCountRef.current += 1; // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
+        setSupplierInvoicesMutationCount((prev) => prev + 1); // prevent parallel GET requests as much as possible. # https://profy.dev/article/react-query-usemutation#edge-case-concurrent-updates-to-the-cache
         await utils.supplierInvoice.getSupplierInvoices.cancel();
         const previousData = utils.supplierInvoice.getSupplierInvoices.getData({
           projectId: projectId,
@@ -311,15 +315,8 @@ export const useDeleteSupplierInvoice = ({
         );
       },
       async onSettled() {
-        setMutationCount((prev) => prev - 1);
-        if (pendingDeleteCountRef) {
-          pendingDeleteCountRef.current -= 1;
-          if (pendingDeleteCountRef.current === 0) {
-            await utils.supplierInvoice.getSupplierInvoices.invalidate();
-          }
-        } else {
-          await utils.supplierInvoice.getSupplierInvoices.invalidate();
-        }
+        setSupplierInvoicesMutationCount((prev) => prev - 1);
+        await utils.supplierInvoice.getSupplierInvoices.invalidate();
       },
     });
   return {
