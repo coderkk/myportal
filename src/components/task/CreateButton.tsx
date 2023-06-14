@@ -12,7 +12,7 @@ import StatusDropdown from "./StatusDropDown";
 
 type FormValues = {
   description: string;
-  assignee: assignee;
+  assignee: assignee | null;
   status: TaskStatus;
 };
 
@@ -32,7 +32,7 @@ const CreateButton = ({
   } = useForm<FormValues>({
     defaultValues: {
       description: "",
-      assignee: undefined,
+      assignee: null,
       status: "NOT_STARTED",
     },
   });

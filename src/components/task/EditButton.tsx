@@ -47,7 +47,7 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
     },
     defaultValues: {
       description: "",
-      assignee: undefined,
+      assignee: null,
       status: "NOT_STARTED",
     },
   });
