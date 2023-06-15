@@ -68,6 +68,7 @@ model User {
     createdMaterials              Material[]
     createdSiteProblems           SiteProblem[]
     createdWorkProgresses         WorkProgress[]
+    createdOrders                 Order[]
     createdRequestForInformations RequestForInformation[]
     createdReplies                Reply[]
     createdBudgets                Budget[]
@@ -97,6 +98,7 @@ model Project {
     createdById            String
     siteDiaries            SiteDiary[]
     tasks                  Task[]
+    orders                 Order[]
     requestForInformations RequestForInformation[]
     users                  UsersOnProjects[]
     budgets                Budget[]
@@ -229,6 +231,23 @@ model Task {
     @@index([projectId])
     @@index([createdById])
     @@index([assignedToId])
+}
+
+model Order {
+    id                   String             @id @default(cuid())
+    note                 String
+    supplierEmailAddress String
+    arrivalOnSite        OrderArrivalOnSite
+    orderNumber          String
+    createdBy            User               @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById          String
+    project              Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId            String
+    createdAt            DateTime           @default(now())
+    updatedAt            DateTime           @updatedAt
+
+    @@index([projectId])
+    @@index([createdById])
 }
 
 model RequestForInformation {
@@ -367,6 +386,11 @@ enum TaskStatus {
     NOT_STARTED
     IN_PROGRESS
     COMPLETED
+}
+
+enum OrderArrivalOnSite {
+    YES
+    NO
 }
 
 enum RequestForInformationStatus {
