@@ -1,3 +1,4 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project } from "@prisma/client";
 import classNames from "classnames";
 import { useSession } from "next-auth/react";
@@ -5,12 +6,14 @@ import Image from "next/image";
 import type { BaseSyntheticEvent } from "react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import type { z } from "zod";
 import defaultPhoto from "../../../public/images/default-photo.jpg";
 import {
   useGetMyProfessionalRole,
   useUpdateMyProfessionalRole,
 } from "../../hooks/me";
 import { useGetProjectCreator, useUpdateProject } from "../../hooks/project";
+import { updateProjectSchema } from "../../schema/project";
 import type { OptionItem } from "../common/SelectList";
 import SelectList from "../common/SelectList";
 import Spinner from "../common/Spinner";
@@ -64,9 +67,7 @@ const plans = [
   { label: "Premium", value: "Premium" },
 ];
 
-type FormValues = {
-  projectName: string;
-};
+type FormValues = z.infer<typeof updateProjectSchema>;
 
 const GeneralInformation = ({
   project,
@@ -91,6 +92,7 @@ const GeneralInformation = ({
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
+    resolver: zodResolver(updateProjectSchema),
     values: {
       projectName: project.name,
     },
@@ -213,7 +215,7 @@ const GeneralInformation = ({
                 <div>
                   {errors.projectName && (
                     <span className="mb-2 flex justify-center text-xs italic text-red-400">
-                      Project name is required
+                      {errors.projectName.message}
                     </span>
                   )}
                   <button

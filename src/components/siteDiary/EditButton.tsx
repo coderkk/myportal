@@ -34,6 +34,10 @@ const EditButton = ({
       name: siteDiary.name,
       date: siteDiary.date,
     },
+    defaultValues: {
+      name: "",
+      date: new Date(),
+    },
   });
   const { updateSiteDiary } = useUpdateSiteDiary({ projectId: projectId });
   const onSubmit = (
@@ -74,7 +78,6 @@ const EditButton = ({
                     errors.name ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="name"
-                  defaultValue={siteDiary.name}
                   {...register("name", { required: true })}
                 />
 

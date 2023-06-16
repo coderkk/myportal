@@ -106,7 +106,6 @@ const CreateButton = ({
                       : ""
                   }`}
                   id="expectedBudget"
-                  defaultValue={0}
                   {...register("expectedBudget", {
                     required: true,
                     valueAsNumber: true,
@@ -129,7 +128,6 @@ const CreateButton = ({
                       : ""
                   }`}
                   id="costsIncurred"
-                  defaultValue={0}
                   {...register("costsIncurred", {
                     required: true,
                     valueAsNumber: true,

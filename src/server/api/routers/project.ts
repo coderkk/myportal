@@ -36,7 +36,7 @@ export const getProjectCreatorSchema = z.object({
   projectId: z.string(),
 });
 
-export async function userIsCreator({
+export async function userIsProjectCreator({
   prisma,
   session,
   projectId,
@@ -203,7 +203,7 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: async () => {
-          await userIsCreator({
+          await userIsProjectCreator({
             prisma: ctx.prisma,
             session: ctx.session,
             projectId: input.projectId,
@@ -227,7 +227,7 @@ export const projectRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
         fn: async () => {
-          const isCreatorPromise = userIsCreator({
+          const isCreatorPromise = userIsProjectCreator({
             prisma: ctx.prisma,
             session: ctx.session,
             projectId: input.projectId,
@@ -276,7 +276,7 @@ export const projectRouter = createTRPCRouter({
       return await trycatch({
         fn: async () => {
           // check for permission first - only creator of the project can remove others
-          const isCreatorPromise = userIsCreator({
+          const isCreatorPromise = userIsProjectCreator({
             prisma: ctx.prisma,
             session: ctx.session,
             projectId: input.projectId,

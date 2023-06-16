@@ -17,7 +17,12 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      date: new Date(),
+      name: "",
+    },
+  });
   const { createSiteDiary } = useCreateSiteDiary();
   const onSubmit = (
     data: FormValues,
@@ -64,7 +69,6 @@ const CreateButton = ({ projectId }: { projectId: string }) => {
                 <Controller
                   name="date"
                   control={control}
-                  defaultValue={new Date()}
                   render={({
                     field,
                   }: {

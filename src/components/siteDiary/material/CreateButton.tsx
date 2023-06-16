@@ -19,7 +19,13 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
     reset,
     control,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      type: "",
+      units: "M2",
+      amount: 1,
+    },
+  });
   const { createMaterial } = useCreateMaterial();
   const onSubmit = (
     data: FormValues,
@@ -79,7 +85,6 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                 <Controller
                   name="units"
                   control={control}
-                  defaultValue="M2"
                   rules={{ required: true }}
                   render={({ field: { onChange, value } }) => {
                     return (
@@ -104,7 +109,6 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                     errors.amount ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="amount"
-                  defaultValue={1}
                   placeholder="e.g. 5"
                   type="number"
                   {...register("amount", {

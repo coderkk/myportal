@@ -14,7 +14,12 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      type: "",
+      amount: 1,
+    },
+  });
   const { createPlant } = useCreatePlant();
   const onSubmit = (
     data: FormValues,
@@ -77,7 +82,6 @@ const CreateButton = ({ siteDiaryId }: { siteDiaryId: string }) => {
                   }`}
                   id="amount"
                   placeholder="Nr."
-                  // defaultValue={1}
                   type="number"
                   {...register("amount", {
                     required: true,
