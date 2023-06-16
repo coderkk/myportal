@@ -1,5 +1,7 @@
 import { z } from "zod";
 
 export const createProjectSchema = z.object({
-  projectName: z.string().min(1, "Project name is required"),
+  projectName: z.string().trim().min(1, "A project name is required"),
 });
+
+export const updateProjectSchema = createProjectSchema;
