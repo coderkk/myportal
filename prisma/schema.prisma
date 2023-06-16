@@ -69,8 +69,6 @@ model User {
     createdSiteProblems           SiteProblem[]
     createdWorkProgresses         WorkProgress[]
     createdOrders                 Order[]
-    createdRequestForInformations RequestForInformation[]
-    createdReplies                Reply[]
     createdBudgets                Budget[]
     createdTasks                  Task[]                  @relation("createdTasks")
     createdSupplierInvoiceItems   SupplierInvoiceItem[]
@@ -99,7 +97,6 @@ model Project {
     siteDiaries            SiteDiary[]
     tasks                  Task[]
     orders                 Order[]
-    requestForInformations RequestForInformation[]
     users                  UsersOnProjects[]
     budgets                Budget[]
     supplierInvoices       SupplierInvoice[]
@@ -250,36 +247,6 @@ model Order {
     @@index([createdById])
 }
 
-model RequestForInformation {
-    id          String                      @id @default(cuid())
-    topic       String
-    status      RequestForInformationStatus
-    replies     Reply[]
-    createdBy   User                        @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById String
-    project     Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId   String
-    createdAt   DateTime                    @default(now())
-    updatedAt   DateTime                    @updatedAt
-
-    @@index([projectId])
-    @@index([createdById])
-}
-
-model Reply {
-    id                      String                @id @default(cuid())
-    description             String
-    createdBy               User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById             String
-    createdAt               DateTime              @default(now())
-    updatedAt               DateTime              @updatedAt
-    requestForInformation   RequestForInformation @relation(fields: [requestForInformationId], references: [id], onDelete: Cascade)
-    requestForInformationId String
-
-    @@index([requestForInformationId])
-    @@index([createdById])
-}
-
 model UsersOnProjects {
     user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId               String
@@ -393,7 +360,3 @@ enum OrderArrivalOnSite {
     NO
 }
 
-enum RequestForInformationStatus {
-    PENDING
-    CLOSED_OUT
-}
