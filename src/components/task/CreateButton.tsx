@@ -12,7 +12,7 @@ import StatusDropdown from "./StatusDropDown";
 
 type FormValues = {
   description: string;
-  assignee: assignee;
+  assignee: assignee | null;
   status: TaskStatus;
 };
 
@@ -29,7 +29,13 @@ const CreateButton = ({
     reset,
     control,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      description: "",
+      assignee: null,
+      status: "NOT_STARTED",
+    },
+  });
   const { createTask } = useCreateTask({ projectId: projectId });
   const { usersForProject } = useGetUsersForProject({ projectId: projectId });
 
@@ -107,7 +113,6 @@ const CreateButton = ({
                 <Controller
                   name="status"
                   control={control}
-                  defaultValue={"NOT_STARTED"}
                   rules={{ required: true }}
                   render={({ field }) => {
                     const value = field.value;

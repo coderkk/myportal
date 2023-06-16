@@ -40,6 +40,12 @@ const EditButton = ({
       expectedBudget: expectedBudget,
       costsIncurred: costsIncurred,
     },
+    defaultValues: {
+      budgetId: "",
+      description: "",
+      expectedBudget: 0,
+      costsIncurred: 0,
+    },
   });
 
   const { updateBudget } = useUpdateBudget({
@@ -113,7 +119,6 @@ const EditButton = ({
                       : ""
                   }`}
                   id="expectedBudget"
-                  defaultValue={Math.floor(Math.random() * 100000).toString()}
                   {...register("expectedBudget", {
                     required: true,
                     valueAsNumber: true,
@@ -136,7 +141,6 @@ const EditButton = ({
                       : ""
                   }`}
                   id="costsIncurred"
-                  defaultValue={Math.floor(Math.random() * 100000).toString()}
                   {...register("costsIncurred", {
                     required: true,
                     valueAsNumber: true,

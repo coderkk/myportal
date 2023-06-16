@@ -32,6 +32,11 @@ const EditButton = ({
       units: material.units,
       amount: material.amount,
     },
+    defaultValues: {
+      type: "",
+      units: "M2",
+      amount: 1,
+    },
   });
   const { updateMaterial } = useUpdateMaterial({ siteDiaryId: siteDiaryId });
   const onSubmit = (
@@ -91,7 +96,6 @@ const EditButton = ({
                 <Controller
                   name="units"
                   control={control}
-                  defaultValue="M2"
                   rules={{ required: true }}
                   render={({ field: { onChange, value } }) => {
                     return (
@@ -116,7 +120,6 @@ const EditButton = ({
                     errors.amount ? "border-red-400  focus:border-red-400 " : ""
                   }`}
                   id="amount"
-                  defaultValue={1}
                   placeholder="e.g. 5"
                   type="number"
                   {...register("amount", {

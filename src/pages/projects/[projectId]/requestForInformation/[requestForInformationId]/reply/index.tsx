@@ -29,7 +29,11 @@ const Replies = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      description: "",
+    },
+  });
   const { createReply } = useCreateReply();
 
   const onSubmit = (
@@ -97,7 +101,6 @@ const Replies = () => {
                     : ""
                 }`}
                         id="description"
-                        defaultValue=""
                         {...register("description", {
                           required: true,
                         })}

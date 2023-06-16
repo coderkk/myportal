@@ -36,6 +36,10 @@ const EditButton = ({
       topic: requestForInformation.topic,
       status: requestForInformation.status,
     },
+    defaultValues: {
+      topic: "",
+      status: "PENDING",
+    },
   });
   const { updateRequestForInformation } = useUpdateRequestForInformation({
     projectId: projectId,
@@ -84,7 +88,6 @@ const EditButton = ({
                 <Controller
                   name="status"
                   control={control}
-                  defaultValue="PENDING"
                   rules={{ required: true }}
                   render={({ field }) => {
                     const { value, onChange } = field;

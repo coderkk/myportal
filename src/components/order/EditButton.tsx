@@ -42,6 +42,12 @@ const EditButton = ({
       supplierEmailAddress: order.supplierEmailAddress,
       arrivalOnSite: order.arrivalOnSite,
     },
+    defaultValues: {
+      orderNumber: "",
+      note: "",
+      arrivalOnSite: "NO",
+      supplierEmailAddress: "",
+    },
   });
 
   const { updateOrder } = useUpdateOrder({ projectId: projectId });
@@ -133,7 +139,6 @@ const EditButton = ({
                   <Controller
                     name="arrivalOnSite"
                     control={control}
-                    defaultValue={"NO"}
                     rules={{ required: true }}
                     render={({ field }) => {
                       const { value, onChange } = field;
