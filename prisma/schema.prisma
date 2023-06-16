@@ -52,31 +52,30 @@ model Session {
 }
 
 model User {
-    id                            String                  @id @default(cuid())
-    name                          String?
-    email                         String?                 @unique
-    emailVerified                 DateTime?
-    image                         String?                 @db.Text
-    phoneNumber                   String?                 @default("") // Must have a default value: https://create.t3.gg/en/usage/next-auth#adding-new-fields-to-your-models
-    company                       String?                 @default("")
-    accounts                      Account[]
-    sessions                      Session[]
-    createdProjects               Project[]
-    createdSiteDiaries            SiteDiary[]
-    createdPlants                 Plant[]
-    createdLaborers               Laborer[]
-    createdMaterials              Material[]
-    createdSiteProblems           SiteProblem[]
-    createdWorkProgresses         WorkProgress[]
-    createdOrders                 Order[]
-    createdBudgets                Budget[]
-    createdTasks                  Task[]                  @relation("createdTasks")
-    createdSupplierInvoiceItems   SupplierInvoiceItem[]
-    assignedTasks                 Task[]                  @relation("assignedTasks")
-    projects                      UsersOnProjects[]
-    createdSupplierInvoices       SupplierInvoice[]
-    createdAt                     DateTime                @default(now())
-    updatedAt                     DateTime                @default(now()) @updatedAt
+    id                          String                @id @default(cuid())
+    name                        String?
+    email                       String?               @unique
+    emailVerified               DateTime?
+    image                       String?               @db.Text
+    phoneNumber                 String?               @default("") // Must have a default value: https://create.t3.gg/en/usage/next-auth#adding-new-fields-to-your-models
+    company                     String?               @default("")
+    accounts                    Account[]
+    sessions                    Session[]
+    createdProjects             Project[]
+    createdSiteDiaries          SiteDiary[]
+    createdPlants               Plant[]
+    createdLaborers             Laborer[]
+    createdMaterials            Material[]
+    createdSiteProblems         SiteProblem[]
+    createdWorkProgresses       WorkProgress[]
+    createdBudgets              Budget[]
+    createdTasks                Task[]                @relation("createdTasks")
+    createdSupplierInvoiceItems SupplierInvoiceItem[]
+    assignedTasks               Task[]                @relation("assignedTasks")
+    projects                    UsersOnProjects[]
+    createdSupplierInvoices     SupplierInvoice[]
+    createdAt                   DateTime              @default(now())
+    updatedAt                   DateTime              @default(now()) @updatedAt
 }
 
 model VerificationToken {
@@ -90,18 +89,17 @@ model VerificationToken {
 }
 
 model Project {
-    id                     String                  @id @default(cuid())
-    name                   String
-    createdBy              User                    @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById            String
-    siteDiaries            SiteDiary[]
-    tasks                  Task[]
-    orders                 Order[]
-    users                  UsersOnProjects[]
-    budgets                Budget[]
-    supplierInvoices       SupplierInvoice[]
-    createdAt              DateTime                @default(now())
-    updatedAt              DateTime                @updatedAt
+    id               String            @id @default(cuid())
+    name             String
+    createdBy        User              @relation(fields: [createdById], references: [id], onDelete: Restrict)
+    createdById      String
+    siteDiaries      SiteDiary[]
+    tasks            Task[]
+    users            UsersOnProjects[]
+    budgets          Budget[]
+    supplierInvoices SupplierInvoice[]
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime          @updatedAt
 
     @@index([createdById])
 }
@@ -230,23 +228,6 @@ model Task {
     @@index([assignedToId])
 }
 
-model Order {
-    id                   String             @id @default(cuid())
-    note                 String
-    supplierEmailAddress String
-    arrivalOnSite        OrderArrivalOnSite
-    orderNumber          String
-    createdBy            User               @relation(fields: [createdById], references: [id], onDelete: Restrict)
-    createdById          String
-    project              Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    projectId            String
-    createdAt            DateTime           @default(now())
-    updatedAt            DateTime           @updatedAt
-
-    @@index([projectId])
-    @@index([createdById])
-}
-
 model UsersOnProjects {
     user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId               String
@@ -354,9 +335,3 @@ enum TaskStatus {
     IN_PROGRESS
     COMPLETED
 }
-
-enum OrderArrivalOnSite {
-    YES
-    NO
-}
-

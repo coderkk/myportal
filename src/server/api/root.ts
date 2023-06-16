@@ -3,7 +3,6 @@ import { gptRouter } from "./routers/gpt";
 import { laborerRouter } from "./routers/laborer";
 import { materialRouter } from "./routers/material";
 import { meRouter } from "./routers/me";
-import { orderRouter } from "./routers/order";
 import { plantRouter } from "./routers/plant";
 import { projectRouter } from "./routers/project";
 import { s3Router } from "./routers/s3";
@@ -33,7 +32,6 @@ export const appRouter = createTRPCRouter({
   workProgress: workProgressRouter,
   weather: weatherRouter,
   task: taskRouter,
-  order: orderRouter,
   s3: s3Router,
   budget: budgetRouter,
   supplierInvoice: supplierInvoiceRouter,
