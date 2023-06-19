@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { userBelongsToProject  } from "../../../utils/permissions";
 
 export const createTaskSchema = z.object({
   taskDescription: z.string(),
@@ -37,6 +38,7 @@ export const getTaskInfoSchema = z.object({
 
 export const updateTaskSchema = z.object({
   taskId: z.string(),
+  projectId: z.string(),
   taskDescription: z.string(),
   taskStatus: z
     .enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED"])
@@ -54,6 +56,7 @@ export const updateTaskSchema = z.object({
 
 export const deleteTaskSchema = z.object({
   taskId: z.string(),
+  projectId: z.string(),
 });
 
 export const taskRouter = createTRPCRouter({
@@ -61,7 +64,12 @@ export const taskRouter = createTRPCRouter({
     .input(createTaskSchema)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
+        fn: async () => {
+          await userBelongsToProject({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
+          });
           return ctx.prisma.task.create({
             data: {
               description: input.taskDescription,
@@ -188,7 +196,12 @@ export const taskRouter = createTRPCRouter({
     .input(updateTaskSchema)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
+        fn: async () => {
+          await userBelongsToProject({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
+          });
           return ctx.prisma.task.update({
             where: {
               id: input.taskId,
@@ -206,6 +219,11 @@ export const taskRouter = createTRPCRouter({
   deleteTask: protectedProcedure
     .input(deleteTaskSchema)
     .mutation(async ({ ctx, input }) => {
+      await userBelongsToProject({
+        prisma: ctx.prisma,
+        session: ctx.session,
+        projectId: input.projectId,
+      });
       return await trycatch({
         fn: () => {
           return ctx.prisma.task.delete({

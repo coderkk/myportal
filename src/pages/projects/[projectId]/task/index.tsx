@@ -270,6 +270,7 @@ const MotionTR = ({ task, projectId }: { task: task; projectId: string }) => {
             onDelete={() => {
               deleteTask({
                 taskId: task.id,
+                projectId: projectId
               });
             }}
           />

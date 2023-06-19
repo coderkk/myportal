@@ -6,6 +6,7 @@ import {
   tasksMutationCountAtom,
 } from "../atoms/taskAtoms";
 import { api } from "../utils/api";
+import { project } from '../components/project/EditButton';
 
 export type task = {
   id: string;
@@ -156,7 +157,7 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
   const [activeStatusFilters] = useAtom(activeStatusFiltersAtom);
   const [activeSearchFilters] = useAtom(activeSearchFiltersAtom);
   const { mutate: updateTask } = api.task.updateTask.useMutation({
-    async onMutate({ taskId, taskDescription, taskStatus, taskAssignedTo }) {
+    async onMutate({ taskId, projectId, taskDescription, taskStatus, taskAssignedTo }) {
       await utils.task.getTasks.cancel();
       const previousData = utils.task.getTasks.getInfiniteData({
         projectId: projectId,
@@ -194,6 +195,7 @@ export const useUpdateTask = ({ projectId }: { projectId: string }) => {
                 if (task.id === taskId) {
                   return {
                     id: taskId,
+                    projectId: projectId,
                     description: taskDescription,
                     status: taskStatus || "NOT_STARTED",
                     assignedTo: taskAssignedTo

@@ -62,6 +62,7 @@ const EditButton = ({ projectId, task }: { projectId: string; task: task }) => {
     setOpen(false);
     updateTask({
       taskId: task.id,
+      projectId: projectId,
       taskDescription: data.description,
       taskAssignedTo: data.assignee,
       taskStatus: data.status,
