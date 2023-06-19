@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { trycatch } from "../../../utils/trycatch";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { userBelongsToProject  } from "../../../utils/permissions";
 
 export const createSupplierInvoiceSchema = z.object({
   invoiceNo: z.string(),
@@ -67,6 +68,7 @@ export const updateSupplierInvoiceSchema = z.object({
 
 export const deleteSupplierInvoiceSchema = z.object({
   supplierInvoiceId: z.string(),
+  projectId: z.string(),
 });
 
 export const getSupplierInvoicesForCSVDownloadSchema = z.object({
@@ -82,7 +84,12 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .input(createSupplierInvoiceSchema)
     .mutation(async ({ ctx, input }) => {
       return trycatch({
-        fn: () => {
+        fn: async () => {
+          await userBelongsToProject({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
+          });
           return ctx.prisma.$transaction(async (tx) => {
             const { supplierInvoiceItems, ...rest } = input;
             const supplierInvoice = await tx.supplierInvoice.create({
@@ -197,7 +204,12 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .input(updateSupplierInvoiceSchema)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
+        fn: async () => {
+          await userBelongsToProject({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
+          });
           return ctx.prisma.$transaction(async (tx) => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { supplierInvoiceItems, ...rest } = input;
@@ -291,14 +303,22 @@ export const supplierInvoiceRouter = createTRPCRouter({
     .input(deleteSupplierInvoiceSchema)
     .mutation(async ({ ctx, input }) => {
       return await trycatch({
-        fn: () => {
+        fn: async () => {
+          await userBelongsToProject({
+            prisma: ctx.prisma,
+            session: ctx.session,
+            projectId: input.projectId,
+          });
           return ctx.prisma.supplierInvoice.delete({
             where: {
               id: input.supplierInvoiceId,
             },
           });
         },
-        errorMessages: ["Failed to delete supplier invoice"],
+        errorMessages: [
+          "Failed to delete supplier invoice",
+          "You do not have permission since you did not create the supplier invoice",
+        ],
       })();
     }),
   getSupplierInvoicesForCSVDownload: protectedProcedure

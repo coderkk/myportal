@@ -194,6 +194,7 @@ const Invoices = () => {
                                   onDelete={() => {
                                     deleteSupplierInvoice({
                                       supplierInvoiceId: supplierInvoice.id,
+                                      projectId: supplierInvoice.projectId
                                     });
                                   }}
                                 />
