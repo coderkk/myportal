@@ -6,7 +6,6 @@ import {
   tasksMutationCountAtom,
 } from "../atoms/taskAtoms";
 import { api } from "../utils/api";
-import { project } from '../components/project/EditButton';
 
 export type task = {
   id: string;
